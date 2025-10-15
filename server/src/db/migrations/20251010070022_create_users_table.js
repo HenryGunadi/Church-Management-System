@@ -3,14 +3,22 @@
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-  await knex.schema.createTable('users', (table) => {
-    table.increments('id').primary();
-    table.string('name').notNullable();
-    table.string('email').notNullable().unique();
-    table.enu('role', ['admin', 'guest']).notNullable();
-
-    table.timestamps(true, true); // created_at, updated_at
-  });
+    await knex.schema.createTable('users', (table) => {
+        table.increments('id').primary();
+        table.string('name', 100).notNullable();
+        table.string('email', 100).notNullable().unique();
+        table.string('password', 255).notNullable();
+        table
+            .enu('role', ['admin', 'member'])
+            .notNullable()
+            .defaultTo('member');
+        table.enu('gender', ['Male', 'Female']).nullable();
+        table.date('birth_date').nullable();
+        table.string('phone_number', 20).nullable();
+        table.text('address').nullable();
+        table.timestamp('joined_at').defaultTo(knex.fn.now());
+        table.timestamps(true, true); // created_at, updated_at
+    });
 };
 
 /**
@@ -18,5 +26,5 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function (knex) {
-  await knex.schema.dropTable('users');
+    await knex.schema.dropTableIfExists('users');
 };
