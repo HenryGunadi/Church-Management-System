@@ -8,6 +8,7 @@ exports.up = async function (knex) {
         table.string('event_name').notNullable();
         table.string('place').notNullable();
         table.string('image_url').nullable();
+        table.string('qr_code').nullable();
         table.text('description').nullable();
 
         table.timestamps(true, true); // created_at, updated_at
