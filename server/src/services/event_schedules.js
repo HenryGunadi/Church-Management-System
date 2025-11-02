@@ -3,9 +3,10 @@ class EventSchedules {
     this.db = db;
   }
 
-  async create(payload) {
+  async create(payload, trx = null) {
     try {
-      const [id] = await this.db("event_schedules").insert(payload);
+      const queryBuilder = trx || this.db;
+      const [id] = await queryBuilder("event_schedules").insert(payload);
       return await this.view(id);
     } catch (err) {
       throw new Error(`Create event schedule failed: ${err.message}`);

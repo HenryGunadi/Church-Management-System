@@ -4,7 +4,7 @@ const {
   updateEventValidation,
   deleteEventValidation,
   viewEventValidation,
-} = require("../validators/events");
+} = require("../validators/event");
 
 class EventRouter {
   constructor(eventService, express) {

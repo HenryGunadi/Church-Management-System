@@ -1,6 +1,12 @@
 const { db } = require("../db/db");
-const { AuthRouter, UserRouter } = require("../routers");
-const { AuthService, UserService } = require("../services");
+const { AuthRouter, UserRouter, EventRouter } = require("../routers");
+const {
+  AuthService,
+  UserService,
+  EventService,
+  EventSchedules,
+  EventTokens,
+} = require("../services");
 
 class Server {
   constructor(port, host) {
@@ -16,14 +22,22 @@ class Server {
     // services
     const authService = new AuthService(this.db);
     const userService = new UserService(this.db);
+    const eventScheduleService = new EventSchedules(this.db);
+    const eventTokensService = new EventTokens(this.db);
+    const eventService = new EventService(
+      this.db,
+      eventTokensService,
+      eventScheduleService
+    );
 
     // routes
     const authRouter = new AuthRouter(authService, this.express);
     const userRouter = new UserRouter(userService, this.express);
+    const eventRouter = new EventRouter(eventService, this.express); // register routes
 
-    // register routes
     this.app.use("/api/auth", authRouter.router);
     this.app.use("/api/user", userRouter.router);
+    this.app.use("/api/events", eventRouter.router);
 
     this.app.get("/", (req, res) => {
       res.send("Server is running!");

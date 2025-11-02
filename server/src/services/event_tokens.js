@@ -5,9 +5,11 @@ class EventTokens {
     this.db = db;
   }
 
-  async create(eventId, token) {
+  async create(eventId, token, trx = null) {
     try {
-      await this.db("event_tokens").insert({
+      const queryBuilder = trx || this.db;
+
+      await queryBuilder("event_tokens").insert({
         event_id: eventId,
         token: token,
       });

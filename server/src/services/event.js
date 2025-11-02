@@ -10,27 +10,38 @@ class EventService {
   }
 
   async create(payload) {
+    const trx = await this.db.transaction();
+
     try {
-      const [eventId] = await this.db("events").insert(payload);
-
-      // generate QR Code
-      const qrCode = await this.generateQR(eventId);
-
-      await this.db("events")
-        .where({ id: eventId })
-        .update({ qr_code: qrCode });
-
-      // create event schedules
       const { event_name, place, image_url, description, ...rest } = payload;
-      const eventSchedules = await this.eventScheduleService.create(rest);
 
-      return await this.view(eventId);
+      const [eventId] = await trx("events").insert({
+        event_name,
+        place,
+        image_url,
+        description,
+      });
+
+      const qrCode = await this.generateQR(eventId, trx);
+
+      await trx("events").where({ id: eventId }).update({ qr_code: qrCode });
+
+      const scheduledPayload = {
+        ...rest,
+        event_id: eventId,
+      };
+      await this.eventScheduleService.create(scheduledPayload, trx);
+
+      await trx.commit();
+
+      return await this.viewDetailed(eventId);
     } catch (err) {
+      await trx.rollback();
       throw new Error(`Create event failed: ${err.message}`);
     }
   }
 
-  async generateQR(eventId) {
+  async generateQR(eventId, trx = null) {
     try {
       const randomToken = uuidv4();
       const baseURL =
@@ -39,7 +50,7 @@ class EventService {
           : "http://localhost:3000";
 
       // create token service data
-      await this.eventTokenService.create(eventId, randomToken);
+      await this.eventTokenService.create(eventId, randomToken, trx);
 
       const url = `${baseURL}/scan?token=${randomToken}`;
       return await QRCode.toDataURL(url);
@@ -89,6 +100,24 @@ class EventService {
       }
     } catch (err) {
       throw new Error(`View events failed: ${err.message}`);
+    }
+  }
+
+  async viewDetailed(id) {
+    try {
+      if (!id) throw new Error("Event ID is required for detailed view");
+      console.log("Event id : ", id);
+      const result = await this.db.raw(
+        "SELECT get_event_details(?) as event_data",
+        [id]
+      );
+      const eventData = result[0][0].event_data;
+
+      console.log("Result : ", result);
+
+      return eventData ? JSON.parse(eventData) : null;
+    } catch (err) {
+      throw new Error(`Detailed view failed: ${err.message}`);
     }
   }
 }
