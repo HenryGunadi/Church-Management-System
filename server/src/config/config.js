@@ -20,6 +20,7 @@ class Config {
       jwt_secret: process.env.JWT_SECRET,
       jwt_exp: process.env.JWT_EXP,
     };
+    this.state_mode = process.env.STATE_MODE;
   }
 }
 

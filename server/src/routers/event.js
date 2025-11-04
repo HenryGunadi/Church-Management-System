@@ -5,6 +5,7 @@ const {
   deleteEventValidation,
   viewEventValidation,
 } = require("../validators/event");
+const { authenticate, checkRole } = require("../middlewares/auth");
 
 class EventRouter {
   constructor(eventService, express) {
@@ -15,11 +16,22 @@ class EventRouter {
   }
 
   registerRoutes() {
-    this.router.post("/create", createEventValidation, this.create.bind(this));
-    this.router.patch("/update", updateEventValidation, this.update.bind(this));
+    this.router.post(
+      "/create",
+      [authenticate, checkRole("admin")],
+      createEventValidation,
+      this.create.bind(this)
+    );
+    this.router.patch(
+      "/update",
+      [authenticate, checkRole("admin")],
+      updateEventValidation,
+      this.update.bind(this)
+    );
     this.router.delete(
       "/delete/:id",
       deleteEventValidation,
+      [authenticate, checkRole("admin")],
       this.delete.bind(this)
     );
     this.router.get("/view/:id", viewEventValidation, this.view.bind(this));

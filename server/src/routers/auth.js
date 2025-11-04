@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { registerValidation, loginValidation } = require("../validators/auth");
+const config = require("../config/config");
 
 class AuthRouter {
   constructor(authService, express) {
@@ -30,7 +31,14 @@ class AuthRouter {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      res.json({ message: "Login successful", user, token });
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      res.json({ message: "Login successful", user });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

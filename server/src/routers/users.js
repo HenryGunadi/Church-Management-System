@@ -1,10 +1,11 @@
-const { validationResult } = require("express-validator");
+const { validationResult, check } = require("express-validator");
 const {
   createUserValidation,
   updateUserValidation,
   deleteUserValidation,
   viewUserValidation,
 } = require("../validators/users");
+const { authenticate, checkRole } = require("../middlewares/auth");
 
 class UserRouter {
   constructor(userService, express) {
@@ -16,11 +17,22 @@ class UserRouter {
   }
 
   registerRoutes() {
-    this.router.post("/create", createUserValidation, this.create.bind(this));
-    this.router.patch("/update", updateUserValidation, this.update.bind(this));
+    this.router.post(
+      "/create",
+      [authenticate, checkRole("admin")],
+      createUserValidation,
+      this.create.bind(this)
+    );
+    this.router.patch(
+      "/update",
+      [authenticate, checkRole("admin")],
+      updateUserValidation,
+      this.update.bind(this)
+    );
     this.router.delete(
       "/delete/:id/:email",
       deleteUserValidation,
+      [authenticate, checkRole("admin")],
       this.delete.bind(this)
     );
     this.router.get(
