@@ -7,6 +7,7 @@ const {
   EventSchedules,
   EventTokens,
 } = require("../services");
+const cors = require("cors");
 
 class Server {
   constructor(port, host) {
@@ -17,6 +18,12 @@ class Server {
     this.db = db;
 
     // Middleware
+    this.app.use(
+      cors({
+        origin: true,
+        credentials: true,
+      })
+    );
     this.app.use(this.express.json());
 
     // services

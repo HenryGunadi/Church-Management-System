@@ -41,11 +41,12 @@ class AuthService {
 
       return { user, token };
     } catch (err) {
+      console.log("Login service error : ", err.message);
       throw new Error(`Login failed: ${err.message}`);
     }
   }
 
-  async register(name, email, password, role) {
+  async register(email, password, role) {
     try {
       const existingUser = await this.db("users").where({ email }).first();
       if (existingUser) {
@@ -55,7 +56,6 @@ class AuthService {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const [insertId] = await this.db("users").insert({
-        name,
         email,
         password: hashedPassword,
         role,
@@ -63,11 +63,12 @@ class AuthService {
 
       const newUser = await this.db("users")
         .where({ id: insertId })
-        .select("id", "name", "email", "role", "created_at")
+        .select("id", "email", "role", "created_at")
         .first();
 
       return newUser;
     } catch (err) {
+      console.log("Register service error : ", err.message);
       throw new Error(`Registration failed: ${err.message}`);
     }
   }

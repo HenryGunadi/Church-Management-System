@@ -48,7 +48,7 @@ class EventRouter {
 
       res.status(201).json({ message: "Event created successfully.", event });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -66,7 +66,7 @@ class EventRouter {
         updatedEvent,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -83,7 +83,7 @@ class EventRouter {
 
       res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -102,7 +102,7 @@ class EventRouter {
         event,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 }

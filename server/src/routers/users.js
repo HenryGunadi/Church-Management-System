@@ -53,7 +53,7 @@ class UserRouter {
 
       res.status(201).json({ message: "User created successfully.", user });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -71,7 +71,7 @@ class UserRouter {
         updatedUser,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -88,7 +88,7 @@ class UserRouter {
 
       res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -107,7 +107,7 @@ class UserRouter {
         user,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 }
