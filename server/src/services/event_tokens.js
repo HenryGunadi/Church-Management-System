@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 
-class EventTokens {
+class EventTokenService {
   constructor(db) {
     this.db = db;
   }
@@ -39,4 +39,4 @@ class EventTokens {
   }
 }
 
-module.exports = EventTokens;
+module.exports = EventTokenService;

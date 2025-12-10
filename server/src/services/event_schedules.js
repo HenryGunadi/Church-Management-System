@@ -1,4 +1,4 @@
-class EventSchedules {
+class EventScheduleService {
   constructor(db) {
     this.db = db;
   }
@@ -61,4 +61,4 @@ class EventSchedules {
   }
 }
 
-module.exports = EventSchedules;
+module.exports = EventScheduleService;

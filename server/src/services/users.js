@@ -43,6 +43,7 @@ class UserService {
       throw new Error(`Update user failed: ${err.message}`);
     }
   }
+
   async delete(id = undefined, email = undefined) {
     try {
       if (!id && !email) {
@@ -77,7 +78,7 @@ class UserService {
           .first();
       }
 
-      if (user) {
+      if (email || id) {
         delete user.password;
         return user;
       }
