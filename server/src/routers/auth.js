@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { registerValidation, loginValidation } = require("../validators/auth");
+const config = require("../config/config");
 
 class AuthRouter {
   constructor(authService, express) {
@@ -24,15 +25,25 @@ class AuthRouter {
       }
 
       const { email, password } = req.body;
-      const { user, token } = await this.authService.login(email, password);
+      const result = await this.authService.login(email, password);
 
-      if (!user) {
+      if (!result) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      res.json({ message: "Login successful", user, token });
+      const { user, token } = result;
+
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      res.json({ message: "Login success.", user });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      console.log("Login error : ", err.message);
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -44,15 +55,16 @@ class AuthRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { name, email, password, role } = req.body;
-      const user = await this.authService.register(name, email, password, role);
+      const { email, password, role } = req.body;
+      const user = await this.authService.register(email, password, role);
 
       res.status(201).json({
-        message: "User registered successfully",
+        message: "Your account has been created successfully.",
         user,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      console.log("Register error : ", err.message);
+      res.status(500).json({ message: err.message });
     }
   }
 }

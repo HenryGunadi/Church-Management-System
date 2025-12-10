@@ -1,18 +1,17 @@
-const { validationResult, check } = require("express-validator");
+const { validationResult } = require("express-validator");
 const {
-  createUserValidation,
-  updateUserValidation,
-  deleteUserValidation,
-  viewUserValidation,
-} = require("../validators/users");
+  createEventValidation,
+  updateEventValidation,
+  deleteEventValidation,
+  viewEventValidation,
+} = require("../validators/event");
 const { authenticate, checkRole } = require("../middlewares/auth");
 
-class UserRouter {
-  constructor(userService, express) {
-    this.userService = userService;
+class EventRouter {
+  constructor(eventService, express) {
+    this.eventService = eventService;
     this.router = express.Router();
 
-    // register routes
     this.registerRoutes();
   }
 
@@ -20,26 +19,22 @@ class UserRouter {
     this.router.post(
       "/create",
       [authenticate, checkRole("admin")],
-      createUserValidation,
+      createEventValidation,
       this.create.bind(this)
     );
     this.router.patch(
       "/update",
       [authenticate, checkRole("admin")],
-      updateUserValidation,
+      updateEventValidation,
       this.update.bind(this)
     );
     this.router.delete(
-      "/delete/:id/:email",
-      deleteUserValidation,
+      "/delete/:id",
+      deleteEventValidation,
       [authenticate, checkRole("admin")],
       this.delete.bind(this)
     );
-    this.router.get(
-      "/view/:id/:email",
-      viewUserValidation,
-      this.view.bind(this)
-    );
+    this.router.get("/view/:id", viewEventValidation, this.view.bind(this));
   }
 
   async create(req, res) {
@@ -49,9 +44,9 @@ class UserRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const user = await this.userService.create(req.body);
+      const event = await this.eventService.create(req.body);
 
-      res.status(201).json({ message: "User created successfully.", user });
+      res.status(201).json({ message: "Event created successfully.", event });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
@@ -64,11 +59,11 @@ class UserRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const updatedUser = await this.userService.update(req.body);
+      const updatedEvent = await this.eventService.update(req.body);
 
       res.status(200).json({
-        message: "User updated successfully",
-        updatedUser,
+        message: "Event updated successfully",
+        updatedEvent,
       });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -82,9 +77,9 @@ class UserRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { id, email } = req.params;
+      const { id } = req.params;
 
-      const result = await this.userService.delete(id, email);
+      const result = await this.eventService.delete(id);
 
       res.status(200).json(result);
     } catch (err) {
@@ -99,12 +94,12 @@ class UserRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { id, email } = req.params;
-      const user = await this.userService.view(id, email);
+      const { id } = req.params;
+      const event = await this.eventService.view(id);
 
       res.status(200).json({
-        message: "User viewed successfully",
-        user,
+        message: "Event retrieved successfully",
+        event,
       });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -112,4 +107,4 @@ class UserRouter {
   }
 }
 
-module.exports = UserRouter;
+module.exports = EventRouter;

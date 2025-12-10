@@ -13,8 +13,8 @@ class UserService {
         throw new Error("User already exists!");
       }
 
-      const [id] = await this.db("users").insert(payload).returning("*");
-      return await db("users").where({ id }).first();
+      const [id] = await this.db("users").insert(payload);
+      return await this.view(id, undefined);
     } catch (err) {
       throw new Error(`Create user failed: ${err.message}`);
     }
