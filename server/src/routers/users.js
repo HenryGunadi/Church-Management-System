@@ -19,24 +19,32 @@ class UserRouter {
   registerRoutes() {
     this.router.post(
       "/create",
-      [authenticate, checkRole("admin")],
+      authenticate,
+      checkRole("admin"),
       createUserValidation,
       this.create.bind(this)
     );
+
     this.router.patch(
       "/update",
-      [authenticate, checkRole("admin")],
+      authenticate,
+      checkRole("admin"),
       updateUserValidation,
       this.update.bind(this)
     );
+
     this.router.delete(
       "/delete/:id/:email",
+      authenticate,
+      checkRole("admin"),
       deleteUserValidation,
-      [authenticate, checkRole("admin")],
       this.delete.bind(this)
     );
+
     this.router.get(
-      "/view/:id/:email",
+      "/view",
+      authenticate, 
+      checkRole("admin", "member"), 
       viewUserValidation,
       this.view.bind(this)
     );

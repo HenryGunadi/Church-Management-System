@@ -7,6 +7,7 @@ const {
   EventSchedules,
   EventTokens,
 } = require("../services");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 class Server {
@@ -20,11 +21,13 @@ class Server {
     // Middleware
     this.app.use(
       cors({
-        origin: true,
-        credentials: true,
+      origin: "http://localhost:5173", 
+      credentials: true, 
       })
     );
+
     this.app.use(this.express.json());
+    this.app.use(cookieParser());
 
     // services
     const authService = new AuthService(this.db);

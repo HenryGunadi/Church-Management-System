@@ -878,6 +878,19 @@
       </div>
     </footer>
     <div id="app"></div>
-    <script src="./src/js/user/landingPage.js" type="module"></script>
+    <script src="./src/js/user/landingPage.js" type="module">
+      import { protectPage } from "../../js/auth/protect.js";
+
+      protectPage("member"); 
+
+      document.getElementById("logout").addEventListener("click", async () => {
+        await fetch("http://localhost:5000/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+        window.location.href = "/src/pages/user/login.html";
+      });
+    </script>
+    
   </body>
 </html>
