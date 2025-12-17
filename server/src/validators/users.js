@@ -68,8 +68,8 @@ const updateUserValidation = [
 ];
 
 const viewUserValidation = [
-  param("id").optional().isInt().withMessage("User ID must be an integer"),
-  param("email").optional().isEmail().withMessage("Email must be valid"),
+  query("id").optional().isInt().withMessage("User ID must be an integer"),
+  query("email").optional().isEmail().withMessage("Email must be valid"),
 ];
 
 const deleteUserValidation = [

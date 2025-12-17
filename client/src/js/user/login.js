@@ -138,7 +138,11 @@ form.addEventListener("submit", async function (e) {
         message: String(data.message),
         type: "success",
       });
-      window.location.href = "dashboard.html";
+      if (data.user && data.user.role === "admin") {
+        window.location.href = "../../pages/admin/dashboard.html";
+      } else {
+        window.location.href = "../../pages/user/dashboard.html";
+      }
     } else {
       // Handle error
       if (response.status === 401) {

@@ -8,6 +8,7 @@ async function checkDb() {
     await db.raw("SELECT 1");
     console.log("DB connected ✅");
   } catch (err) {
+    console.error(err);
     console.error("DB connection failed ❌", err.message);
   }
 }
