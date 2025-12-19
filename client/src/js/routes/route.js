@@ -22,6 +22,18 @@ export const routes = {
     css: "/src/css/about.css",
     js: [],
   },
+
+  "/admin/profile": {
+    html: "/src/pages/admin/adminProfile.html",
+    js: ["/src/js/admin/adminProfile.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
+
+    "/user/profile": {
+    html: "/src/pages/user/userProfile.html",
+    js: ["/src/js/user/userProfile.js"],
+    meta: { requiresAuth: true, role: "user" },
+  },
 };
 
 // ================================
@@ -55,6 +67,7 @@ async function loadJS(jsFiles = []) {
     }
   }
 }
+
 
 // ================================
 // Router
