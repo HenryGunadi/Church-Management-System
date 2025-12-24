@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        /* Navigation */
+        nav {
+            background: #ffffff;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #f59e0b;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .auth-buttons button {
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn {
+            background: transparent;
+            color: #f59e0b;
+            border: 2px solid #f59e0b;
+        }
+
+        .login-btn:hover {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+
+        .signup-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Hero Section */
+        .hero-about {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            padding: 80px 50px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .hero-about h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .hero-about p {
+            font-size: 20px;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 50px;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: #ffffff;
+            border: 2px solid #f59e0b;
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            transition: all 0.3s;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
+        }
+
+        .section-card.alternate {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: none;
+        }
+
+        .section-card h2 {
+            font-size: 36px;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .section-card p {
+            color: #666;
+            line-height: 1.9;
+            font-size: 16px;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            padding: 60px 50px;
+            margin: 60px 0;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* Team Section */
+        .team-section {
+            padding: 60px 0;
+        }
+
+        .team-section h2 {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 30px;
+            background: #ffffff;
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.25);
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .member-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .member-role {
+            color: #f59e0b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Values Section */
+        .values-section {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            padding: 80px 50px;
+            margin: 60px 0;
+        }
+
+        .values-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .values-container h2 {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .value-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #f59e0b;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .value-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .value-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .value-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .value-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            background: #ffffff;
+            padding: 40px 50px;
+            border-top: 2px solid #fff7ed;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 50px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #666;
+            line-height: 2;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: #f59e0b;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #f59e0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            color: #999;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+        }
+
+        .contact-info p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                gap: 20px;
+                order: 3;
+                width: 100%;
+                margin-top: 20px;
+                justify-content: center;
+            }
+
+            .hero-about h1 {
+                font-size: 36px;
+            }
+
+            .section-card {
+                padding: 30px 20px;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">STUDIO</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#" class="active">About Us</a></li>
+            <li><a href="#">Membership & Schedule</a></li>
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Resources</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <button class="login-btn">Log In</button>
+            <button class="signup-btn">Sign Up</button>
+        </div>
+    </nav>
+
+    <div class="hero-about">
+        <h1>About Us</h1>
+        <p>Empowering creativity and innovation through collaborative excellence</p>
+    </div>
+
+    <div class="content-container">
+        <div class="section-card">
+            <h2>Our History</h2>
+            <p>Founded in 2015, Creative Studio emerged from a shared vision to create a collaborative space where innovation meets creativity. What started as a small team of passionate designers and developers has grown into a thriving community of creative professionals dedicated to pushing the boundaries of digital excellence.</p>
+            <p>Over the years, we've had the privilege of working with hundreds of clients, from ambitious startups to established enterprises, helping them bring their visions to life through thoughtful design and innovative solutions. Our journey has been marked by continuous learning, adaptation, and an unwavering commitment to quality.</p>
+            <p>Today, we stand as a testament to the power of collaboration, creativity, and the belief that great work comes from great teams. Our history is not just about our past achievements, but about the foundation we've built for future innovations and the relationships we've fostered along the way.</p>
+        </div>
+
+        <div class="section-card alternate">
+            <h2>Our Vision</h2>
+            <p>We envision a world where creativity knows no bounds and innovation is accessible to everyone. Our vision is to become the leading creative hub that empowers individuals and organizations to transform their ideas into impactful realities through design, technology, and strategic thinking.</p>
+            <p>We believe in creating experiences that inspire, engage, and make a lasting difference. By fostering a culture of continuous learning and experimentation, we aim to stay at the forefront of creative and technological advancement, setting new standards for excellence in everything we do.</p>
+            <p>Our vision extends beyond our studio walls – we aspire to build a global community of creative thinkers, problem solvers, and innovators who share our passion for meaningful work. Together, we're not just creating projects; we're shaping the future of creative industries and making a positive impact on the world around us.</p>
+        </div>
+
+        <div class="section-card">
+            <h2>Our Mission</h2>
+            <p>Our mission is to deliver exceptional creative solutions that drive real results for our clients while nurturing a community of passionate creatives. We are committed to understanding the unique needs of each project and crafting tailored strategies that exceed expectations.</p>
+            <p>We strive to maintain the highest standards of quality in every aspect of our work, from initial concept to final delivery. Through collaboration, innovation, and attention to detail, we transform challenges into opportunities and ideas into tangible successes that make a meaningful impact.</p>
+            <p>Beyond delivering outstanding work, we're dedicated to fostering growth – both for our team members and our clients. We believe in building lasting partnerships based on trust, transparency, and mutual success. Our mission is to be more than just a service provider; we aim to be a trusted partner in your creative journey, helping you navigate the ever-evolving landscape of design and technology with confidence and creativity.</p>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Projects Completed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">250+</div>
+                <div class="stat-label">Happy Clients</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Team Members</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">9+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="values-section">
+        <div class="values-container">
+            <h2>Our Core Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <h3>Excellence</h3>
+                    <p>We pursue excellence in everything we do, continuously raising the bar for quality and innovation.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Collaboration</h3>
+                    <p>Great things happen when people work together. We believe in the power of teamwork and shared vision.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">💡</div>
+                    <h3>Innovation</h3>
+                    <p>We embrace change and constantly seek new ways to solve problems and create value.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">❤️</div>
+                    <h3>Integrity</h3>
+                    <p>Honesty and transparency guide our relationships with clients, partners, and each other.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div class="team-section">
+            <h2>Meet Our Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-avatar">👨‍💼</div>
+                    <div class="member-name">John Anderson</div>
+                    <div class="member-role">Chief Executive Officer</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍💼</div>
+                    <div class="member-name">Sarah Mitchell</div>
+                    <div class="member-role">Creative Director</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👨‍💻</div>
+                    <div class="member-name">Michael Chen</div>
+                    <div class="member-role">Lead Developer</div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍🎨</div>
+                    <div class="member-name">Emma Rodriguez</div>
+                    <div class="member-role">Senior Designer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <p>Join our creative community and stay updated with the latest news, projects, and opportunities.</p>
+                <div class="social-links">
+                    <a href="#">📘</a>
+                    <a href="#">📷</a>
+                    <a href="#">🐦</a>
+                    <a href="#">💼</a>
+                </div>
+                <div class="contact-info">
+                    <p>📧 hello@studio.com</p>
+                    <p>📱 +62 123 4567 890</p>
+                    <p>📍 Jl. Creative Avenue No. 123<br>   Bandung, West Java 40115<br>   Indonesia</p>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">Home</a>
+                <a href="#">About Us</a>
+                <a href="#">Events</a>
+                <a href="#">Membership</a>
+                <a href="#">Resources</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Services</h3>
+                <a href="#">Web Design</a>
+                <a href="#">App Development</a>
+                <a href="#">Brand Strategy</a>
+                <a href="#">Digital Marketing</a>
+                <a href="#">Consultation</a>
+                <a href="#">Workshop</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Studio. All rights reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
+</body>
+</html>

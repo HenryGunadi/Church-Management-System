@@ -7,7 +7,9 @@ const {
   EventSchedules,
   EventTokens,
 } = require("../services");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 
 class Server {
   constructor(port, host) {
@@ -20,11 +22,16 @@ class Server {
     // Middleware
     this.app.use(
       cors({
-        origin: true,
+        origin: "http://localhost:5173",
         credentials: true,
       })
     );
+
+    // Serve frontend
+    this.app.use(this.express.static(path.join(__dirname, "../../dist")));
+
     this.app.use(this.express.json());
+    this.app.use(cookieParser());
 
     // services
     const authService = new AuthService(this.db);
@@ -46,8 +53,14 @@ class Server {
     this.app.use("/api/user", userRouter.router);
     this.app.use("/api/events", eventRouter.router);
 
-    this.app.get("/", (req, res) => {
+    // Health check
+    this.app.get("/health", (req, res) => {
       res.send("Server is running!");
+    });
+
+    // SPA fallback (LAST — Express v5 safe)
+    this.app.use((req, res) => {
+      res.sendFile(path.join(__dirname, "../../dist/index.html"));
     });
   }
 

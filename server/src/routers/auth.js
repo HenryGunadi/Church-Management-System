@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const { registerValidation, loginValidation } = require("../validators/auth");
 const config = require("../config/config");
+const jwt = require("jsonwebtoken");
+
 
 class AuthRouter {
   constructor(authService, express) {
@@ -14,19 +16,41 @@ class AuthRouter {
   registerRoutes() {
     this.router.post("/login", loginValidation, this.login.bind(this));
     this.router.post("/register", registerValidation, this.register.bind(this));
+    this.router.get("/verify", this.verify.bind(this));
+  }
+  
+  async verify(req, res) {
+    try {
+      const token = req.cookies?.auth_token; 
+      if (!token) {
+        return res.status(401).json({ authenticated: false, message: "No token" });
+      }
+
+      const decoded = jwt.verify(token, config.auth.jwt_secret);
+
+      res.status(200).json({
+        authenticated: true,
+        user: decoded, 
+      });
+    } catch (err) {
+      res.status(401).json({
+        authenticated: false,
+        message: "Invalid or expired token",
+      });
+    }
   }
 
   async login(req, res) {
-    try {
-      // Validate payload
-      const errors = validationResult(req);
+  try {
+    const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
       const { email, password } = req.body;
-      const result = await this.authService.login(email, password);
+      console.log("Login attempt:", email);
 
+      const result = await this.authService.login(email, password);
       if (!result) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -35,21 +59,24 @@ class AuthRouter {
 
       res.cookie("auth_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: false,
+        sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
       });
 
       res.json({ message: "Login success.", user });
     } catch (err) {
-      console.log("Login error : ", err.message);
+      console.error("Login error:", err.stack || err.message);
       res.status(500).json({ message: err.message });
     }
   }
 
+
   async register(req, res) {
     try {
       // Validate payload
+      console.log("register terpanggil")
+      console.log(req.body);
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });

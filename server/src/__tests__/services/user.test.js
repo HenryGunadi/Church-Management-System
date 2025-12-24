@@ -1,4 +1,4 @@
-const UserService = require("../../src/services/users");
+const UserService = require("../../services/users");
 const bcrypt = require("bcrypt");
 
 jest.mock("bcrypt");

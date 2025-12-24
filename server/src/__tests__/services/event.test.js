@@ -1,6 +1,6 @@
-const EventService = require("../../src/services/event");
-const EventScheduleService = require("../../src/services/event_schedules");
-const EventTokenService = require("../../src/services/event_tokens");
+const EventService = require("../../services/event");
+const EventScheduleService = require("../../services/event_schedules");
+const EventTokenService = require("../../services/event_tokens");
 
 const QRCode = require("qrcode");
 const { v4: uuidv4 } = require("uuid");
