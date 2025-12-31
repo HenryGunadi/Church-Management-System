@@ -1,6 +1,4 @@
-// ================================
 // Init (called by router)
-// ================================
 export function init() {
   const navbar = document.getElementById("navbar");
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
@@ -8,9 +6,8 @@ export function init() {
 
   if (!navbar || !mobileMenuBtn || !navLinks) return;
 
-  // ================================
+
   // Navbar scroll effect
-  // ================================
   window.addEventListener("scroll", onScrollNavbar);
 
   function onScrollNavbar() {
@@ -21,9 +18,8 @@ export function init() {
     }
   }
 
-  // ================================
+
   // Mobile menu toggle
-  // ================================
   mobileMenuBtn.addEventListener("click", () => {
     navLinks.classList.toggle("active");
     const icon = mobileMenuBtn.querySelector("i");
@@ -59,9 +55,8 @@ export function init() {
     icon.classList.add("fa-bars");
   }
 
-  // ================================
+
   // Smooth scroll for anchors
-  // ================================
   document
     .querySelectorAll('a[href^="#"]:not([href^="#/"])')
     .forEach((anchor) => {
@@ -84,9 +79,8 @@ export function init() {
       });
     });
 
-  // ================================
+
   // Gallery lightbox
-  // ================================
   document.querySelectorAll(".gallery-item").forEach((item) => {
     item.addEventListener("click", () => {
       const img = item.querySelector("img");
@@ -122,9 +116,8 @@ export function init() {
     });
   });
 
-  // ================================
+
   // Section animations
-  // ================================
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -146,9 +139,8 @@ export function init() {
       observer.observe(section);
     });
 
-  // ================================
+
   // Active nav link on scroll
-  // ================================
   window.addEventListener("scroll", updateActiveNav);
 
   function updateActiveNav() {
@@ -168,9 +160,8 @@ export function init() {
     });
   }
 
-  // ================================
+
   // Hero animation
-  // ================================
   const heroContent = document.querySelector(".hero-content");
   if (heroContent) {
     heroContent.style.opacity = "0";
@@ -183,9 +174,8 @@ export function init() {
     }, 100);
   }
 
-  // ================================
+
   // Placeholder event links
-  // ================================
   document.querySelectorAll(".event-link").forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();

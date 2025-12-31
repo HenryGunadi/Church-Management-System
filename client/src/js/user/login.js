@@ -137,12 +137,11 @@ export function init() {
         });
 
         if (data.user?.role === "admin") {
-          history.pushState(null, "", "/admin");
-          window.dispatchEvent(new PopStateEvent("popstate"));
-        } else {
-          history.pushState(null, "", "/");
-          window.dispatchEvent(new PopStateEvent("popstate"));
+          history.pushState(null, "", "/admin/dashboard");
+        } else if(data.user?.role === "member") {
+          history.pushState(null, "", "/user/dashboard");
         }
+        window.dispatchEvent(new PopStateEvent("popstate"));
       } else {
         showAlert({
           timer: true,
