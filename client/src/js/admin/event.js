@@ -296,9 +296,9 @@ class EventManagement {
     const obj = Object.fromEntries(formData.entries());
     console.log("Request event : ", obj);
 
-    if (this.currentImageFile) {
-      formData.append("image", this.currentImageFile);
-    }
+    // if (this.currentImageFile) {
+    //   formData.append("image", this.currentImageFile);
+    // }
 
     this.setButtonLoading(this.submitBtn, true);
 
@@ -322,6 +322,7 @@ class EventManagement {
       }
 
       if (!response.ok) {
+        console.log("Error : ", response.json());
         throw new Error("Failed to save event");
       }
 
@@ -624,8 +625,13 @@ class EventManagement {
   }
 
   downloadQRCodePDF() {
-    const event = this.events.find((e) => e.event_id === this.currentEventId);
-    if (!event || !event.qr_code) {
+    const qrCodeSrc = this.detailQrCode
+      ? this.detailQrCode.src
+      : this.qrCodeImage
+      ? this.qrCodeImage.src
+      : null;
+
+    if (!qrCodeSrc || qrCodeSrc === "") {
       showAlert({
         type: "error",
         title: "Error",
@@ -634,10 +640,16 @@ class EventManagement {
       return;
     }
 
+    const event = this.events.find((e) => e.event_id === this.currentEventId);
+    const eventName = event ? event.event_name : "Event";
+
+    // Download the QR code
     const link = document.createElement("a");
-    link.href = event.qr_code;
-    link.download = `${event.event_name.replace(/\s+/g, "-")}-QR.png`;
+    link.href = qrCodeSrc; // Use the image src that's currently displayed
+    link.download = `${eventName.replace(/\s+/g, "-")}-QR.png`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 
     showAlert({
       type: "success",

@@ -13,30 +13,59 @@ class EventService {
     const trx = await this.db.transaction();
 
     try {
-      const { event_name, place, image_url, description, ...rest } = payload;
+      console.log("Creating event with payload:", payload);
 
-      const [eventId] = await trx("events").insert({
+      const {
         event_name,
+        event_type = "event",
         place,
         image_url,
         description,
+        start_time,
+        end_time,
+        worship_topic,
+      } = payload;
+
+      if (!event_name || !place || !start_time) {
+        throw new Error(
+          "Missing required fields: event_name, place, or start_time"
+        );
+      }
+
+      // Insert event
+      const [eventId] = await trx("events").insert({
+        event_name,
+        event_type,
+        place,
+        image_url: image_url || null,
+        description: description || null,
       });
 
-      const qrCode = await this.generateQR(eventId, trx);
+      console.log("Event created with ID:", eventId);
 
+      // Generate QR code
+      const qrCode = await this.generateQR(eventId, trx);
       await trx("events").where({ id: eventId }).update({ qr_code: qrCode });
 
+      console.log("QR code generated");
+
       const scheduledPayload = {
-        ...rest,
         event_id: eventId,
+        start_time,
+        end_time: end_time || null,
+        worship_topic: worship_topic || null,
       };
+
       await this.eventScheduleService.create(scheduledPayload, trx);
+
+      console.log("Schedule created");
 
       await trx.commit();
 
       return await this.viewDetailed(eventId);
     } catch (err) {
       await trx.rollback();
+      console.error("Create event error:", err);
       throw new Error(`Create event failed: ${err.message}`);
     }
   }
@@ -55,22 +84,75 @@ class EventService {
       const url = `${baseURL}/scan?token=${randomToken}`;
       return await QRCode.toDataURL(url);
     } catch (err) {
-      throw new Error(`Geneate QR error : ${err.message}`);
+      console.error("Generate QR error:", err);
+      throw new Error(`Generate QR error: ${err.message}`);
     }
   }
 
   async update(payload) {
+    const trx = await this.db.transaction();
+
     try {
-      const event = await this.view(payload.id);
+      console.log("Updating event with payload:", payload);
+
+      const {
+        id,
+        event_name,
+        event_type,
+        place,
+        image_url,
+        description,
+        start_time,
+        end_time,
+        worship_topic,
+      } = payload;
+
+      if (!id) {
+        throw new Error("Event ID is required for update");
+      }
+
+      const event = await this.view(id);
 
       if (!event) {
         throw new Error("Event doesn't exist.");
       }
 
-      await this.db("events").where({ id: payload.id }).update(payload);
+      const eventUpdate = {};
+      if (event_name !== undefined) eventUpdate.event_name = event_name;
+      if (event_type !== undefined) eventUpdate.event_type = event_type;
+      if (place !== undefined) eventUpdate.place = place;
+      if (image_url !== undefined) eventUpdate.image_url = image_url;
+      if (description !== undefined) eventUpdate.description = description;
 
-      return { success: true, message: "Event has been updated." };
+      if (Object.keys(eventUpdate).length > 0) {
+        await trx("events").where({ id }).update(eventUpdate);
+        console.log("Event updated");
+      }
+
+      if (
+        start_time !== undefined ||
+        end_time !== undefined ||
+        worship_topic !== undefined
+      ) {
+        const scheduleUpdate = {};
+        if (start_time !== undefined) scheduleUpdate.start_time = start_time;
+        if (end_time !== undefined) scheduleUpdate.end_time = end_time;
+        if (worship_topic !== undefined)
+          scheduleUpdate.worship_topic = worship_topic;
+
+        await trx("event_schedules")
+          .where({ event_id: id })
+          .update(scheduleUpdate);
+
+        console.log("Schedule updated");
+      }
+
+      await trx.commit();
+
+      return await this.viewDetailed(id);
     } catch (err) {
+      await trx.rollback();
+      console.error("Update event error:", err);
       throw new Error(`Update event failed: ${err.message}`);
     }
   }
@@ -85,39 +167,124 @@ class EventService {
 
       return { success: true, message: "Event deleted successfully" };
     } catch (err) {
+      console.error("Delete event error:", err);
       throw new Error(`Delete event failed: ${err.message}`);
     }
   }
 
-  async view(id = undefined) {
+  async view(id) {
     try {
-      const query = this.db("events").select("*");
-
-      if (id) {
-        return query.where({ id }).first();
-      } else {
-        return await query;
-      }
+      return await this.db("events").select("*").where({ id }).first();
     } catch (err) {
-      throw new Error(`View events failed: ${err.message}`);
+      console.error("View event error:", err);
+      throw new Error(`View event failed: ${err.message}`);
+    }
+  }
+
+  async viewAll() {
+    try {
+      console.log("Fetching all events...");
+
+      const events = await this.db("events")
+        .select("*")
+        .orderBy("created_at", "desc");
+
+      console.log(`Found ${events.length} events`);
+
+      const schedules = await this.db("event_schedules").select("*");
+
+      console.log(`Found ${schedules.length} schedules`);
+
+      const eventsWithSchedules = events.map((event) => {
+        const eventSchedules = schedules
+          .filter((schedule) => schedule.event_id === event.id)
+          .map((schedule) => ({
+            schedule_id: schedule.id,
+            start_time: schedule.start_time,
+            end_time: schedule.end_time,
+            worship_topic: schedule.worship_topic,
+          }));
+
+        return {
+          ...event,
+          event_id: event.id,
+          schedules: eventSchedules,
+        };
+      });
+
+      console.log("Successfully formatted events with schedules");
+      return eventsWithSchedules;
+    } catch (err) {
+      console.error("ViewAll error:", err);
+      console.error("Error details:", {
+        message: err.message,
+        code: err.code,
+        errno: err.errno,
+        sql: err.sql,
+      });
+      throw new Error(`View all events failed: ${err.message}`);
     }
   }
 
   async viewDetailed(id) {
     try {
       if (!id) throw new Error("Event ID is required for detailed view");
-      console.log("Event id : ", id);
-      const result = await this.db.raw(
-        "SELECT get_event_details(?) as event_data",
-        [id]
-      );
-      const eventData = result[0][0].event_data;
 
-      console.log("Result : ", result);
+      console.log("Fetching detailed event:", id);
 
-      return eventData ? JSON.parse(eventData) : null;
+      try {
+        const result = await this.db.raw(
+          "SELECT get_event_details(?) as event_data",
+          [id]
+        );
+
+        const eventData = result[0][0].event_data;
+
+        if (!eventData) {
+          return null;
+        }
+
+        const parsedData = JSON.parse(eventData);
+
+        return {
+          ...parsedData,
+          event_id: parsedData.id,
+        };
+      } catch (funcError) {
+        console.log("Stored procedure not found, using manual query");
+        return await this.viewDetailedManual(id);
+      }
     } catch (err) {
+      console.error("ViewDetailed error:", err);
       throw new Error(`Detailed view failed: ${err.message}`);
+    }
+  }
+
+  async viewDetailedManual(id) {
+    try {
+      const event = await this.db("events").select("*").where({ id }).first();
+
+      if (!event) {
+        return null;
+      }
+
+      const schedules = await this.db("event_schedules")
+        .select("*")
+        .where({ event_id: id });
+
+      return {
+        ...event,
+        event_id: event.id,
+        schedules: schedules.map((schedule) => ({
+          schedule_id: schedule.id,
+          start_time: schedule.start_time,
+          end_time: schedule.end_time,
+          worship_topic: schedule.worship_topic,
+        })),
+      };
+    } catch (err) {
+      console.error("ViewDetailedManual error:", err);
+      throw new Error(`Manual detailed view failed: ${err.message}`);
     }
   }
 }

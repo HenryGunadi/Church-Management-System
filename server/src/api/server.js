@@ -27,8 +27,15 @@ class Server {
       })
     );
 
+    this.app.use(
+      "/uploads",
+      this.express.static(path.join(__dirname, "../../uploads"))
+    );
+
+    const frontendDist = path.join(__dirname, "../../../client/dist");
+
     // Serve frontend
-    this.app.use(this.express.static(path.join(__dirname, "../../dist")));
+    this.app.use(this.express.static(frontendDist));
 
     this.app.use(this.express.json());
     this.app.use(cookieParser());
@@ -60,7 +67,7 @@ class Server {
 
     // SPA fallback (LAST — Express v5 safe)
     this.app.use((req, res) => {
-      res.sendFile(path.join(__dirname, "../../dist/index.html"));
+      res.sendFile(path.join(frontendDist, "index.html"));
     });
   }
 

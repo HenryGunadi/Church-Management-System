@@ -2,7 +2,7 @@ const { validationResult } = require("express-validator");
 const { registerValidation, loginValidation } = require("../validators/auth");
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
-
+const { authenticate, checkRole } = require("../middlewares/auth");
 
 class AuthRouter {
   constructor(authService, express) {
@@ -16,7 +16,24 @@ class AuthRouter {
   registerRoutes() {
     this.router.post("/login", loginValidation, this.login.bind(this));
     this.router.post("/register", registerValidation, this.register.bind(this));
-    this.router.get("/verify", this.verify.bind(this));
+    this.router.get("/verify", authenticate, (req, res) => {
+      res.json({
+        authenticated: true,
+        user: req.user,
+      });
+    });
+
+    this.router.get(
+      "/admin-only",
+      authenticate,
+      checkRole("admin"),
+      (req, res) => {
+        res.json({
+          message: "Admin access granted",
+          user: req.user,
+        });
+      }
+    );
   }
   
   async verify(req, res) {
@@ -71,7 +88,6 @@ class AuthRouter {
     }
   }
 
-
   async register(req, res) {
     try {
       // Validate payload
@@ -82,8 +98,8 @@ class AuthRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { email, password, role } = req.body;
-      const user = await this.authService.register(email, password, role);
+      const { email, password } = req.body;
+      const user = await this.authService.register(email, password, "member");
 
       res.status(201).json({
         message: "Your account has been created successfully.",
