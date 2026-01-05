@@ -1,135 +1,159 @@
 import { authMiddleware } from "./authMiddleware";
 
-  // Route definitions
-  export const routes = {
-    "/": {
-      html: "/src/pages/user/landing_page.html",
-      css: "/src/css/user/landingPage.css",
-      js: ["/src/js/user/landingPage.js"],
-    },
-    "/register": {
-      html: "/src/pages/user/register.html",
-      css: "/src/css/user/register.css",
-      js: ["/src/js/user/register.js"],
-    },
-    "/login": {
-      html: "/src/pages/user/login.html",
-      css: "/src/css/user/login.css",
-      js: ["/src/js/user/login.js"],
-    },
-    "/about": {
-      html: "/src/pages/user/about.html",
-      css: "/src/css/about.css",
-      js: [],
-    },
+// Route definitions
+export const routes = {
+  "/": {
+    html: "/src/pages/user/landing_page.html",
+    css: "/src/css/user/landingPage.css",
+    js: ["/src/js/user/landingPage.js"],
+  },
+  "/register": {
+    html: "/src/pages/user/register.html",
+    css: "/src/css/user/register.css",
+    js: ["/src/js/user/register.js"],
+  },
+  "/login": {
+    html: "/src/pages/user/login.html",
+    css: "/src/css/user/login.css",
+    js: ["/src/js/user/login.js"],
+  },
 
-    "/admin/profile": {
-      html: "/src/pages/admin/adminProfile.html",
-      js: ["/src/js/admin/adminProfile.js"],
-      meta: { requiresAuth: true, role: "admin" },
-    },
+  "/admin/profile": {
+    html: "/src/pages/admin/adminProfile.html",
+    js: ["/src/js/admin/adminProfile.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
 
-    "/admin/dashboard": {
-      html: "/src/pages/admin/dashboard.html",
-      js: ["/src/js/admin/dashboard.js"],
-      meta: { requiresAuth: true, role: "admin" },
-    },
+  "/admin/dashboard": {
+    html: "/src/pages/admin/dashboard.html",
+    js: ["/src/js/admin/dashboard.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
 
-    "/user/dashboard": {
-      html: "/src/pages/user/dashboard.html",
-      js: ["/src/js/user/dashboard.js"],
-      meta: { requiresAuth: true, role: "member" },
-    },
+  "/admin/events": {
+    html: "/src/pages/admin/event.html",
+    css: "/src/css/admin/event.css",
+    js: ["/src/js/admin/event.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
 
-      "/user/profile": {
-      html: "/src/pages/user/userProfile.html",
-      js: ["/src/js/user/userProfile.js"],
-      meta: { requiresAuth: true, role: "member" },
-    },
+  "/user/dashboard": {
+    html: "/src/pages/user/dashboard.html",
+    css: "/src/css/user/landingPage.css",
+    js: ["/src/js/user/dashboard.js"],
+    meta: { requiresAuth: true, role: "member" },
+  },
 
-      "/admin/events": {
-      html: "/src/pages/admin/event.html",
-      css: "/src/css/admin/event.css",
-      js: ["/src/js/admin/event.js"],
-      meta: { requiresAuth: true, role: "admin" },
-    },
-  };
+  "/user/profile": {
+    html: "/src/pages/user/userProfile.html",
+    css: "/src/css/user/userProfile.css",
+    js: ["/src/js/user/userProfile.js"],
+    meta: { requiresAuth: true, role: "member" },
+  },
 
-  // Register all JS modules (Vite)
-  const jsModules = import.meta.glob("/src/js/**/*.js");
+  "/user/about": {
+    html: "/src/pages/user/about_us.html",
+    css: "/src/css/user/abouts_us.css",
+    js: [],
+    meta: { requiresAuth: true, role: "member" },
+  },
 
-  // Load CSS dynamically
-  function loadCSS(href) {
-    const link = document.getElementById("page-style");
-    if (link) link.href = href || "";
-  }
+  "/user/event": {
+    html: "/src/pages/user/event_page.html",
+    css: "/src/css/user/event_page.css",
+    js: [],
+    meta: { requiresAuth: true, role: "member" },
+  },
 
-  // Load JS dynamically
-  async function loadJS(jsFiles = []) {
-    for (const path of jsFiles) {
-      const loader = jsModules[path];
+   "/user/Ministries": {
+    html: "/src/pages/user/ministries.html",
+    css: "/src/css/user/ministries.css",
+    js: ["/src/js/user/ministries.js"],
+    meta: { requiresAuth: true, role: "member" },
+  },
 
-      if (!loader) {
-        console.warn(`[router] JS module not found: ${path}`);
-        continue;
-      }
+  "/user/Worship": {
+    html: "/src/pages/user/worship_schedule.html",
+    css: "/src/css/user/worship_schedule.css",
+    js: ["/src/js/user/worship_schedule.js"],
+    meta: { requiresAuth: true, role: "member" },
+  },
+};
 
-      const module = await loader();
-      if (typeof module.init === "function") {
-        module.init();
-      }
+// Register all JS modules (Vite)
+const jsModules = import.meta.glob("/src/js/**/*.js");
+
+// Load CSS dynamically
+function loadCSS(href) {
+  const link = document.getElementById("page-style");
+  if (link) link.href = href || "";
+}
+
+// Load JS dynamically
+async function loadJS(jsFiles = []) {
+  for (const path of jsFiles) {
+    const loader = jsModules[path];
+
+    if (!loader) {
+      console.warn(`[router] JS module not found: ${path}`);
+      continue;
+    }
+
+    const module = await loader();
+    if (typeof module.init === "function") {
+      module.init();
     }
   }
+}
 
-  export async function router() {
-    const path = location.pathname;
-    const route = routes[path] || routes["/"];
+export async function router() {
+  const path = location.pathname;
+  const route = routes[path] || routes["/"];
 
-    const result = await authMiddleware(route);
+  const result = await authMiddleware(route);
 
-    if (!result.allow) {
-      navigateTo(result.redirect);
-      return;
-    }
-
-    const html = await fetch(route.html).then((r) => r.text());
-    document.getElementById("app").innerHTML = html;
-
-    loadCSS(route.css);
-
-    if (route.js?.length) {
-      await loadJS(route.js);
-    }
-  } 
-
-  // Navigation
-  function navigateTo(url) {
-    history.pushState(null, "", url);
-    router();
+  if (!result.allow) {
+    navigateTo(result.redirect);
+    return;
   }
 
-  // Intercept SPA links
-  document.addEventListener("click", (e) => {
-    const link = e.target.closest("a[data-link]");
-    if (!link) return;
+  const html = await fetch(route.html).then((r) => r.text());
+  document.getElementById("app").innerHTML = html;
 
-    e.preventDefault();
-    navigateTo(link.getAttribute("href"));
-  });
+  loadCSS(route.css);
 
-  // Back / forward buttons
-  window.addEventListener("popstate", router);
-
-  async function checkAuth() {
-    try {
-      const res = await fetch("http://localhost:3000/api/auth/verify", {
-        credentials: "include",
-      });
-
-
-      if (!res.ok) return { authenticated: false };
-      return res.json(); 
-    } catch (err) {
-      return { authenticated: false };
-    }
+  if (route.js?.length) {
+    await loadJS(route.js);
   }
+}
+
+// Navigation
+function navigateTo(url) {
+  history.pushState(null, "", url);
+  router();
+}
+
+// Intercept SPA links
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("a[data-link]");
+  if (!link) return;
+
+  e.preventDefault();
+  navigateTo(link.getAttribute("href"));
+});
+
+// Back / forward buttons
+window.addEventListener("popstate", router);
+
+async function checkAuth() {
+  try {
+    const res = await fetch("http://localhost:3000/api/auth/verify", {
+      credentials: "include",
+    });
+
+    if (!res.ok) return { authenticated: false };
+    return res.json();
+  } catch (err) {
+    return { authenticated: false };
+  }
+}

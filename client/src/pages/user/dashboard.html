@@ -1,17 +1,201 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Church Management System</title>
-    <link rel="stylesheet" href="./src/css/main.css" />
-    <link rel="stylesheet" href="./src/css/alert.css" />
-    <link id="page-style" rel="stylesheet" />
-  </head>
-  <body>
-    <section>
-      <main id="app"></main>
+<section>
+  <main id="app"></main>
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#/" class="logo">
+        <div class="logo-icon">✟</div>
+        <span class="logo-text">Grace Chapel</span>
+      </a>
 
-      <h1>halo test</h1>
-    </section>
-  </body>
-</html>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/user/dashboard" data-link>Home</a></li>
+        <li><a href="/user/about" data-link>About Us</a></li>
+        <li><a href="/user/event" data-link>Events</a></li>
+        <li><a href="/user/Ministries" data-link>Ministries</a></li>
+        <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1>Welcome!</h1>
+      <div class="hero-underline"></div>
+      <p>
+        Join us in worship, fellowship, and spiritual growth as we build a
+        stronger community of faith together.
+      </p>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <div class="about-container">
+      <div class="about-content">
+        <h2>ABOUT US</h2>
+        <p>
+          Grace Chapel Church is a vibrant and welcoming community dedicated to
+          spreading God's love and serving our neighbors.
+        </p>
+        <p>
+          We believe in the power of community, worship, and the transformative
+          nature of God's grace.
+        </p>
+        <p>
+          Whether you're new to faith or experienced, you'll find a home here.
+        </p>
+      </div>
+
+      <div class="about-images">
+        <div class="about-img large">
+          <img
+            src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800"
+            alt="Church community"
+          />
+        </div>
+        <div class="about-img">
+          <img
+            src="https://images.unsplash.com/photo-1509027572446-af8401acfdc3?w=400"
+            alt="Worship"
+          />
+        </div>
+        <div class="about-img">
+          <img
+            src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400"
+            alt="Community"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events Section -->
+  <section class="events" id="events">
+    <div class="section-header">
+      <h2>UPCOMING EVENTS</h2>
+      <p>Join us for these exciting events</p>
+    </div>
+
+    <div class="events-container">
+      <div class="event-card">
+        <div class="event-content">
+          <div class="event-date">DECEMBER 15, 2024</div>
+          <h3>Sunday Worship Service</h3>
+          <p>Weekly worship service with inspiring messages.</p>
+          <a href="#" class="event-link">Learn More →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-content">
+          <div class="event-date">DECEMBER 20, 2024</div>
+          <h3>Youth Fellowship Night</h3>
+          <p>Fun, games, and fellowship for youth.</p>
+          <a href="#" class="event-link">Learn More →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-content">
+          <div class="event-date">DECEMBER 24, 2024</div>
+          <h3>Christmas Eve Service</h3>
+          <p>Special candlelight worship service.</p>
+          <a href="#" class="event-link">Learn More →</a>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-content">
+          <div class="event-date">JANUARY 5, 2025</div>
+          <h3>Community Outreach</h3>
+          <p>Serving our local community together.</p>
+          <a href="#" class="event-link">Learn More →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="gallery" id="gallery">
+    <div class="gallery-container">
+      <div class="section-header">
+        <h2>GALLERY</h2>
+        <p>Moments from our church community</p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img
+            src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://images.unsplash.com/photo-1509027572446-af8401acfdc3?w=600"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600"
+          />
+        </div>
+        <div class="gallery-item">
+          <img
+            src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact" id="contact">
+    <div class="contact-container">
+      <div class="contact-info">
+        <h3>Connect With Us</h3>
+        <p>Email: info@gracechapel.com</p>
+        <p>Phone: +1 (555) 123-4567</p>
+      </div>
+
+      <div class="map-container">
+        <iframe
+          src="https://www.google.com/maps?q=Bandung,Indonesia&output=embed"
+          loading="lazy"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>Grace Chapel</h3>
+        <p>Building a community of faith, hope, and love.</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/user/dashboard" data-link>Home</a></li>
+          <li><a href="/user/about" data-link>About Us</a></li>
+          <li><a href="/user/event" data-link>Events</a></li>
+          <li><a href="/user/Ministries" data-link>Ministries</a></li>
+          <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
+          <li><a href="/login">Member Login</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Newsletter</h3>
+        <a href="/register" class="btn-signup">Subscribe</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2024 Grace Chapel Church</p>
+    </div>
+  </footer>
+</section>
