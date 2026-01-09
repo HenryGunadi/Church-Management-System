@@ -26,6 +26,10 @@ export const routes = {
 
   "/admin/dashboard": {
     html: "/src/pages/admin/dashboard.html",
+    css: [
+      "/src/css/admin/adminSidebar.css",  
+      "/src/css/admin/dashboard.css"
+    ],
     js: ["/src/js/admin/dashboard.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
@@ -34,6 +38,16 @@ export const routes = {
     html: "/src/pages/admin/event.html",
     css: "/src/css/admin/event.css",
     js: ["/src/js/admin/event.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
+
+  "/admin/users": {
+    html: "/src/pages/admin/users.html",
+    css: [
+      "/src/css/admin/adminSidebar.css",
+      "/src/css/admin/users.css"
+    ],
+    js: ["/src/js/admin/users.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
@@ -84,9 +98,23 @@ export const routes = {
 const jsModules = import.meta.glob("/src/js/**/*.js");
 
 // Load CSS dynamically
-function loadCSS(href) {
-  const link = document.getElementById("page-style");
-  if (link) link.href = href || "";
+// Load CSS dynamically
+function loadCSS(cssFiles) {
+  // Remove existing page styles
+  document.querySelectorAll('link[data-page-style]').forEach(link => link.remove());
+  
+  // Handle array or single CSS
+  const files = Array.isArray(cssFiles) ? cssFiles : [cssFiles];
+  
+  files.forEach(href => {
+    if (href) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.setAttribute('data-page-style', 'true');
+      document.head.appendChild(link);
+    }
+  });
 }
 
 // Load JS dynamically

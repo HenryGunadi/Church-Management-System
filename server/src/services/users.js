@@ -7,14 +7,32 @@ class UserService {
 
   async create(payload) {
     try {
-      const user = await this.view(undefined, payload.email);
+      // Check if user with this email exists
+      const existingUser = await this.db("users")
+        .where({ email: payload.email })
+        .select("*")
+        .first();
 
-      if (user) {
+      if (existingUser) {
         throw new Error("User already exists!");
       }
 
+      // Hash password before saving
+      if (payload.password) {
+        payload.password = await bcrypt.hash(payload.password, 10);
+      }
+
       const [id] = await this.db("users").insert(payload);
-      return await this.view(id, undefined);
+      
+      // Return the newly created user
+      const newUser = await this.db("users")
+        .where({ id })
+        .select("*")
+        .first();
+      
+      delete newUser.password;
+      return newUser;
+      
     } catch (err) {
       throw new Error(`Create user failed: ${err.message}`);
     }
@@ -22,7 +40,11 @@ class UserService {
 
   async update(payload) {
     try {
-      const user = await this.view(payload.id);
+      // Check if user exists
+      const user = await this.db("users")
+        .where({ id: payload.id })
+        .select("*")
+        .first();
 
       if (!user) {
         throw new Error("User doesn't exist!");
@@ -36,13 +58,19 @@ class UserService {
 
       await this.db("users").where({ id: payload.id }).update(updatedFields);
 
-      const updatedUser = await this.view(payload.id);
+      const updatedUser = await this.db("users")
+        .where({ id: payload.id })
+        .select("*")
+        .first();
+      
       delete updatedUser.password;
       return updatedUser;
+      
     } catch (err) {
       throw new Error(`Update user failed: ${err.message}`);
     }
   }
+
   async delete(id = undefined, email = undefined) {
     try {
       if (!id && !email) {
@@ -67,26 +95,40 @@ class UserService {
 
   async view(id = undefined, email = undefined) {
     try {
-      let user;
+      // If id or email is provided, return single user
       if (id) {
-        user = await this.db("users").where({ id: id }).select("*").first();
-      } else if (email) {
-        user = await this.db("users")
-          .where({ email: email })
+        const user = await this.db("users")
+          .where({ id })
           .select("*")
           .first();
+        
+        if (user) {
+          delete user.password;
+          return user;
+        }
+        return null; // Return null if not found
+      }
+      
+      if (email) {
+        const user = await this.db("users")
+          .where({ email })
+          .select("*")
+          .first();
+        
+        if (user) {
+          delete user.password;
+          return user;
+        }
+        return null; // Return null if not found
       }
 
-      if (user) {
-        delete user.password;
-        return user;
-      }
-
+      // If no id or email provided, return all users
       const users = await this.db("users").select("*");
       return users.map((u) => {
         delete u.password;
         return u;
       });
+      
     } catch (err) {
       throw new Error(`View users failed: ${err.message}`);
     }
