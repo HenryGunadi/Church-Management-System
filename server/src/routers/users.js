@@ -76,7 +76,7 @@ class UserRouter {
 
       res.status(200).json({
         message: "User updated successfully",
-        updatedUser,
+        user: updatedUser, // Changed from 'updatedUser' to 'user' for consistency
       });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -107,7 +107,8 @@ class UserRouter {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { id, email } = req.params;
+      // Get id and email from query params (not params)
+      const { id, email } = req.query;
       const user = await this.userService.view(id, email);
 
       res.status(200).json({

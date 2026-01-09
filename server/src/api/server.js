@@ -47,7 +47,7 @@ class Server {
     const eventTokensService = new EventTokens(this.db);
     const eventService = new EventService(
       this.db,
-      eventTokensService,
+      eventTokensService, 
       eventScheduleService
     );
 
