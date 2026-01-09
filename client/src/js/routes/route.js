@@ -51,6 +51,16 @@ export const routes = {
     meta: { requiresAuth: true, role: "admin" },
   },
 
+    "/admin/attendance": {
+    html: "/src/pages/admin/attendance.html",
+    css: [
+      "/src/css/admin/adminSidebar.css",
+      "/src/css/admin/attendance.css"
+    ],
+    js: ["/src/js/admin/attendance.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
+
   "/user/dashboard": {
     html: "/src/pages/user/dashboard.html",
     css: "/src/css/user/landingPage.css",

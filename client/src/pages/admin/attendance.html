@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Component -->
+        <div id="adminSidebar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="header">
+                <h1 class="page-title"><i class="fas fa-calendar-check"></i> Attendance</h1>
+                <button class="btn"><i class="fas fa-download"></i> Export</button>
+            </header>
+
+            <!-- Filter -->
+            <div class="card">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="filterDate">
+                    </div>
+                    <div class="filter-group">
+                        <label>Nama User</label>
+                        <input type="text" id="filterName" placeholder="Cari nama...">
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="filterStatus">
+                            <option value="">Semua</option>
+                            <option value="Hadir">Hadir</option>
+                            <option value="Izin">Izin</option>
+                            <option value="Alpha">Alpha</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Tanggal</th>
+                            <th>Masuk</th>
+                            <th>Keluar</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable">
+                        <tr>
+                            <td>1</td>
+                            <td class="name">John Doe</td>
+                            <td class="date">2025-01-10</td>
+                            <td>08:05</td>
+                            <td>16:45</td>
+                            <td><span class="status hadir">Hadir</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="name">Siti Aisyah</td>
+                            <td class="date">2025-01-10</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="status izin">Izin</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="name">Agus Wijaya</td>
+                            <td class="date">2025-01-10</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="status alpha">Alpha</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>    
+
+    <script>
+    const filterName = document.getElementById('filterName');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterDate = document.getElementById('filterDate');
+    const rows = document.querySelectorAll('#attendanceTable tr');
+
+    function filterTable() {
+        const nameVal = filterName.value.toLowerCase();
+        const statusVal = filterStatus.value;
+        const dateVal = filterDate.value;
+
+        rows.forEach(row => {
+            const name = row.querySelector('.name').textContent.toLowerCase();
+            const status = row.querySelector('.status').textContent;
+            const date = row.querySelector('.date').textContent;
+
+            let show = true;
+            if (nameVal && !name.includes(nameVal)) show = false;
+            if (statusVal && status !== statusVal) show = false;
+            if (dateVal && date !== dateVal) show = false;
+
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    filterName.addEventListener('input', filterTable);
+    filterStatus.addEventListener('change', filterTable);
+    filterDate.addEventListener('change', filterTable);
+    </script>
+</body>
+</html>
