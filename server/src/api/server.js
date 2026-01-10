@@ -16,13 +16,13 @@ class Server {
     this.express = require("express");
     this.app = this.express();
     this.port = port || 3000;
-    this.host = host || "localhost";
+    this.host = host || "0.0.0.0";
     this.db = db;
 
     // Middleware
     this.app.use(
       cors({
-        origin: "http://localhost:5173",
+        origin: true,
         credentials: true,
       })
     );
@@ -47,7 +47,7 @@ class Server {
     const eventTokensService = new EventTokens(this.db);
     const eventService = new EventService(
       this.db,
-      eventTokensService, 
+      eventTokensService,
       eventScheduleService
     );
 
@@ -73,7 +73,9 @@ class Server {
 
   run() {
     this.app.listen(this.port, this.host, () => {
-      console.log(`Server running at http://${this.host}:${this.port}`);
+      const displayHost =
+        this.host === "0.0.0.0" ? require("os").networkInterfaces() : this.host;
+      console.log(`Server running at http://${displayHost}:${this.port}`);
     });
   }
 }
