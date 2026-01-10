@@ -94,20 +94,39 @@ function setupLogout() {
     
     if (confirm('Apakah Anda yakin ingin logout?')) {
       try {
+        // Show loading state
+        logoutBtn.style.opacity = '0.6';
+        logoutBtn.style.pointerEvents = 'none';
+
         // Call logout API
-        await fetch('http://localhost:3000/api/auth/logout', {
+        const response = await fetch('http://localhost:3000/api/auth/logout', {
           method: 'POST',
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
-        // Clear local storage
+        if (!response.ok) {
+          throw new Error('Logout failed');
+        }
+
+        const result = await response.json();
+        console.log('Logout successful:', result);
+
+        // Clear any local storage/session storage
         localStorage.clear();
+        sessionStorage.clear();
         
-        // Redirect to login
+        // Redirect to login page
         window.location.href = '/login';
       } catch (error) {
         console.error('Logout error:', error);
-        alert('Terjadi kesalahan saat logout');
+        alert('Terjadi kesalahan saat logout. Silakan coba lagi.');
+        
+        // Reset button state
+        logoutBtn.style.opacity = '1';
+        logoutBtn.style.pointerEvents = 'auto';
       }
     }
   });

@@ -59,7 +59,7 @@ async function loadUsers() {
   try {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="loading">
+        <td colspan="8" class="loading">
           <div class="spinner"></div>
         </td>
       </tr>
@@ -83,7 +83,7 @@ async function loadUsers() {
     console.error('Error loading users:', error);
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align: center; color: #e74c3c; padding: 30px;">
+        <td colspan="8" style="text-align: center; color: #e74c3c; padding: 30px;">
           <i class="fas fa-exclamation-triangle"></i><br>
           Gagal memuat data user: ${error.message}
         </td>
@@ -99,7 +99,7 @@ function renderUsersTable(users) {
   if (!users || users.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align: center; padding: 30px; color: #7f8c8d;">
+        <td colspan="8" style="text-align: center; padding: 30px; color: #7f8c8d;">
           <i class="fas fa-inbox"></i><br>
           Belum ada data user
         </td>
@@ -119,6 +119,7 @@ function renderUsersTable(users) {
         </span>
       </td>
       <td>${escapeHtml(user.phone_number || '-')}</td>
+      <td>${escapeHtml(user.gender || '-')}</td>
       <td>${formatDate(user.created_at)}</td>
       <td>
         <div class="actions-cell">
