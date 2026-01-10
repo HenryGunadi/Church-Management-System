@@ -1,0 +1,45 @@
+<!-- User Navbar Component -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="/user/dashboard" data-link class="logo">
+      <div class="logo-icon">✟</div>
+      <span class="logo-text">Grace Chapel</span>
+    </a>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Navigation Links -->
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/user/dashboard" data-link>Home</a></li>
+      <li><a href="/user/about" data-link>About Us</a></li>
+      <li><a href="/user/event" data-link>Events</a></li>
+      <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
+      
+      <!-- User Profile & Logout -->
+      <li class="nav-profile">
+        <div class="profile-dropdown">
+          <button class="profile-btn" id="profileBtn">
+            <div class="user-avatar-circle" id="userAvatarCircle">U</div>
+            <span id="userName">Loading...</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="profile-menu" id="profileMenu">
+            <a href="/user/profile" data-link class="profile-menu-item">
+              <i class="fas fa-user"></i>
+              <span>My Profile</span>
+            </a>
+            <div class="profile-menu-divider"></div>
+            <button class="profile-menu-item logout-btn" id="userLogoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>

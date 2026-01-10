@@ -203,7 +203,8 @@ async function handleSubmit(e) {
     name: document.getElementById('name').value,
     email: document.getElementById('email').value,
     role: document.getElementById('role').value,
-    phone_number: document.getElementById('phone').value || null
+    phone_number: document.getElementById('phone').value || null,
+    gender: document.getElementById('gender').value || null
   };
 
   const password = document.getElementById('password').value;
@@ -352,6 +353,8 @@ async function editUser(userId) {
     document.getElementById('email').value = user.email;
     document.getElementById('role').value = user.role;
     document.getElementById('phone').value = user.phone_number || '';
+    document.getElementById('gender').value = user.gender || '';
+
     document.getElementById('password').value = '';
     document.getElementById('password').required = false;
     

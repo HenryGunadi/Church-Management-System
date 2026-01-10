@@ -66,8 +66,15 @@ export const routes = {
 
   "/user/dashboard": {
     html: "/src/pages/user/dashboard.html",
-    css: "/src/css/user/landingPage.css",
-    js: ["/src/js/user/dashboard.js"],
+    css: [
+      "/src/css/user/userNavbar.css",      
+      "/src/css/user/userFooter.css",  
+      "/src/css/user/landingPage.css"      
+    ],
+    js: [
+      "/src/js/user/dashboard.js",
+      "/src/js/user/userFooter.js"      
+    ],     
     meta: { requiresAuth: true, role: "member" },
   },
 
@@ -80,15 +87,26 @@ export const routes = {
 
   "/user/about": {
     html: "/src/pages/user/about_us.html",
-    css: "/src/css/user/abouts_us.css",
-    js: [],
+    css: [
+      "/src/css/user/userNavbar.css",
+      "/src/css/user/userFooter.css",
+      "/src/css/user/abouts_us.css"
+    ],
+    js: [
+      "/src/js/user/about.js",
+      "/src/js/user/userFooter.js"    
+    ],
     meta: { requiresAuth: true, role: "member" },
   },
 
   "/user/event": {
     html: "/src/pages/user/event_page.html",
-    css: "/src/css/user/event_page.css",
-    js: [],
+    css: [
+      "/src/css/user/userNavbar.css",
+      "/src/css/user/userFooter.css",
+      "/src/css/user/event_page.css"
+    ],
+    js: ["/src/js/user/event.js"],
     meta: { requiresAuth: true, role: "member" },
   },
 
@@ -101,7 +119,11 @@ export const routes = {
 
   "/user/Worship": {
     html: "/src/pages/user/worship_schedule.html",
-    css: "/src/css/user/worship_schedule.css",
+    css: [
+      "/src/css/user/userNavbar.css",
+      "/src/css/user/userFooter.css",
+      "/src/css/user/worship_schedule.css"
+    ],
     js: ["/src/js/user/worship_schedule.js"],
     meta: { requiresAuth: true, role: "member" },
   },
