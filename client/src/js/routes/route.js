@@ -36,7 +36,10 @@ export const routes = {
 
   "/admin/events": {
     html: "/src/pages/admin/event.html",
-    css: "/src/css/admin/event.css",
+    css: [
+      "/src/css/admin/adminSidebar.css",
+      "/src/css/admin/event.css"
+    ],
     js: ["/src/js/admin/event.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
@@ -138,20 +141,34 @@ export async function router() {
   const path = location.pathname;
   const route = routes[path] || routes["/"];
 
+  // Cek autentikasi dan role
   const result = await authMiddleware(route);
-
   if (!result.allow) {
     navigateTo(result.redirect);
     return;
   }
 
+  // Ambil HTML halaman
   const html = await fetch(route.html).then((r) => r.text());
   document.getElementById("app").innerHTML = html;
 
+  // Load CSS dinamis
   loadCSS(route.css);
 
+  // Load JS dinamis
   if (route.js?.length) {
     await loadJS(route.js);
+  }
+
+  /* 🧠 Tambahkan logika khusus di bawah sini */
+  // Jika halaman admin events → panggil initEventPage() dari event.js
+  if (path === "/admin/events") {
+    try {
+      const { initEventPage } = await import("/src/js/admin/event.js");
+      await initEventPage();
+    } catch (err) {
+      console.error("❌ Gagal inisialisasi halaman event:", err);
+    }
   }
 }
 
