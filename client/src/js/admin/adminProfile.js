@@ -3,6 +3,8 @@ let originalData = {
   email: "jemaat@gereja.com",
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 let currentPhotoUrl =
   "https://ui-avatars.com/api/?name=Nama+Jemaat&size=160&background=ff6b35&color=fff";
 
@@ -129,7 +131,9 @@ export function init() {
 }
 
 async function loadProfile() {
-  const res = await fetch("http://localhost:3000/api/users/me");
+  const res = await fetch(`${API_URL}/users/me`, {
+    credentials: "include",
+  });
   const user = await res.json();
 
   document.getElementById("fullName").value = user.name;
@@ -137,12 +141,13 @@ async function loadProfile() {
 }
 
 async function saveProfile(fullName, newPassword) {
-  await fetch("http://localhost:3000/api/users/update", {
+  await fetch(`${API_URL}/users/update`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       name: fullName,
       password: newPassword || undefined,
     }),
+    credentials: "include",
   });
 }

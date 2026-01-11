@@ -1,134 +1,130 @@
+import { loadLayout } from "../layout";
 import { authMiddleware } from "./authMiddleware";
+import { PAGES } from "../../config/pages";
 
 // Route definitions
 export const routes = {
   "/": {
-    html: "/src/pages/user/landing_page.html",
-    css: "/src/css/user/landingPage.css",
+    html: PAGES.landing,
+    css: "/css/user/landingPage.css",
+    layout: "user",
     js: ["/src/js/user/landingPage.js"],
   },
+
   "/register": {
-    html: "/src/pages/user/register.html",
-    css: "/src/css/user/register.css",
+    html: PAGES.register,
+    layout: "user",
+    css: "/css/user/register.css",
     js: ["/src/js/user/register.js"],
   },
+
   "/login": {
-    html: "/src/pages/user/login.html",
-    css: "/src/css/user/login.css",
+    html: PAGES.login,
+    layout: "user",
+    css: "/css/user/login.css",
     js: ["/src/js/user/login.js"],
   },
 
+  // ===== ADMIN =====
   "/admin/profile": {
-    html: "/src/pages/admin/adminProfile.html",
+    html: PAGES.adminProfile,
+    layout: "admin",
     js: ["/src/js/admin/adminProfile.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
   "/admin/dashboard": {
-    html: "/src/pages/admin/dashboard.html",
-    css: [
-      "/src/css/admin/adminSidebar.css",  
-      "/src/css/admin/dashboard.css"
-    ],
+    html: PAGES.adminDashboard,
+    layout: "admin",
+    css: ["/css/admin/adminSidebar.css", "/css/admin/dashboard.css"],
     js: ["/src/js/admin/dashboard.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
   "/admin/events": {
-    html: "/src/pages/admin/event.html",
-    css: [
-      "/src/css/admin/adminSidebar.css",
-      "/src/css/admin/event.css"
-    ],
+    html: PAGES.adminEvents,
+    layout: "admin",
+    css: ["/css/admin/adminSidebar.css", "/css/admin/event.css"],
     js: ["/src/js/admin/event.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
   "/admin/users": {
-    html: "/src/pages/admin/users.html",
-    css: [
-      "/src/css/admin/adminSidebar.css",
-      "/src/css/admin/users.css"
-    ],
+    html: PAGES.adminUsers,
+    layout: "admin",
+    css: ["/css/admin/adminSidebar.css", "/css/admin/users.css"],
     js: ["/src/js/admin/users.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
-    "/admin/attendance": {
-    html: "/src/pages/admin/attendance.html",
-    css: [
-      "/src/css/admin/adminSidebar.css",
-      "/src/css/admin/attendance.css"
-    ],
+  "/admin/attendance": {
+    html: PAGES.adminAttendance,
+    layout: "admin",
+    css: ["/css/admin/adminSidebar.css", "/css/admin/attendance.css"],
     js: ["/src/js/admin/attendance.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
+  // ===== USER =====
   "/user/dashboard": {
-    html: "/src/pages/user/dashboard.html",
+    html: PAGES.userDashboard,
     css: [
-      "/src/css/user/userNavbar.css",      
-      "/src/css/user/userFooter.css",  
-      "/src/css/user/landingPage.css"      
+      "/css/user/userNavbar.css",
+      "/css/user/userFooter.css",
+      "/css/user/landingPage.css",
     ],
-    js: [
-      "/src/js/user/dashboard.js",
-      "/src/js/user/userFooter.js"      
-    ],     
+    js: ["/src/js/user/dashboard.js", "/src/js/user/userFooter.js"],
     meta: { requiresAuth: true, role: "member" },
+    layout: "user",
   },
 
   "/user/profile": {
-    html: "/src/pages/user/userProfile.html",
-    css: [
-      "/src/css/user/userNavbar.css",
-      "/src/css/user/userProfile.css"
-    ],
+    html: PAGES.userProfile,
+    css: ["/css/user/userNavbar.css", "/css/user/userProfile.css"],
     js: ["/src/js/user/userProfile.js"],
     meta: { requiresAuth: true, role: "member" },
+    layout: "user",
   },
 
   "/user/about": {
-    html: "/src/pages/user/about_us.html",
+    html: PAGES.userAbout,
     css: [
-      "/src/css/user/userNavbar.css",
-      "/src/css/user/userFooter.css",
-      "/src/css/user/abouts_us.css"
+      "/css/user/userNavbar.css",
+      "/css/user/userFooter.css",
+      "/css/user/abouts_us.css",
     ],
-    js: [
-      "/src/js/user/about.js",
-      "/src/js/user/userFooter.js"    
-    ],
+    js: ["/src/js/user/about.js", "/src/js/user/userFooter.js"],
     meta: { requiresAuth: true, role: "member" },
+    layout: "user",
   },
 
   "/user/event": {
-    html: "/src/pages/user/event_page.html",
+    html: PAGES.userEvent,
     css: [
-      "/src/css/user/userNavbar.css",
-      "/src/css/user/userFooter.css",
-      "/src/css/user/event_page.css"
+      "/css/user/userNavbar.css",
+      "/css/user/userFooter.css",
+      "/css/user/event_page.css",
     ],
     js: ["/src/js/user/event.js"],
     meta: { requiresAuth: true, role: "member" },
+    layout: "user",
   },
 
-   "/user/Ministries": {
-    html: "/src/pages/user/ministries.html",
-    css: "/src/css/user/ministries.css",
-    js: ["/src/js/user/ministries.js"],
-    meta: { requiresAuth: true, role: "member" },
-  },
-
-  "/user/Worship": {
-    html: "/src/pages/user/worship_schedule.html",
+  "/user/worship": {
+    html: PAGES.userWorship,
     css: [
-      "/src/css/user/userNavbar.css",
-      "/src/css/user/userFooter.css",
-      "/src/css/user/worship_schedule.css"
+      "/css/user/userNavbar.css",
+      "/css/user/userFooter.css",
+      "/css/user/worship_schedule.css",
     ],
     js: ["/src/js/user/worship_schedule.js"],
     meta: { requiresAuth: true, role: "member" },
+    layout: "user",
+  },
+
+  // not found
+  "/404": {
+    html: PAGES.notFound,
   },
 };
 
@@ -136,20 +132,19 @@ export const routes = {
 const jsModules = import.meta.glob("/src/js/**/*.js");
 
 // Load CSS dynamically
-// Load CSS dynamically
 function loadCSS(cssFiles) {
-  // Remove existing page styles
-  document.querySelectorAll('link[data-page-style]').forEach(link => link.remove());
-  
-  // Handle array or single CSS
+  document
+    .querySelectorAll("link[data-page-style]")
+    .forEach((link) => link.remove());
+
   const files = Array.isArray(cssFiles) ? cssFiles : [cssFiles];
-  
-  files.forEach(href => {
+
+  files.forEach((href) => {
     if (href) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
       link.href = href;
-      link.setAttribute('data-page-style', 'true');
+      link.setAttribute("data-page-style", "true");
       document.head.appendChild(link);
     }
   });
@@ -173,42 +168,58 @@ async function loadJS(jsFiles = []) {
 }
 
 export async function router() {
-  const path = location.pathname;
-  const route = routes[path] || routes["/"];
+  const app = document.getElementById("app");
+  if (!app) {
+    console.error("#app not found");
+    return;
+  }
 
-  // Cek autentikasi dan role
+  const path = location.pathname;
+  const route = routes[path] ?? routes["/404"];
+
+  // Check authentication and role
   const result = await authMiddleware(route);
   if (!result.allow) {
     navigateTo(result.redirect);
     return;
   }
 
-  // Ambil HTML halaman
-  const html = await fetch(route.html).then((r) => r.text());
-  document.getElementById("app").innerHTML = html;
-
-  // Load CSS dinamis
-  loadCSS(route.css);
-
-  // Load JS dinamis
-  if (route.js?.length) {
-    await loadJS(route.js);
+  // 1. Load CSS first
+  if (route.css) {
+    loadCSS(route.css);
   }
 
-  /* 🧠 Tambahkan logika khusus di bawah sini */
-  // Jika halaman admin events → panggil initEventPage() dari event.js
-  if (path === "/admin/events") {
-    try {
-      const { initEventPage } = await import("/src/js/admin/event.js");
-      await initEventPage();
-    } catch (err) {
-      console.error("❌ Gagal inisialisasi halaman event:", err);
-    }
+  // 2. Load page HTML
+  try {
+    const html = await fetch(route.html).then((r) => {
+      if (!r.ok) throw new Error(`Failed to load page: ${r.status}`);
+      return r.text();
+    });
+    app.innerHTML = html;
+    console.log(`✅ Page HTML loaded: ${path}`);
+  } catch (err) {
+    console.error("❌ Error loading page HTML:", err);
+    app.innerHTML = "<h1>Error loading page</h1>";
+    return;
+  }
+
+  // 3. Wait for DOM to be ready (important!)
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  // 4. Load layout components AFTER DOM is ready
+  if (route.layout) {
+    console.log(`🔄 Loading layout: ${route.layout}`);
+    await loadLayout(route.layout);
+  }
+
+  // 5. Load and initialize JavaScript last
+  if (route.js?.length) {
+    await loadJS(route.js);
   }
 }
 
 // Navigation
-function navigateTo(url) {
+export function navigateTo(url) {
   history.pushState(null, "", url);
   router();
 }
@@ -224,16 +235,3 @@ document.addEventListener("click", (e) => {
 
 // Back / forward buttons
 window.addEventListener("popstate", router);
-
-async function checkAuth() {
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/verify", {
-      credentials: "include",
-    });
-
-    if (!res.ok) return { authenticated: false };
-    return res.json();
-  } catch (err) {
-    return { authenticated: false };
-  }
-}

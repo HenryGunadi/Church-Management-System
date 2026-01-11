@@ -2,11 +2,12 @@
 // Register all JS modules (Vite)
 // ================================
 import { router } from "./routes/route";
+import { PAGES } from "../config/pages";
 
 // LOAD LANDING PAGE PERTAMA
-fetch("/src/pages/user/landing_page.html")
+fetch(PAGES.landing)
   .then((res) => res.text())
   .then((html) => {
-    app.innerHTML = html;
+    document.getElementById("app").innerHTML = html;
   });
 router();

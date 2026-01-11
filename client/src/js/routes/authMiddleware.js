@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function authMiddleware(route) {
   // Public routes - no auth needed
@@ -40,7 +40,7 @@ export async function authMiddleware(route) {
       if (auth.user.role === "admin") {
         return { allow: false, redirect: "/admin/dashboard" };
       }
-      
+
       if (auth.user.role === "member") {
         return { allow: false, redirect: "/user/dashboard" };
       }
@@ -61,15 +61,15 @@ export async function authMiddleware(route) {
 export async function logout() {
   try {
     const response = await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
+      method: "POST",
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
 
     if (!response.ok) {
-      throw new Error('Logout request failed');
+      throw new Error("Logout request failed");
     }
 
     // Clear all local data
@@ -77,11 +77,11 @@ export async function logout() {
     sessionStorage.clear();
 
     // Redirect to login
-    window.location.href = '/login';
-    
+    window.location.href = "/login";
+
     return true;
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
     throw error;
   }
 }
@@ -100,10 +100,10 @@ export async function checkAuth() {
     const data = await res.json();
     return {
       authenticated: data.authenticated,
-      user: data.user
+      user: data.user,
     };
   } catch (error) {
-    console.error('Check auth error:', error);
+    console.error("Check auth error:", error);
     return { authenticated: false };
   }
 }

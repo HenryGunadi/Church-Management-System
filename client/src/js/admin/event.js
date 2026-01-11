@@ -1,6 +1,6 @@
-import { loadSidebar } from './adminSidebar.js';
+import { loadSidebar } from "./adminSidebar.js";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 class EventManagement {
   constructor() {
@@ -10,18 +10,18 @@ class EventManagement {
     this.isEditMode = false;
 
     this.API_ENDPOINTS = {
-      getEvents: `${API_BASE_URL}/api/events/view`,
-      getEventDetailed: (id) => `${API_BASE_URL}/api/events/view/${id}`,
-      createEvent: `${API_BASE_URL}/api/events/create`,
-      updateEvent: `${API_BASE_URL}/api/events/update`,
-      deleteEvent: (id) => `${API_BASE_URL}/api/events/delete/${id}`,
+      getEvents: `${API_BASE_URL}/events/view`,
+      getEventDetailed: (id) => `${API_BASE_URL}/events/view/${id}`,
+      createEvent: `${API_BASE_URL}/events/create`,
+      updateEvent: `${API_BASE_URL}/events/update`,
+      deleteEvent: (id) => `${API_BASE_URL}/events/delete/${id}`,
     };
   }
 
   async init() {
     // Load sidebar first
     await loadSidebar();
-    
+
     // Then initialize event management
     this.cacheDOMElements();
     this.attachEventListeners();
@@ -67,7 +67,9 @@ class EventManagement {
     this.detailDateTime = document.getElementById("detailDateTime");
     this.detailPlace = document.getElementById("detailPlace");
     this.detailWorshipTopic = document.getElementById("detailWorshipTopic");
-    this.detailWorshipTopicContainer = document.getElementById("detailWorshipTopicContainer");
+    this.detailWorshipTopicContainer = document.getElementById(
+      "detailWorshipTopicContainer"
+    );
     this.detailDescription = document.getElementById("detailDescription");
     this.detailQrCode = document.getElementById("detailQrCode");
     this.detailDownloadQr = document.getElementById("detailDownloadQr");
@@ -82,45 +84,63 @@ class EventManagement {
 
   attachEventListeners() {
     if (this.createEventBtn) {
-      this.createEventBtn.addEventListener("click", () => this.openCreateModal());
+      this.createEventBtn.addEventListener("click", () =>
+        this.openCreateModal()
+      );
     }
 
     if (this.closeModalBtn) {
-      this.closeModalBtn.addEventListener("click", () => this.closeModal(this.eventModal));
+      this.closeModalBtn.addEventListener("click", () =>
+        this.closeModal(this.eventModal)
+      );
     }
-    
+
     if (this.cancelBtn) {
-      this.cancelBtn.addEventListener("click", () => this.closeModal(this.eventModal));
+      this.cancelBtn.addEventListener("click", () =>
+        this.closeModal(this.eventModal)
+      );
     }
 
     if (this.closeQrModal) {
-      this.closeQrModal.addEventListener("click", () => this.closeModal(this.qrModal));
+      this.closeQrModal.addEventListener("click", () =>
+        this.closeModal(this.qrModal)
+      );
     }
 
     if (this.closeDetailModal) {
-      this.closeDetailModal.addEventListener("click", () => this.closeModal(this.detailModal));
+      this.closeDetailModal.addEventListener("click", () =>
+        this.closeModal(this.detailModal)
+      );
     }
 
     if (this.closeDeleteModal) {
-      this.closeDeleteModal.addEventListener("click", () => this.closeModal(this.deleteModal));
+      this.closeDeleteModal.addEventListener("click", () =>
+        this.closeModal(this.deleteModal)
+      );
     }
 
     if (this.cancelDeleteBtn) {
-      this.cancelDeleteBtn.addEventListener("click", () => this.closeModal(this.deleteModal));
+      this.cancelDeleteBtn.addEventListener("click", () =>
+        this.closeModal(this.deleteModal)
+      );
     }
 
-    [this.eventModal, this.qrModal, this.detailModal, this.deleteModal].forEach(modal => {
-      if (modal) {
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            this.closeModal(modal);
-          }
-        });
+    [this.eventModal, this.qrModal, this.detailModal, this.deleteModal].forEach(
+      (modal) => {
+        if (modal) {
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+              this.closeModal(modal);
+            }
+          });
+        }
       }
-    });
+    );
 
     if (this.eventForm) {
-      this.eventForm.addEventListener("submit", (e) => this.handleFormSubmit(e));
+      this.eventForm.addEventListener("submit", (e) =>
+        this.handleFormSubmit(e)
+      );
     }
 
     if (this.searchInput) {
@@ -132,8 +152,12 @@ class EventManagement {
     }
 
     if (this.fileUploadArea && this.imageUpload) {
-      this.fileUploadArea.addEventListener("click", () => this.imageUpload.click());
-      this.imageUpload.addEventListener("change", (e) => this.handleImageUpload(e));
+      this.fileUploadArea.addEventListener("click", () =>
+        this.imageUpload.click()
+      );
+      this.imageUpload.addEventListener("change", (e) =>
+        this.handleImageUpload(e)
+      );
     }
 
     if (this.removeImageBtn) {
@@ -148,7 +172,9 @@ class EventManagement {
     }
 
     if (this.detailDownloadQr) {
-      this.detailDownloadQr.addEventListener("click", () => this.downloadQRCode());
+      this.detailDownloadQr.addEventListener("click", () =>
+        this.downloadQRCode()
+      );
     }
 
     if (this.detailEditBtn) {
@@ -166,19 +192,21 @@ class EventManagement {
     }
 
     if (this.confirmDeleteBtn) {
-      this.confirmDeleteBtn.addEventListener("click", () => this.confirmDelete());
+      this.confirmDeleteBtn.addEventListener("click", () =>
+        this.confirmDelete()
+      );
     }
 
     // Add datetime validation listeners
-    const startTimeInput = document.getElementById('startTime');
-    const endTimeInput = document.getElementById('endTime');
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
 
     if (startTimeInput) {
-      startTimeInput.addEventListener('change', () => this.validateStartTime());
+      startTimeInput.addEventListener("change", () => this.validateStartTime());
     }
 
     if (endTimeInput) {
-      endTimeInput.addEventListener('change', () => this.validateEndTime());
+      endTimeInput.addEventListener("change", () => this.validateEndTime());
     }
   }
 
@@ -257,9 +285,12 @@ class EventManagement {
 
   async loadEventForEdit(eventId) {
     try {
-      const response = await fetch(this.API_ENDPOINTS.getEventDetailed(eventId), {
-        credentials: "include",
-      });
+      const response = await fetch(
+        this.API_ENDPOINTS.getEventDetailed(eventId),
+        {
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to load event details");
@@ -275,13 +306,17 @@ class EventManagement {
 
       if (event.schedules && event.schedules.length > 0) {
         const schedule = event.schedules[0];
-        document.getElementById("startTime").value = this.formatDateTimeForInput(schedule.start_time);
-        document.getElementById("endTime").value = schedule.end_time ? this.formatDateTimeForInput(schedule.end_time) : "";
-        document.getElementById("worshipTopic").value = schedule.worship_topic || "";
+        document.getElementById("startTime").value =
+          this.formatDateTimeForInput(schedule.start_time);
+        document.getElementById("endTime").value = schedule.end_time
+          ? this.formatDateTimeForInput(schedule.end_time)
+          : "";
+        document.getElementById("worshipTopic").value =
+          schedule.worship_topic || "";
       }
 
       if (event.image_url) {
-        this.previewImage.src = `${API_BASE_URL}${event.image_url}`;
+        this.previewImage.src = event.image_url;
         this.fileUploadArea.style.display = "none";
         this.filePreview.style.display = "block";
       }
@@ -327,7 +362,11 @@ class EventManagement {
 
       const result = await response.json();
 
-      alert(this.isEditMode ? "Event updated successfully!" : "Event created successfully!");
+      alert(
+        this.isEditMode
+          ? "Event updated successfully!"
+          : "Event created successfully!"
+      );
 
       this.closeModal(this.eventModal);
 
@@ -348,10 +387,13 @@ class EventManagement {
     this.setButtonLoading(this.confirmDeleteBtn, true);
 
     try {
-      const response = await fetch(this.API_ENDPOINTS.deleteEvent(this.currentEventId), {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        this.API_ENDPOINTS.deleteEvent(this.currentEventId),
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete event");
@@ -371,9 +413,12 @@ class EventManagement {
 
   async viewEventDetails(eventId) {
     try {
-      const response = await fetch(this.API_ENDPOINTS.getEventDetailed(eventId), {
-        credentials: "include",
-      });
+      const response = await fetch(
+        this.API_ENDPOINTS.getEventDetailed(eventId),
+        {
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to load event details");
@@ -393,22 +438,38 @@ class EventManagement {
       return;
     }
 
-    const html = events.map((event) => {
-      const schedule = event.schedules && event.schedules[0];
-      const status = this.getEventStatus(schedule?.start_time, schedule?.end_time);
-      const typeClass = `type-${event.event_type}`;
+    const html = events
+      .map((event) => {
+        const schedule = event.schedules && event.schedules[0];
+        const status = this.getEventStatus(
+          schedule?.start_time,
+          schedule?.end_time
+        );
+        const typeClass = `type-${event.event_type}`;
 
-      return `
+        return `
         <tr data-event-id="${event.event_id}">
           <td class="event-name-cell">${this.escapeHtml(event.event_name)}</td>
           <td>
-            <span class="event-type-badge ${typeClass}">${event.event_type}</span>
+            <span class="event-type-badge ${typeClass}">${
+          event.event_type
+        }</span>
           </td>
           <td class="event-datetime">
-            ${schedule ? `
-              <span class="event-date">${this.formatDate(schedule.start_time)}</span><br>
-              <span class="event-time">${this.formatTime(schedule.start_time)}${schedule.end_time ? " - " + this.formatTime(schedule.end_time) : ""}</span>
-            ` : '<span class="event-time">No schedule</span>'}
+            ${
+              schedule
+                ? `
+              <span class="event-date">${this.formatDate(
+                schedule.start_time
+              )}</span><br>
+              <span class="event-time">${this.formatTime(schedule.start_time)}${
+                    schedule.end_time
+                      ? " - " + this.formatTime(schedule.end_time)
+                      : ""
+                  }</span>
+            `
+                : '<span class="event-time">No schedule</span>'
+            }
           </td>
           <td class="event-place">${this.escapeHtml(event.place)}</td>
           <td>
@@ -418,18 +479,24 @@ class EventManagement {
             </span>
           </td>
           <td class="action-buttons">
-            <button class="action-btn view-btn" onclick="eventManagement.viewEventDetails(${event.event_id})" title="View Details">
+            <button class="action-btn view-btn" onclick="eventManagement.viewEventDetails(${
+              event.event_id
+            })" title="View Details">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 4C4.5 4 1 10 1 10C1 10 4.5 16 10 16C15.5 16 19 10 19 10C19 10 15.5 4 10 4Z" stroke="currentColor" stroke-width="2"/>
                 <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
               </svg>
             </button>
-            <button class="action-btn edit-btn" onclick="eventManagement.openEditModal(${event.event_id})" title="Edit">
+            <button class="action-btn edit-btn" onclick="eventManagement.openEditModal(${
+              event.event_id
+            })" title="Edit">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M14 2L17 5L6 16H3V13L14 2Z" stroke="currentColor" stroke-width="2"/>
               </svg>
             </button>
-            <button class="action-btn delete-btn" onclick="eventManagement.openDeleteModal(${event.event_id})" title="Delete">
+            <button class="action-btn delete-btn" onclick="eventManagement.openDeleteModal(${
+              event.event_id
+            })" title="Delete">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 5H17M8 9V15M12 9V15M4 5L5 17C5 17.5 5.2 18 5.6 18.4C6 18.8 6.5 19 7 19H13C13.5 19 14 18.8 14.4 18.4C14.8 18 15 17.5 15 17L16 5M7 5V3C7 2.7 7.1 2.5 7.3 2.3C7.5 2.1 7.7 2 8 2H12C12.3 2 12.5 2.1 12.7 2.3C12.9 2.5 13 2.7 13 3V5" stroke="currentColor" stroke-width="2"/>
               </svg>
@@ -437,7 +504,8 @@ class EventManagement {
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
 
     this.eventsTableBody.innerHTML = html;
   }
@@ -475,12 +543,13 @@ class EventManagement {
 
   showDetailModal(event) {
     this.currentEventId = event.event_id;
-    
+
     if (this.detailImage && event.image_url) {
-      this.detailImage.src = `${API_BASE_URL}${event.image_url}`;
+      this.detailImage.src = event.image_url;
     }
 
-    if (this.detailEventName) this.detailEventName.textContent = event.event_name;
+    if (this.detailEventName)
+      this.detailEventName.textContent = event.event_name;
     if (this.detailEventType) {
       this.detailEventType.textContent = event.event_type;
       this.detailEventType.className = `event-type-badge type-${event.event_type}`;
@@ -489,7 +558,11 @@ class EventManagement {
     if (event.schedules && event.schedules.length > 0) {
       const schedule = event.schedules[0];
       if (this.detailDateTime) {
-        this.detailDateTime.textContent = `${this.formatDate(schedule.start_time)} at ${this.formatTime(schedule.start_time)}${schedule.end_time ? " - " + this.formatTime(schedule.end_time) : ""}`;
+        this.detailDateTime.textContent = `${this.formatDate(
+          schedule.start_time
+        )} at ${this.formatTime(schedule.start_time)}${
+          schedule.end_time ? " - " + this.formatTime(schedule.end_time) : ""
+        }`;
       }
 
       if (schedule.worship_topic && this.detailWorshipTopic) {
@@ -504,7 +577,8 @@ class EventManagement {
 
     if (this.detailPlace) this.detailPlace.textContent = event.place;
     if (this.detailDescription) {
-      this.detailDescription.textContent = event.description || "No description provided";
+      this.detailDescription.textContent =
+        event.description || "No description provided";
     }
     if (this.detailQrCode && event.qr_code) {
       this.detailQrCode.src = event.qr_code;
@@ -517,7 +591,9 @@ class EventManagement {
     if (this.qrEventName) this.qrEventName.textContent = event.event_name;
 
     if (event.schedules && event.schedules.length > 0 && this.qrEventDetails) {
-      this.qrEventDetails.textContent = `${event.place} • ${this.formatDate(event.schedules[0].start_time)}`;
+      this.qrEventDetails.textContent = `${event.place} • ${this.formatDate(
+        event.schedules[0].start_time
+      )}`;
     } else if (this.qrEventDetails) {
       this.qrEventDetails.textContent = event.place;
     }
@@ -525,7 +601,7 @@ class EventManagement {
     if (this.qrCodeImage && event.qr_code) {
       this.qrCodeImage.src = event.qr_code;
     }
-    
+
     this.currentEventId = event.event_id;
     this.openModal(this.qrModal);
   }
@@ -589,7 +665,9 @@ class EventManagement {
     const typeFilter = this.typeFilter?.value || "";
 
     const filtered = this.events.filter((event) => {
-      const matchesSearch = event.event_name.toLowerCase().includes(searchTerm) || event.place.toLowerCase().includes(searchTerm);
+      const matchesSearch =
+        event.event_name.toLowerCase().includes(searchTerm) ||
+        event.place.toLowerCase().includes(searchTerm);
       const matchesType = !typeFilter || event.event_type === typeFilter;
       return matchesSearch && matchesType;
     });
@@ -650,12 +728,14 @@ class EventManagement {
   updateShowingText(count = null) {
     if (!this.showingText) return;
     const total = count !== null ? count : this.events.length;
-    this.showingText.textContent = `Showing ${total} ${total === 1 ? "event" : "events"}`;
+    this.showingText.textContent = `Showing ${total} ${
+      total === 1 ? "event" : "events"
+    }`;
   }
 
   setButtonLoading(button, isLoading) {
     if (!button) return;
-    
+
     const textEl = button.querySelector(".btn-text");
     const loaderEl = button.querySelector(".btn-loader");
 
@@ -675,14 +755,14 @@ class EventManagement {
     const now = new Date();
     // Set to current time
     const minDateTime = this.formatDateTimeForInput(now.toISOString());
-    
-    const startTimeInput = document.getElementById('startTime');
-    const endTimeInput = document.getElementById('endTime');
-    
+
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+
     if (startTimeInput) {
       startTimeInput.min = minDateTime;
     }
-    
+
     if (endTimeInput) {
       endTimeInput.min = minDateTime;
     }
@@ -690,7 +770,7 @@ class EventManagement {
 
   // Validate start time
   validateStartTime() {
-    const startTimeInput = document.getElementById('startTime');
+    const startTimeInput = document.getElementById("startTime");
     if (!startTimeInput || !startTimeInput.value) return true;
 
     const startTime = new Date(startTimeInput.value);
@@ -700,8 +780,10 @@ class EventManagement {
     now.setMinutes(now.getMinutes() - 1);
 
     if (startTime < now && !this.isEditMode) {
-      alert('Start time cannot be in the past. Please select a future date and time.');
-      startTimeInput.value = '';
+      alert(
+        "Start time cannot be in the past. Please select a future date and time."
+      );
+      startTimeInput.value = "";
       startTimeInput.focus();
       return false;
     }
@@ -713,9 +795,9 @@ class EventManagement {
 
   // Validate end time
   validateEndTime() {
-    const startTimeInput = document.getElementById('startTime');
-    const endTimeInput = document.getElementById('endTime');
-    
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+
     if (!endTimeInput || !endTimeInput.value) return true;
     if (!startTimeInput || !startTimeInput.value) return true;
 
@@ -725,16 +807,20 @@ class EventManagement {
 
     // Check if end time is in the past (only for new events)
     if (endTime < now && !this.isEditMode) {
-      alert('End time cannot be in the past. Please select a future date and time.');
-      endTimeInput.value = '';
+      alert(
+        "End time cannot be in the past. Please select a future date and time."
+      );
+      endTimeInput.value = "";
       endTimeInput.focus();
       return false;
     }
 
     // Check if end time is before start time
     if (endTime <= startTime) {
-      alert('End time must be after start time. Please select a valid end time.');
-      endTimeInput.value = '';
+      alert(
+        "End time must be after start time. Please select a valid end time."
+      );
+      endTimeInput.value = "";
       endTimeInput.focus();
       return false;
     }

@@ -1,12 +1,18 @@
 const os = require("os");
 const { db } = require("../db/db");
-const { AuthRouter, UserRouter, EventRouter } = require("../routers");
+const {
+  AuthRouter,
+  UserRouter,
+  EventRouter,
+  AttendanceRouter,
+} = require("../routers");
 const {
   AuthService,
   UserService,
   EventService,
   EventSchedules,
   EventTokens,
+  AttendanceService,
 } = require("../services");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -33,6 +39,7 @@ class Server {
     );
 
     const frontendDist = path.join(__dirname, "../../../client/dist");
+    console.log(frontendDist);
 
     // Serve frontend
     this.app.use(this.express.static(frontendDist));
@@ -45,6 +52,7 @@ class Server {
     const userService = new UserService(this.db);
     const eventScheduleService = new EventSchedules(this.db);
     const eventTokensService = new EventTokens(this.db);
+    const attendanceService = new AttendanceService(this.db);
     const eventService = new EventService(
       this.db,
       eventTokensService,
@@ -55,10 +63,15 @@ class Server {
     const authRouter = new AuthRouter(authService, this.express);
     const userRouter = new UserRouter(userService, this.express);
     const eventRouter = new EventRouter(eventService, this.express); // register routes
+    const attendanceRouter = new AttendanceRouter(
+      attendanceService,
+      this.express
+    ); // register routes
 
     this.app.use("/api/auth", authRouter.router);
     this.app.use("/api/user", userRouter.router);
     this.app.use("/api/events", eventRouter.router);
+    this.app.use("/api/attendance", attendanceRouter.router);
 
     // Health check
     this.app.get("/health", (req, res) => {
@@ -79,7 +92,6 @@ class Server {
         const nets = os.networkInterfaces();
         for (const name of Object.keys(nets)) {
           for (const net of nets[name]) {
-            // IPv4 & not internal
             if (net.family === "IPv4" && !net.internal) {
               displayHost = net.address;
               break;

@@ -18,6 +18,7 @@ exports.up = async function (knex) {
             'event_name', e.event_name,
             'event_type', e.event_type,
             'place', e.place,
+            'speaker', e.speaker,
             'image_url', e.image_url,
             'qr_code', e.qr_code,
             'description', e.description,

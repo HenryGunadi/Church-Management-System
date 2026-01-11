@@ -20,6 +20,7 @@ class EventService {
         event_type = "event",
         place,
         image_url,
+        speaker,
         description,
         start_time,
         end_time,
@@ -39,6 +40,7 @@ class EventService {
         place,
         image_url: image_url || null,
         description: description || null,
+        speaker: speaker || null,
       });
 
       console.log("Event created with ID:", eventId);
@@ -99,6 +101,7 @@ class EventService {
         id,
         event_name,
         event_type,
+        speaker,
         place,
         image_url,
         description,
@@ -118,6 +121,7 @@ class EventService {
       }
 
       const eventUpdate = {};
+      if (speaker !== undefined) eventUpdate.speaker = speaker; // 👈 ADD
       if (event_name !== undefined) eventUpdate.event_name = event_name;
       if (event_type !== undefined) eventUpdate.event_type = event_type;
       if (place !== undefined) eventUpdate.place = place;

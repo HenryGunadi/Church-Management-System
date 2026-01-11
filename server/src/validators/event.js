@@ -25,6 +25,11 @@ const createEventValidation = [
     .isISO8601()
     .withMessage("Start time must be a valid datetime (ISO 8601 format)."),
 
+  body("speaker")
+    .optional()
+    .isString()
+    .withMessage("Speaker must be a string."),
+
   body("end_time")
     .optional()
     .isISO8601()
@@ -83,6 +88,11 @@ const updateEventValidation = [
     .optional()
     .isString()
     .withMessage("Worship topic must be a valid string"),
+
+  body("speaker")
+    .optional()
+    .isString()
+    .withMessage("Speaker must be a string."),
 ];
 
 const deleteEventValidation = [
