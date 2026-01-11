@@ -12,6 +12,7 @@ export const PAGES = {
   adminEvents: `${ASSET_BASE}/pages/admin/event.html`,
   adminUsers: `${ASSET_BASE}/pages/admin/users.html`,
   adminAttendance: `${ASSET_BASE}/pages/admin/attendance.html`,
+  adminEventSchedules: `${ASSET_BASE}/pages/admin/event_schedules.html`,
 
   // ===== USER =====
   userDashboard: `${ASSET_BASE}/pages/user/dashboard.html`,
@@ -20,4 +21,5 @@ export const PAGES = {
   userEvent: `${ASSET_BASE}/pages/user/event_page.html`,
   userMinistries: `${ASSET_BASE}/pages/user/ministries.html`,
   userWorship: `${ASSET_BASE}/pages/user/worship_schedule.html`,
+  userScan: `${ASSET_BASE}/pages/user/scan.html`,
 };

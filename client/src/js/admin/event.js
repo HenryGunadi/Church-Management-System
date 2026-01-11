@@ -25,7 +25,6 @@ class EventManagement {
     // Then initialize event management
     this.cacheDOMElements();
     this.attachEventListeners();
-    this.setMinDateTime(); // Set minimum date/time for datetime inputs
     await this.loadEvents();
   }
 
@@ -36,7 +35,6 @@ class EventManagement {
     this.submitBtn = document.getElementById("submitBtn");
 
     this.eventModal = document.getElementById("eventModal");
-    this.qrModal = document.getElementById("qrModal");
     this.detailModal = document.getElementById("detailModal");
     this.deleteModal = document.getElementById("deleteModal");
 
@@ -54,25 +52,17 @@ class EventManagement {
     this.previewImage = document.getElementById("previewImage");
     this.removeImageBtn = document.getElementById("removeImage");
 
-    this.closeQrModal = document.getElementById("closeQrModal");
-    this.qrCodeImage = document.getElementById("qrCodeImage");
-    this.qrEventName = document.getElementById("qrEventName");
-    this.qrEventDetails = document.getElementById("qrEventDetails");
-    this.downloadQrBtn = document.getElementById("downloadQrBtn");
-
     this.closeDetailModal = document.getElementById("closeDetailModal");
     this.detailImage = document.getElementById("detailImage");
     this.detailEventName = document.getElementById("detailEventName");
     this.detailEventType = document.getElementById("detailEventType");
-    this.detailDateTime = document.getElementById("detailDateTime");
     this.detailPlace = document.getElementById("detailPlace");
-    this.detailWorshipTopic = document.getElementById("detailWorshipTopic");
-    this.detailWorshipTopicContainer = document.getElementById(
-      "detailWorshipTopicContainer"
+    this.detailSpeaker = document.getElementById("detailSpeaker");
+    this.detailSpeakerContainer = document.getElementById(
+      "detailSpeakerContainer"
     );
     this.detailDescription = document.getElementById("detailDescription");
-    this.detailQrCode = document.getElementById("detailQrCode");
-    this.detailDownloadQr = document.getElementById("detailDownloadQr");
+    this.detailSchedules = document.getElementById("detailSchedules");
     this.detailEditBtn = document.getElementById("detailEditBtn");
     this.detailDeleteBtn = document.getElementById("detailDeleteBtn");
 
@@ -101,12 +91,6 @@ class EventManagement {
       );
     }
 
-    if (this.closeQrModal) {
-      this.closeQrModal.addEventListener("click", () =>
-        this.closeModal(this.qrModal)
-      );
-    }
-
     if (this.closeDetailModal) {
       this.closeDetailModal.addEventListener("click", () =>
         this.closeModal(this.detailModal)
@@ -125,17 +109,15 @@ class EventManagement {
       );
     }
 
-    [this.eventModal, this.qrModal, this.detailModal, this.deleteModal].forEach(
-      (modal) => {
-        if (modal) {
-          modal.addEventListener("click", (e) => {
-            if (e.target === modal) {
-              this.closeModal(modal);
-            }
-          });
-        }
+    [this.eventModal, this.detailModal, this.deleteModal].forEach((modal) => {
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            this.closeModal(modal);
+          }
+        });
       }
-    );
+    });
 
     if (this.eventForm) {
       this.eventForm.addEventListener("submit", (e) =>
@@ -167,16 +149,6 @@ class EventManagement {
       });
     }
 
-    if (this.downloadQrBtn) {
-      this.downloadQrBtn.addEventListener("click", () => this.downloadQRCode());
-    }
-
-    if (this.detailDownloadQr) {
-      this.detailDownloadQr.addEventListener("click", () =>
-        this.downloadQRCode()
-      );
-    }
-
     if (this.detailEditBtn) {
       this.detailEditBtn.addEventListener("click", () => {
         this.closeModal(this.detailModal);
@@ -195,18 +167,6 @@ class EventManagement {
       this.confirmDeleteBtn.addEventListener("click", () =>
         this.confirmDelete()
       );
-    }
-
-    // Add datetime validation listeners
-    const startTimeInput = document.getElementById("startTime");
-    const endTimeInput = document.getElementById("endTime");
-
-    if (startTimeInput) {
-      startTimeInput.addEventListener("change", () => this.validateStartTime());
-    }
-
-    if (endTimeInput) {
-      endTimeInput.addEventListener("change", () => this.validateEndTime());
     }
   }
 
@@ -302,18 +262,8 @@ class EventManagement {
       document.getElementById("eventName").value = event.event_name || "";
       document.getElementById("eventType").value = event.event_type || "";
       document.getElementById("place").value = event.place || "";
+      document.getElementById("speaker").value = event.speaker || "";
       document.getElementById("description").value = event.description || "";
-
-      if (event.schedules && event.schedules.length > 0) {
-        const schedule = event.schedules[0];
-        document.getElementById("startTime").value =
-          this.formatDateTimeForInput(schedule.start_time);
-        document.getElementById("endTime").value = schedule.end_time
-          ? this.formatDateTimeForInput(schedule.end_time)
-          : "";
-        document.getElementById("worshipTopic").value =
-          schedule.worship_topic || "";
-      }
 
       if (event.image_url) {
         this.previewImage.src = event.image_url;
@@ -328,11 +278,6 @@ class EventManagement {
 
   async handleFormSubmit(e) {
     e.preventDefault();
-
-    // Validate dates before submission
-    if (!this.validateStartTime() || !this.validateEndTime()) {
-      return;
-    }
 
     const formData = new FormData(this.eventForm);
 
@@ -369,11 +314,6 @@ class EventManagement {
       );
 
       this.closeModal(this.eventModal);
-
-      if (!this.isEditMode && result.qr_code) {
-        this.showQRModal(result);
-      }
-
       await this.loadEvents();
     } catch (error) {
       console.error("Save event error:", error);
@@ -440,11 +380,7 @@ class EventManagement {
 
     const html = events
       .map((event) => {
-        const schedule = event.schedules && event.schedules[0];
-        const status = this.getEventStatus(
-          schedule?.start_time,
-          schedule?.end_time
-        );
+        const scheduleCount = event.schedules ? event.schedules.length : 0;
         const typeClass = `type-${event.event_type}`;
 
         return `
@@ -455,27 +391,14 @@ class EventManagement {
           event.event_type
         }</span>
           </td>
-          <td class="event-datetime">
-            ${
-              schedule
-                ? `
-              <span class="event-date">${this.formatDate(
-                schedule.start_time
-              )}</span><br>
-              <span class="event-time">${this.formatTime(schedule.start_time)}${
-                    schedule.end_time
-                      ? " - " + this.formatTime(schedule.end_time)
-                      : ""
-                  }</span>
-            `
-                : '<span class="event-time">No schedule</span>'
-            }
-          </td>
           <td class="event-place">${this.escapeHtml(event.place)}</td>
+          <td class="event-speaker">${
+            event.speaker ? this.escapeHtml(event.speaker) : "-"
+          }</td>
           <td>
-            <span class="status-badge status-${status.toLowerCase()}">
-              <span class="status-dot"></span>
-              ${status}
+            <span class="schedule-count-badge">
+              <i class="fas fa-calendar"></i>
+              ${scheduleCount} ${scheduleCount === 1 ? "schedule" : "schedules"}
             </span>
           </td>
           <td class="action-buttons">
@@ -555,55 +478,69 @@ class EventManagement {
       this.detailEventType.className = `event-type-badge type-${event.event_type}`;
     }
 
-    if (event.schedules && event.schedules.length > 0) {
-      const schedule = event.schedules[0];
-      if (this.detailDateTime) {
-        this.detailDateTime.textContent = `${this.formatDate(
-          schedule.start_time
-        )} at ${this.formatTime(schedule.start_time)}${
-          schedule.end_time ? " - " + this.formatTime(schedule.end_time) : ""
-        }`;
-      }
+    if (this.detailPlace) this.detailPlace.textContent = event.place;
 
-      if (schedule.worship_topic && this.detailWorshipTopic) {
-        this.detailWorshipTopic.textContent = schedule.worship_topic;
-        if (this.detailWorshipTopicContainer) {
-          this.detailWorshipTopicContainer.style.display = "flex";
-        }
-      } else if (this.detailWorshipTopicContainer) {
-        this.detailWorshipTopicContainer.style.display = "none";
+    if (event.speaker && this.detailSpeaker) {
+      this.detailSpeaker.textContent = event.speaker;
+      if (this.detailSpeakerContainer) {
+        this.detailSpeakerContainer.style.display = "flex";
       }
+    } else if (this.detailSpeakerContainer) {
+      this.detailSpeakerContainer.style.display = "none";
     }
 
-    if (this.detailPlace) this.detailPlace.textContent = event.place;
     if (this.detailDescription) {
       this.detailDescription.textContent =
         event.description || "No description provided";
     }
-    if (this.detailQrCode && event.qr_code) {
-      this.detailQrCode.src = event.qr_code;
+
+    // Display schedules
+    if (this.detailSchedules) {
+      if (event.schedules && event.schedules.length > 0) {
+        const schedulesHtml = event.schedules
+          .map((schedule) => {
+            const startTime = new Date(schedule.start_time);
+            const endTime = schedule.end_time
+              ? new Date(schedule.end_time)
+              : null;
+
+            return `
+              <div class="schedule-item">
+                <div class="schedule-item-header">
+                  <span class="schedule-date">
+                    <i class="fas fa-calendar"></i>
+                    ${this.formatDate(schedule.start_time)}
+                  </span>
+                  <span class="schedule-time">
+                    <i class="fas fa-clock"></i>
+                    ${this.formatTime(schedule.start_time)}${
+              endTime ? ` - ${this.formatTime(schedule.end_time)}` : ""
+            }
+                  </span>
+                </div>
+                ${
+                  schedule.worship_topic
+                    ? `
+                  <div class="schedule-topic">
+                    <i class="fas fa-bible"></i>
+                    <strong>Topic:</strong> ${schedule.worship_topic}
+                  </div>
+                `
+                    : ""
+                }
+              </div>
+            `;
+          })
+          .join("");
+        this.detailSchedules.innerHTML = schedulesHtml;
+      } else {
+        this.detailSchedules.innerHTML = `
+          <p class="no-schedules">No schedules created yet. Add schedules in the Schedule Management page.</p>
+        `;
+      }
     }
 
     this.openModal(this.detailModal);
-  }
-
-  showQRModal(event) {
-    if (this.qrEventName) this.qrEventName.textContent = event.event_name;
-
-    if (event.schedules && event.schedules.length > 0 && this.qrEventDetails) {
-      this.qrEventDetails.textContent = `${event.place} • ${this.formatDate(
-        event.schedules[0].start_time
-      )}`;
-    } else if (this.qrEventDetails) {
-      this.qrEventDetails.textContent = event.place;
-    }
-
-    if (this.qrCodeImage && event.qr_code) {
-      this.qrCodeImage.src = event.qr_code;
-    }
-
-    this.currentEventId = event.event_id;
-    this.openModal(this.qrModal);
   }
 
   handleImageUpload(e) {
@@ -639,27 +576,6 @@ class EventManagement {
     if (this.filePreview) this.filePreview.style.display = "none";
   }
 
-  downloadQRCode() {
-    const qrCodeSrc = this.detailQrCode?.src || this.qrCodeImage?.src;
-
-    if (!qrCodeSrc) {
-      alert("QR code not available.");
-      return;
-    }
-
-    const event = this.events.find((e) => e.event_id === this.currentEventId);
-    const eventName = event ? event.event_name : "Event";
-
-    const link = document.createElement("a");
-    link.href = qrCodeSrc;
-    link.download = `${eventName.replace(/\s+/g, "-")}-QR.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    alert("QR code downloaded successfully!");
-  }
-
   filterEvents() {
     const searchTerm = this.searchInput?.value.toLowerCase() || "";
     const typeFilter = this.typeFilter?.value || "";
@@ -674,18 +590,6 @@ class EventManagement {
 
     this.renderEvents(filtered);
     this.updateShowingText(filtered.length);
-  }
-
-  getEventStatus(startTime, endTime) {
-    if (!startTime) return "Unknown";
-
-    const now = new Date();
-    const start = new Date(startTime);
-    const end = endTime ? new Date(endTime) : null;
-
-    if (now < start) return "Upcoming";
-    if (end && now > end) return "Ended";
-    return "Ongoing";
   }
 
   formatDate(dateString) {
@@ -706,17 +610,6 @@ class EventManagement {
       hour: "2-digit",
       minute: "2-digit",
     });
-  }
-
-  formatDateTimeForInput(dateString) {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   escapeHtml(text) {
@@ -748,84 +641,6 @@ class EventManagement {
       if (loaderEl) loaderEl.style.display = "none";
       button.disabled = false;
     }
-  }
-
-  // Set minimum datetime for datetime inputs
-  setMinDateTime() {
-    const now = new Date();
-    // Set to current time
-    const minDateTime = this.formatDateTimeForInput(now.toISOString());
-
-    const startTimeInput = document.getElementById("startTime");
-    const endTimeInput = document.getElementById("endTime");
-
-    if (startTimeInput) {
-      startTimeInput.min = minDateTime;
-    }
-
-    if (endTimeInput) {
-      endTimeInput.min = minDateTime;
-    }
-  }
-
-  // Validate start time
-  validateStartTime() {
-    const startTimeInput = document.getElementById("startTime");
-    if (!startTimeInput || !startTimeInput.value) return true;
-
-    const startTime = new Date(startTimeInput.value);
-    const now = new Date();
-
-    // Allow some buffer (1 minute) to account for processing time
-    now.setMinutes(now.getMinutes() - 1);
-
-    if (startTime < now && !this.isEditMode) {
-      alert(
-        "Start time cannot be in the past. Please select a future date and time."
-      );
-      startTimeInput.value = "";
-      startTimeInput.focus();
-      return false;
-    }
-
-    // Validate end time if it exists
-    this.validateEndTime();
-    return true;
-  }
-
-  // Validate end time
-  validateEndTime() {
-    const startTimeInput = document.getElementById("startTime");
-    const endTimeInput = document.getElementById("endTime");
-
-    if (!endTimeInput || !endTimeInput.value) return true;
-    if (!startTimeInput || !startTimeInput.value) return true;
-
-    const startTime = new Date(startTimeInput.value);
-    const endTime = new Date(endTimeInput.value);
-    const now = new Date();
-
-    // Check if end time is in the past (only for new events)
-    if (endTime < now && !this.isEditMode) {
-      alert(
-        "End time cannot be in the past. Please select a future date and time."
-      );
-      endTimeInput.value = "";
-      endTimeInput.focus();
-      return false;
-    }
-
-    // Check if end time is before start time
-    if (endTime <= startTime) {
-      alert(
-        "End time must be after start time. Please select a valid end time."
-      );
-      endTimeInput.value = "";
-      endTimeInput.focus();
-      return false;
-    }
-
-    return true;
   }
 }
 

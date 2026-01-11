@@ -1,0 +1,27 @@
+<!-- public/pages/user/scan.html -->
+<div class="scan-container">
+  <!-- Loading State -->
+  <div id="loadingState" class="scan-state">
+    <div class="icon">⏳</div>
+    <div class="spinner"></div>
+    <h1>Processing Check-in...</h1>
+    <p>Please wait while we verify your attendance.</p>
+  </div>
+
+  <!-- Success State -->
+  <div id="successState" class="scan-state hidden">
+    <div class="icon">✅</div>
+    <h1 class="success">Successfully Checked In!</h1>
+    <p>Your attendance has been recorded.</p>
+    <div class="event-info" id="eventInfo"></div>
+    <a href="/user/dashboard" data-link class="btn">Back to Dashboard</a>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="scan-state hidden">
+    <div class="icon">❌</div>
+    <h1 class="error">Check-in Failed</h1>
+    <p id="errorMessage">Something went wrong. Please try again.</p>
+    <a href="/user/event" data-link class="btn">Back to Events</a>
+  </div>
+</div>

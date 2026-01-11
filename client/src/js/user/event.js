@@ -55,8 +55,8 @@ async function loadUserAttendance() {
   }
 }
 
-function getUserAttendanceStatus(eventId) {
-  const attendance = userAttendance.find((a) => a.event_id === eventId);
+function getUserAttendanceStatus(scheduleId) {
+  const attendance = userAttendance.find((a) => a.schedule_id === scheduleId);
   if (!attendance) return null;
 
   // Check if user has scanned (attended) or just registered
@@ -84,10 +84,13 @@ function displayEvents(events) {
 
   container.innerHTML = events
     .map((event) => {
+      // Get the first schedule (or handle multiple schedules if needed)
       const schedule = event.schedules && event.schedules[0];
       const startTime = schedule ? new Date(schedule.start_time) : null;
       const worshipTopic = schedule?.worship_topic || "";
-      const status = getUserAttendanceStatus(event.event_id);
+      const status = schedule
+        ? getUserAttendanceStatus(schedule.schedule_id)
+        : null;
 
       const dateStr = startTime
         ? startTime.toLocaleDateString("en-US", {
@@ -153,6 +156,11 @@ function displayEvents(events) {
                 ? `<div class="event-speaker">🎤 ${event.speaker}</div>`
                 : ""
             }
+            ${
+              worshipTopic
+                ? `<div class="event-topic">📖 ${worshipTopic}</div>`
+                : ""
+            }
           </div>
         </div>
       `;
@@ -188,14 +196,21 @@ function setupModal() {
 
 window.openEventModal = function (eventId) {
   const event = window.eventsData?.find((e) => e.event_id === eventId);
-  if (!event) return;
+  if (!event) {
+    console.error("Event not found:", eventId);
+    return;
+  }
 
   const modal = document.getElementById("eventModal");
+
+  // Get the first schedule (primary schedule for the event)
   const schedule = event.schedules && event.schedules[0];
   const startTime = schedule ? new Date(schedule.start_time) : null;
   const endTime =
     schedule && schedule.end_time ? new Date(schedule.end_time) : null;
-  const status = getUserAttendanceStatus(event.event_id);
+  const status = schedule
+    ? getUserAttendanceStatus(schedule.schedule_id)
+    : null;
 
   const dateStr = startTime
     ? startTime.toLocaleDateString("en-US", {
@@ -220,6 +235,7 @@ window.openEventModal = function (eventId) {
       }`
     : "Time TBA";
 
+  // Update modal content
   document.getElementById("modalEventName").textContent = event.event_name;
   document.getElementById("modalEventType").textContent = event.event_type;
   document.getElementById("modalDate").textContent = dateStr;
@@ -228,6 +244,7 @@ window.openEventModal = function (eventId) {
   document.getElementById("modalDescription").textContent =
     event.description || "No description available.";
 
+  // Show worship topic if available
   if (schedule && schedule.worship_topic) {
     document.getElementById("modalTopic").textContent = schedule.worship_topic;
     document.getElementById("modalTopicRow").style.display = "flex";
@@ -235,6 +252,7 @@ window.openEventModal = function (eventId) {
     document.getElementById("modalTopicRow").style.display = "none";
   }
 
+  // Show speaker if available
   if (event.speaker) {
     document.getElementById("modalSpeaker").textContent = event.speaker;
     document.getElementById("modalSpeakerRow").style.display = "flex";
@@ -242,6 +260,7 @@ window.openEventModal = function (eventId) {
     document.getElementById("modalSpeakerRow").style.display = "none";
   }
 
+  // Set modal image
   const modalImage = document.getElementById("modalImage");
   if (event.image_url) {
     modalImage.innerHTML = `<img src="${event.image_url}" alt="${event.event_name}" />`;
@@ -251,8 +270,15 @@ window.openEventModal = function (eventId) {
     )}</div>`;
   }
 
+  // Update register button based on attendance status
   const registerBtn = document.getElementById("registerBtn");
-  if (status === "attended") {
+
+  // Check if schedule exists before enabling registration
+  if (!schedule || !schedule.schedule_id) {
+    registerBtn.innerHTML = "No Schedule Available";
+    registerBtn.className = "btn-register disabled";
+    registerBtn.disabled = true;
+  } else if (status === "attended") {
     registerBtn.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M16.7 5L7.5 14.2L3.3 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -274,9 +300,11 @@ window.openEventModal = function (eventId) {
     registerBtn.innerHTML = "Register Now";
     registerBtn.className = "btn-register";
     registerBtn.disabled = false;
-    registerBtn.onclick = () => registerForEvent(event.event_id);
+    // Pass the schedule_id, not event_id
+    registerBtn.onclick = () => registerForEvent(schedule.schedule_id);
   }
 
+  // Show the modal
   modal.classList.add("active");
   document.body.style.overflow = "hidden";
 };
@@ -287,15 +315,24 @@ function closeEventModal() {
   document.body.style.overflow = "";
 }
 
-async function registerForEvent(eventId) {
+async function registerForEvent(scheduleId) {
   try {
+    console.log("🎯 Registering for schedule:", scheduleId);
+
+    // Validate scheduleId
+    if (!scheduleId || typeof scheduleId !== "number") {
+      console.error("❌ Invalid schedule ID:", scheduleId);
+      showNotification("Invalid schedule ID", "error");
+      return;
+    }
+
     const response = await fetch(`${API_BASE_URL}/attendance/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ event_id: eventId }),
+      body: JSON.stringify({ schedule_id: scheduleId }),
     });
 
     const data = await response.json();
@@ -303,10 +340,14 @@ async function registerForEvent(eventId) {
     if (response.ok) {
       showNotification(data.message || "Successfully registered!", "success");
       closeEventModal();
-      // Reload to update status
+      // Reload events to update attendance status
       await loadEvents();
     } else {
-      showNotification(data.message || "Registration failed", "error");
+      console.error("❌ Registration failed:", data);
+      showNotification(
+        data.message || data.errors?.[0]?.msg || "Registration failed",
+        "error"
+      );
     }
   } catch (error) {
     console.error("❌ Registration error:", error);
@@ -322,6 +363,7 @@ function getEventIcon(eventType) {
     workshop: "🎨",
     fellowship: "🤝",
     service: "🙏",
+    other: "📅",
   };
   return icons[eventType?.toLowerCase()] || "📅";
 }

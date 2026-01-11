@@ -81,10 +81,7 @@ async function loadUsers() {
       </tr>
     `;
 
-    console.log('📥 Fetching users from:', API_ENDPOINTS.getUsers);
-
-    // ✅ FIXED: Gunakan constant yang sudah didefinisikan
-    const response = await fetch(API_ENDPOINTS.getUsers, {
+    const response = await fetch(`${API_BASE_URL}/user/view`, {
       credentials: "include",
     });
 
@@ -276,7 +273,7 @@ async function handleSubmit(e) {
     if (currentEditId) {
       // Update user - ✅ FIXED: Gunakan API_ENDPOINTS
       formData.id = currentEditId;
-      response = await fetch(API_ENDPOINTS.updateUser, {
+      response = await fetch(`${API_BASE_URL}/user/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -285,8 +282,8 @@ async function handleSubmit(e) {
         body: JSON.stringify(formData),
       });
     } else {
-      // Create user - ✅ FIXED: Gunakan API_ENDPOINTS
-      response = await fetch(API_ENDPOINTS.createUser, {
+      // Create user
+      response = await fetch(`${API_BASE_URL}/user/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -333,13 +330,7 @@ async function viewUser(userId, userEmail) {
 
     // Backend requires either id or email as query params
     const queryParam = userId ? `id=${userId}` : `email=${userEmail}`;
-    
-    // ✅ FIXED: Gunakan API_ENDPOINTS
-    const url = userId 
-      ? API_ENDPOINTS.viewUser(userId)
-      : `${API_BASE_URL}/user/view?email=${userEmail}`;
-      
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}/user/view?${queryParam}`, {
       credentials: "include",
     });
 
@@ -403,8 +394,7 @@ async function viewUser(userId, userEmail) {
 // Edit user
 async function editUser(userId) {
   try {
-    // ✅ FIXED: Gunakan API_ENDPOINTS
-    const response = await fetch(API_ENDPOINTS.viewUser(userId), {
+    const response = await fetch(`${API_BASE_URL}/user/view?id=${userId}`, {
       credentials: "include",
     });
 
@@ -448,7 +438,7 @@ async function deleteUser(userId, userEmail) {
   try {
     // ✅ FIXED: Gunakan API_ENDPOINTS
     const response = await fetch(
-      API_ENDPOINTS.deleteUser(userId, userEmail),
+      `${API_BASE_URL}/user/delete/${userId}/${encodeURIComponent(userEmail)}`,
       {
         method: "DELETE",
         credentials: "include",

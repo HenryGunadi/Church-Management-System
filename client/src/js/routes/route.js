@@ -25,6 +25,15 @@ export const routes = {
     js: ["/src/js/user/login.js"],
   },
 
+  // ===== QR CODE SCAN =====
+  "/scan": {
+    html: PAGES.userScan,
+    css: ["/css/user/scan.css"],
+    js: ["/src/js/user/scan.js"],
+    meta: { requiresAuth: true, role: "member" },
+    layout: null, // No layout needed for scan page
+  },
+
   // ===== ADMIN =====
   "/admin/profile": {
     html: PAGES.adminProfile,
@@ -62,6 +71,18 @@ export const routes = {
     layout: "admin",
     css: ["/css/admin/adminSidebar.css", "/css/admin/attendance.css"],
     js: ["/src/js/admin/attendance.js"],
+    meta: { requiresAuth: true, role: "admin" },
+  },
+
+  "/admin/schedules": {
+    html: PAGES.adminEventSchedules,
+    layout: "admin",
+    css: [
+      "/css/admin/adminSidebar.css",
+      "/css/admin/event.css",
+      "/css/admin/event_schedules.css",
+    ],
+    js: ["/src/js/admin/event_schedules.js"],
     meta: { requiresAuth: true, role: "admin" },
   },
 
@@ -118,6 +139,14 @@ export const routes = {
       "/css/user/worship_schedule.css",
     ],
     js: ["/src/js/user/worship_schedule.js"],
+    meta: { requiresAuth: true, role: "member" },
+    layout: "user",
+  },
+
+  "/user/scan": {
+    html: PAGES.userScan,
+    css: ["/css/user/scan.css"],
+    js: ["/src/js/user/scan.js"],
     meta: { requiresAuth: true, role: "member" },
     layout: "user",
   },

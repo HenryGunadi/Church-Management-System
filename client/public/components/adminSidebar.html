@@ -1,35 +1,43 @@
 <!-- Sidebar Component -->
 <aside class="sidebar">
-    <div class="logo">
-        <i class="fas fa-chart-line"></i>
-        <h2>Admin</h2>
+  <div class="logo">
+    <i class="fas fa-chart-line"></i>
+    <h2>Admin</h2>
+  </div>
+  <nav class="menu">
+    <a href="/admin/dashboard" data-link class="active">
+      <i class="fas fa-home"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="/admin/users" data-link>
+      <i class="fas fa-users"></i>
+      <span>Data User</span>
+    </a>
+    <a href="/admin/attendance" data-link>
+      <i class="fas fa-church"></i>
+      <span>Attendance</span>
+    </a>
+    <a href="/admin/events" data-link>
+      <i class="fas fa-calendar-alt"></i>
+      <span>Event</span>
+    </a>
+    <a href="/admin/schedules" data-link>
+      <i class="fas fa-qrcode"></i>
+      <span>Sessions</span>
+    </a>
+  </nav>
+  <div class="user-profile">
+    <img
+      src="https://randomuser.me/api/portraits/men/32.jpg"
+      alt="Admin"
+      id="adminAvatar"
+    />
+    <div>
+      <h4 id="adminName">Loading...</h4>
+      <p id="adminRole">Admin</p>
     </div>
-    <nav class="menu">
-        <a href="/admin/dashboard" data-link class="active">
-            <i class="fas fa-home"></i> 
-            <span>Dashboard</span>
-        </a>
-        <a href="/admin/users" data-link>
-            <i class="fas fa-users"></i> 
-            <span>Data User</span>
-        </a>
-        <a href="/admin/attendance" data-link>
-            <i class="fas fa-church"></i> 
-            <span>Attendance</span>
-        </a>
-        <a href="/admin/events" data-link>
-            <i class="fas fa-calendar-alt"></i> 
-            <span>Event</span>
-        </a>
-    </nav>
-    <div class="user-profile">
-        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Admin" id="adminAvatar">
-        <div>
-            <h4 id="adminName">Loading...</h4>
-            <p id="adminRole">Admin</p>
-        </div>
-        <a href="#" id="logoutBtn" title="Logout">
-            <i class="fas fa-sign-out-alt"></i>
-        </a>
-    </div>
+    <a href="#" id="logoutBtn" title="Logout">
+      <i class="fas fa-sign-out-alt"></i>
+    </a>
+  </div>
 </aside>
