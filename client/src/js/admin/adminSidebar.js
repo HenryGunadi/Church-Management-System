@@ -39,11 +39,16 @@ function setActiveMenu() {
 
   menuLinks.forEach((link) => {
     link.classList.remove("active");
-    if (link.getAttribute("href") === currentPath) {
+
+    const href = link.getAttribute("href");
+
+    // cocokkan sebagian path agar /admin/attendance match
+    if (currentPath.startsWith(href)) {
       link.classList.add("active");
     }
   });
 }
+
 
 // Load user profile from API or localStorage
 async function loadUserProfile() {

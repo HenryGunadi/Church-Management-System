@@ -19,7 +19,7 @@ body {
 /* ===== Main Content ===== */
 .main-content {
   flex-grow: 1;
-  margin-left: 250px; /* Width of sidebar */
+  margin-left: 250px;
   padding: 30px;
   background-color: #f5f7fa;
   min-height: 100vh;
@@ -147,6 +147,48 @@ body {
 
 .filter-group input::placeholder {
   color: #95a5a6;
+}
+
+/* ===== Gender Filter ===== */
+.gender-filter-container {
+  margin-bottom: 20px;
+}
+
+.gender-filter-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gender-filter-btn {
+  padding: 10px 20px;
+  border: 2px solid #e0e6ed;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  color: #7f8c8d;
+}
+
+.gender-filter-btn:hover {
+  border-color: #3498db;
+  color: #3498db;
+  transform: translateY(-2px);
+}
+
+.gender-filter-btn.active {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border-color: #3498db;
+}
+
+.gender-filter-btn i {
+  font-size: 1.1rem;
 }
 
 /* ===== Loading State ===== */
@@ -341,7 +383,7 @@ body {
   margin: 20px;
   border-radius: 16px;
   width: 90%;
-  max-width: 900px;
+  max-width: 1000px;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
@@ -435,14 +477,14 @@ body {
 /* ===== Attendance Stats ===== */
 .attendance-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
   margin-bottom: 25px;
 }
 
 .stat-box {
   background: white;
-  padding: 20px;
+  padding: 18px;
   border-radius: 12px;
   text-align: center;
   border: 2px solid #ecf0f1;
@@ -466,6 +508,14 @@ body {
   border-color: #e74c3c;
 }
 
+.stat-box.male {
+  border-color: #3498db;
+}
+
+.stat-box.female {
+  border-color: #e91e63;
+}
+
 .stat-box-value {
   font-size: 2rem;
   font-weight: 700;
@@ -484,11 +534,23 @@ body {
   color: #e74c3c;
 }
 
+.stat-box.male .stat-box-value {
+  color: #3498db;
+}
+
+.stat-box.female .stat-box-value {
+  color: #e91e63;
+}
+
 .stat-box-label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #7f8c8d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 /* ===== Attendance Table ===== */
@@ -600,8 +662,13 @@ body {
   }
 
   .filter-row {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: 1fr;
     gap: 15px;
+  }
+  
+  .attendance-stats {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
   }
 }
 
@@ -612,7 +679,7 @@ body {
   }
 
   .main-content {
-    margin-left: 0; /* Remove margin for mobile */
+    margin-left: 0;
     width: 100%;
     padding: 15px;
   }
@@ -660,7 +727,17 @@ body {
   }
 
   .attendance-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .gender-filter-buttons {
+    flex-direction: column;
+  }
+  
+  .gender-filter-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   /* Mobile Table */
@@ -730,5 +807,9 @@ body {
 
   .event-card-image {
     height: 150px;
+  }
+  
+  .attendance-stats {
+    grid-template-columns: 1fr;
   }
 }

@@ -16,7 +16,7 @@
         </h1>
         <button class="btn" id="exportBtn">
           <i class="fas fa-download"></i>
-          Export Data
+          Export All Data
         </button>
       </header>
 
@@ -43,12 +43,6 @@
               <option value="worship">Worship</option>
               <option value="other">Other</option>
             </select>
-          </div>
-          <div class="filter-group">
-            <label for="filterDate">
-              <i class="fas fa-calendar"></i> Tanggal
-            </label>
-            <input type="date" id="filterDate" />
           </div>
         </div>
       </div>
@@ -87,6 +81,21 @@
           <!-- Event info will be loaded here -->
         </div>
         
+        <!-- Gender Filter (only for worship events) -->
+        <div class="gender-filter-container" id="genderFilterContainer" style="display: none;">
+          <div class="gender-filter-buttons">
+            <button class="gender-filter-btn active" data-gender="all">
+              <i class="fas fa-users"></i> Semua
+            </button>
+            <button class="gender-filter-btn" data-gender="male">
+              <i class="fas fa-mars"></i> Laki-laki
+            </button>
+            <button class="gender-filter-btn" data-gender="female">
+              <i class="fas fa-venus"></i> Perempuan
+            </button>
+          </div>
+        </div>
+
         <div class="attendance-stats" id="attendanceStats">
           <!-- Stats will be loaded here -->
         </div>
@@ -97,6 +106,7 @@
               <tr>
                 <th>No</th>
                 <th>Nama</th>
+                <th>Gender</th>
                 <th>Waktu Check-in</th>
                 <th>Status</th>
               </tr>
@@ -109,7 +119,7 @@
 
         <div class="empty-attendance" id="emptyAttendance" style="display: none;">
           <i class="fas fa-user-clock"></i>
-          <p>Belum ada yang hadir</p>
+          <p>Belum ada data absensi</p>
         </div>
       </div>
       <div class="modal-footer">
