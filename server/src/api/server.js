@@ -1,3 +1,4 @@
+const os = require("os");
 const { db } = require("../db/db");
 const { AuthRouter, UserRouter, EventRouter } = require("../routers");
 const {
@@ -19,11 +20,9 @@ class Server {
     this.host = host || "0.0.0.0";
     this.db = db;
 
-    const frontendIP = "http://192.168.100.2:5173"; // your computer LAN IP
-    // Middleware
     this.app.use(
       cors({
-        origin: frontendIP,
+        origin: true,
         credentials: true,
       })
     );
