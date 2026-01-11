@@ -22,18 +22,13 @@ class EventService {
         image_url,
         speaker,
         description,
-        start_time,
-        end_time,
-        worship_topic,
       } = payload;
 
-      if (!event_name || !place || !start_time) {
-        throw new Error(
-          "Missing required fields: event_name, place, or start_time"
-        );
+      if (!event_name || !place) {
+        throw new Error("Missing required fields: event_name or place");
       }
 
-      // Insert event
+      // Insert event ONLY - no schedule, no QR code
       const [eventId] = await trx("events").insert({
         event_name,
         event_type,
@@ -41,30 +36,14 @@ class EventService {
         image_url: image_url || null,
         description: description || null,
         speaker: speaker || null,
+        // qr_code field removed from events table
       });
 
       console.log("Event created with ID:", eventId);
 
-      // Generate QR code
-      const qrCode = await this.generateQR(eventId, trx);
-      await trx("events").where({ id: eventId }).update({ qr_code: qrCode });
-
-      console.log("QR code generated");
-
-      const scheduledPayload = {
-        event_id: eventId,
-        start_time,
-        end_time: end_time || null,
-        worship_topic: worship_topic || null,
-      };
-
-      await this.eventScheduleService.create(scheduledPayload, trx);
-
-      console.log("Schedule created");
-
       await trx.commit();
 
-      return await this.viewDetailed(eventId);
+      return await this.view(eventId);
     } catch (err) {
       await trx.rollback();
       console.error("Create event error:", err);
@@ -72,7 +51,9 @@ class EventService {
     }
   }
 
-  async generateQR(eventId, trx = null) {
+  // QR generation is now ONLY for schedules, not events
+  // This method should be removed or moved to EventScheduleService
+  async generateQR(scheduleId, trx = null) {
     try {
       const randomToken = uuidv4();
       const baseURL =
@@ -80,8 +61,8 @@ class EventService {
           ? `http://${config.server.host}:${config.server.port}`
           : "http://localhost:3000";
 
-      // create token service data
-      await this.eventTokenService.create(eventId, randomToken, trx);
+      // Create token service data - linked to schedule_id
+      await this.eventTokenService.create(scheduleId, randomToken, trx);
 
       const url = `${baseURL}/scan?token=${randomToken}`;
       return await QRCode.toDataURL(url);
@@ -105,9 +86,6 @@ class EventService {
         place,
         image_url,
         description,
-        start_time,
-        end_time,
-        worship_topic,
       } = payload;
 
       if (!id) {
@@ -121,7 +99,7 @@ class EventService {
       }
 
       const eventUpdate = {};
-      if (speaker !== undefined) eventUpdate.speaker = speaker; // 👈 ADD
+      if (speaker !== undefined) eventUpdate.speaker = speaker;
       if (event_name !== undefined) eventUpdate.event_name = event_name;
       if (event_type !== undefined) eventUpdate.event_type = event_type;
       if (place !== undefined) eventUpdate.place = place;
@@ -133,23 +111,8 @@ class EventService {
         console.log("Event updated");
       }
 
-      if (
-        start_time !== undefined ||
-        end_time !== undefined ||
-        worship_topic !== undefined
-      ) {
-        const scheduleUpdate = {};
-        if (start_time !== undefined) scheduleUpdate.start_time = start_time;
-        if (end_time !== undefined) scheduleUpdate.end_time = end_time;
-        if (worship_topic !== undefined)
-          scheduleUpdate.worship_topic = worship_topic;
-
-        await trx("event_schedules")
-          .where({ event_id: id })
-          .update(scheduleUpdate);
-
-        console.log("Schedule updated");
-      }
+      // ❌ REMOVED: Schedule updates don't belong in EventService
+      // Schedules should be updated via EventScheduleService
 
       await trx.commit();
 
@@ -195,7 +158,7 @@ class EventService {
 
       console.log(`Found ${events.length} events`);
 
-      const schedules = await this.db("event_schedules").select("*");
+      const schedules = await this.db("event_schedules").select("*"); // ✅ This already selects everything including qr_code
 
       console.log(`Found ${schedules.length} schedules`);
 
@@ -207,6 +170,7 @@ class EventService {
             start_time: schedule.start_time,
             end_time: schedule.end_time,
             worship_topic: schedule.worship_topic,
+            qr_code: schedule.qr_code, // ✅ ADD THIS LINE
           }));
 
         return {
@@ -220,12 +184,6 @@ class EventService {
       return eventsWithSchedules;
     } catch (err) {
       console.error("ViewAll error:", err);
-      console.error("Error details:", {
-        message: err.message,
-        code: err.code,
-        errno: err.errno,
-        sql: err.sql,
-      });
       throw new Error(`View all events failed: ${err.message}`);
     }
   }

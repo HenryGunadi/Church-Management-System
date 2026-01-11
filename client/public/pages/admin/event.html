@@ -1,321 +1,330 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Event Management - Admin Panel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="dashboard-container">
-        <!-- Sidebar Component -->
-        <div id="adminSidebar"></div>
+      <!-- Sidebar Component -->
+      <div id="adminSidebar"></div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Page Container -->
-            <div class="page-container">
-                <!-- Page Header -->
-                <header class="page-header">
-                    <div class="header-left">
-                        <h1><i class="fas fa-calendar-alt"></i> Event Management</h1>
-                        <p class="subtitle">Create and manage church events, worship services, and activities</p>
-                    </div>
-                    <div class="header-right">
-                        <button id="createEventBtn" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            <span>Create Event</span>
-                        </button>
-                    </div>
-                </header>
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Container -->
+        <div class="page-container">
+          <!-- Page Header -->
+          <header class="page-header">
+            <div class="header-left">
+              <h1><i class="fas fa-calendar-alt"></i> Event Management</h1>
+              <p class="subtitle">
+                Create and manage church events and activities
+              </p>
+            </div>
+            <div class="header-right">
+              <button id="createEventBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                <span>Create Event</span>
+              </button>
+            </div>
+          </header>
 
-                <!-- Main Content Card -->
-                <div class="card">
-                    <!-- Card Header with Search and Filters -->
-                    <div class="card-header">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search events by name or place...">
-                        </div>
-                        <div class="filter-group">
-                            <select id="typeFilter" class="filter-select">
-                                <option value="">All Types</option>
-                                <option value="event">Event</option>
-                                <option value="worship">Worship</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Table Container -->
-                    <div class="table-container">
-                        <table class="events-table">
-                            <thead>
-                                <tr>
-                                    <th>EVENT NAME</th>
-                                    <th>TYPE</th>
-                                    <th>DATE & TIME</th>
-                                    <th>PLACE</th>
-                                    <th>STATUS</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="eventsTableBody">
-                                <!-- Table rows will be dynamically inserted here -->
-                                <tr class="loading-row">
-                                    <td colspan="6">
-                                        <div class="loading-spinner"></div>
-                                        <p>Loading events...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Table Footer -->
-                    <div class="table-footer">
-                        <p class="showing-text" id="showingText">Showing 0 events</p>
-                    </div>
-                </div>
+          <!-- Main Content Card -->
+          <div class="card">
+            <!-- Card Header with Search and Filters -->
+            <div class="card-header">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Search events by name or place..."
+                />
+              </div>
+              <div class="filter-group">
+                <select id="typeFilter" class="filter-select">
+                  <option value="">All Types</option>
+                  <option value="event">Event</option>
+                  <option value="worship">Worship</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
             </div>
 
-            <!-- Create/Edit Event Modal -->
-            <div id="eventModal" class="modal">
-                <div class="modal-content modal-large">
-                    <div class="modal-header">
-                        <h2 id="modalTitle">Create New Event</h2>
-                        <button id="closeModal" class="modal-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <form id="eventForm">
-                        <div class="modal-body">
-                            <!-- Image Upload Section -->
-                            <div class="form-group">
-                                <label>Event Image</label>
-                                <input type="file" id="imageUpload" name="image" accept="image/*" style="display: none">
-                                <div id="fileUploadArea" class="file-upload-area">
-                                    <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem;"></i>
-                                    <p>Click to upload or drag and drop</p>
-                                    <span>PNG, JPG, GIF up to 5MB</span>
-                                </div>
-                                <div id="filePreview" class="file-preview" style="display: none">
-                                    <img id="previewImage" src="" alt="Preview">
-                                    <button type="button" id="removeImage" class="remove-image">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Form Grid -->
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="eventName">Event Name *</label>
-                                    <input type="text" id="eventName" name="event_name" placeholder="Enter event name" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="eventType">Event Type *</label>
-                                    <select id="eventType" name="event_type" required>
-                                        <option value="">Select type</option>
-                                        <option value="event">Event</option>
-                                        <option value="worship">Worship</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="startTime">Start Date & Time *</label>
-                                    <input type="datetime-local" id="startTime" name="start_time" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="endTime">End Date & Time</label>
-                                    <input type="datetime-local" id="endTime" name="end_time">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="place">Place *</label>
-                                    <input type="text" id="place" name="place" placeholder="Enter location" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="worshipTopic">Worship Topic</label>
-                                    <input type="text" id="worshipTopic" name="worship_topic" placeholder="Optional for worship events">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea id="description" name="description" placeholder="Enter event description..." rows="4"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" id="cancelBtn" class="btn btn-secondary">
-                                <span class="btn-text">Cancel</span>
-                            </button>
-                            <button type="submit" id="submitBtn" class="btn btn-primary">
-                                <span class="btn-text">Create Event</span>
-                                <span class="btn-loader" style="display: none">
-                                    <span class="spinner-small"></span>
-                                </span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <!-- Table Container -->
+            <div class="table-container">
+              <table class="events-table">
+                <thead>
+                  <tr>
+                    <th>EVENT NAME</th>
+                    <th>TYPE</th>
+                    <th>PLACE</th>
+                    <th>SPEAKER</th>
+                    <th>SCHEDULES</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody id="eventsTableBody">
+                  <!-- Table rows will be dynamically inserted here -->
+                  <tr class="loading-row">
+                    <td colspan="6">
+                      <div class="loading-spinner"></div>
+                      <p>Loading events...</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <!-- QR Code Modal -->
-            <div id="qrModal" class="modal">
-                <div class="modal-content modal-medium">
-                    <div class="modal-header">
-                        <h2>Event Created Successfully!</h2>
-                        <button id="closeQrModal" class="modal-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+            <!-- Table Footer -->
+            <div class="table-footer">
+              <p class="showing-text" id="showingText">Showing 0 events</p>
+            </div>
+          </div>
+        </div>
 
-                    <div class="modal-body">
-                        <div class="qr-container">
-                            <div class="qr-header">
-                                <h3 id="qrEventName">Event Name</h3>
-                                <p id="qrEventDetails">Event details</p>
-                            </div>
-
-                            <div class="qr-code-wrapper">
-                                <img id="qrCodeImage" src="" alt="QR Code">
-                            </div>
-
-                            <div class="qr-actions">
-                                <button id="downloadQrBtn" class="btn btn-primary">
-                                    <i class="fas fa-download"></i>
-                                    <span>Download QR Code</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Create/Edit Event Modal -->
+        <div id="eventModal" class="modal">
+          <div class="modal-content modal-large">
+            <div class="modal-header">
+              <h2 id="modalTitle">Create New Event</h2>
+              <button id="closeModal" class="modal-close">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
 
-            <!-- Event Detail Modal -->
-            <div id="detailModal" class="modal">
-                <div class="modal-content modal-large">
-                    <div class="modal-header">
-                        <h2>Event Details</h2>
-                        <button id="closeDetailModal" class="modal-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="detail-container">
-                            <!-- Left: Image -->
-                            <div class="detail-image-section">
-                                <img id="detailImage" src="" alt="Event image">
-                            </div>
-
-                            <!-- Right: Info -->
-                            <div class="detail-info-section">
-                                <div class="detail-header">
-                                    <h3 id="detailEventName">Event Name</h3>
-                                    <span id="detailEventType" class="event-type-badge">Type</span>
-                                </div>
-
-                                <div class="detail-grid">
-                                    <div class="detail-item">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <div>
-                                            <label>Date & Time</label>
-                                            <p id="detailDateTime">Date and time</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="detail-item">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <div>
-                                            <label>Location</label>
-                                            <p id="detailPlace">Place</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="detail-item" id="detailWorshipTopicContainer" style="display: none">
-                                        <i class="fas fa-bible"></i>
-                                        <div>
-                                            <label>Worship Topic</label>
-                                            <p id="detailWorshipTopic">Topic</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="detail-description">
-                                    <label>Description</label>
-                                    <p id="detailDescription">Description text</p>
-                                </div>
-
-                                <div class="detail-qr-section">
-                                    <h4>QR Code</h4>
-                                    <div class="qr-mini-wrapper">
-                                        <img id="detailQrCode" src="" alt="QR Code">
-                                        <button id="detailDownloadQr" class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i>
-                                            <span>Download</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="detail-actions">
-                                    <button id="detailEditBtn" class="btn btn-secondary" style="flex: 1">
-                                        <i class="fas fa-edit"></i>
-                                        <span>Edit Event</span>
-                                    </button>
-                                    <button id="detailDeleteBtn" class="btn btn-danger" style="flex: 1">
-                                        <i class="fas fa-trash"></i>
-                                        <span>Delete Event</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <form id="eventForm">
+              <div class="modal-body">
+                <!-- Image Upload Section -->
+                <div class="form-group">
+                  <label>Event Image</label>
+                  <input
+                    type="file"
+                    id="imageUpload"
+                    name="image"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <div id="fileUploadArea" class="file-upload-area">
+                    <i
+                      class="fas fa-cloud-upload-alt"
+                      style="font-size: 2.5rem"
+                    ></i>
+                    <p>Click to upload or drag and drop</p>
+                    <span>PNG, JPG, GIF up to 5MB</span>
+                  </div>
+                  <div
+                    id="filePreview"
+                    class="file-preview"
+                    style="display: none"
+                  >
+                    <img id="previewImage" src="" alt="Preview" />
+                    <button type="button" id="removeImage" class="remove-image">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
                 </div>
+
+                <!-- Form Grid -->
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="eventName">Event Name *</label>
+                    <input
+                      type="text"
+                      id="eventName"
+                      name="event_name"
+                      placeholder="Enter event name"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="eventType">Event Type *</label>
+                    <select id="eventType" name="event_type" required>
+                      <option value="">Select type</option>
+                      <option value="event">Event</option>
+                      <option value="worship">Worship</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="place">Place *</label>
+                    <input
+                      type="text"
+                      id="place"
+                      name="place"
+                      placeholder="Enter location"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="speaker">Speaker</label>
+                    <input
+                      type="text"
+                      id="speaker"
+                      name="speaker"
+                      placeholder="Optional speaker name"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Enter event description..."
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" id="cancelBtn" class="btn btn-secondary">
+                  <span class="btn-text">Cancel</span>
+                </button>
+                <button type="submit" id="submitBtn" class="btn btn-primary">
+                  <span class="btn-text">Create Event</span>
+                  <span class="btn-loader" style="display: none">
+                    <span class="spinner-small"></span>
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Event Detail Modal -->
+        <div id="detailModal" class="modal">
+          <div class="modal-content modal-large">
+            <div class="modal-header">
+              <h2>Event Details</h2>
+              <button id="closeDetailModal" class="modal-close">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
 
-            <!-- Delete Confirmation Modal -->
-            <div id="deleteModal" class="modal">
-                <div class="modal-content modal-small">
-                    <div class="modal-header">
-                        <h2>Delete Event</h2>
-                        <button id="closeDeleteModal" class="modal-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="delete-warning">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 20px;"></i>
-                            <h3>Are you sure?</h3>
-                            <p>
-                                You are about to delete the event
-                                <span id="deleteEventName">"Event Name"</span>. This action cannot be undone.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button id="cancelDeleteBtn" class="btn btn-secondary">
-                            <span class="btn-text">Cancel</span>
-                        </button>
-                        <button id="confirmDeleteBtn" class="btn btn-danger">
-                            <span class="btn-text">Delete Event</span>
-                            <span class="btn-loader" style="display: none">
-                                <span class="spinner-small"></span>
-                            </span>
-                        </button>
-                    </div>
+            <div class="modal-body">
+              <div class="detail-container">
+                <!-- Left: Image -->
+                <div class="detail-image-section">
+                  <img id="detailImage" src="" alt="Event image" />
                 </div>
+
+                <!-- Right: Info -->
+                <div class="detail-info-section">
+                  <div class="detail-header">
+                    <h3 id="detailEventName">Event Name</h3>
+                    <span id="detailEventType" class="event-type-badge"
+                      >Type</span
+                    >
+                  </div>
+
+                  <div class="detail-grid">
+                    <div class="detail-item">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <div>
+                        <label>Location</label>
+                        <p id="detailPlace">Place</p>
+                      </div>
+                    </div>
+
+                    <div
+                      class="detail-item"
+                      id="detailSpeakerContainer"
+                      style="display: none"
+                    >
+                      <i class="fas fa-microphone"></i>
+                      <div>
+                        <label>Speaker</label>
+                        <p id="detailSpeaker">Speaker</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="detail-description">
+                    <label>Description</label>
+                    <p id="detailDescription">Description text</p>
+                  </div>
+
+                  <div class="detail-schedules-section">
+                    <h4>Schedules</h4>
+                    <div id="detailSchedules" class="schedules-list">
+                      <!-- Schedules will be inserted here -->
+                    </div>
+                  </div>
+
+                  <div class="detail-actions">
+                    <button
+                      id="detailEditBtn"
+                      class="btn btn-secondary"
+                      style="flex: 1"
+                    >
+                      <i class="fas fa-edit"></i>
+                      <span>Edit Event</span>
+                    </button>
+                    <button
+                      id="detailDeleteBtn"
+                      class="btn btn-danger"
+                      style="flex: 1"
+                    >
+                      <i class="fas fa-trash"></i>
+                      <span>Delete Event</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-        </main>
+          </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal">
+          <div class="modal-content modal-small">
+            <div class="modal-header">
+              <h2>Delete Event</h2>
+              <button id="closeDeleteModal" class="modal-close">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div class="delete-warning">
+                <i
+                  class="fas fa-exclamation-triangle"
+                  style="font-size: 3rem; color: #e74c3c; margin-bottom: 20px"
+                ></i>
+                <h3>Are you sure?</h3>
+                <p>
+                  You are about to delete the event
+                  <span id="deleteEventName">"Event Name"</span>. This will also
+                  delete all associated schedules and QR codes. This action
+                  cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button id="cancelDeleteBtn" class="btn btn-secondary">
+                <span class="btn-text">Cancel</span>
+              </button>
+              <button id="confirmDeleteBtn" class="btn btn-danger">
+                <span class="btn-text">Delete Event</span>
+                <span class="btn-loader" style="display: none">
+                  <span class="spinner-small"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-</body>
+  </body>
 </html>

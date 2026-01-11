@@ -65,7 +65,7 @@ async function loadUsers() {
       </tr>
     `;
 
-    const response = await fetch(`${API_BASE_URL}/view`, {
+    const response = await fetch(`${API_BASE_URL}/user/view`, {
       credentials: "include",
     });
 
@@ -231,7 +231,7 @@ async function handleSubmit(e) {
     if (currentEditId) {
       // Update user
       formData.id = currentEditId;
-      response = await fetch(`${API_BASE_URL}/update`, {
+      response = await fetch(`${API_BASE_URL}/user/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -241,7 +241,7 @@ async function handleSubmit(e) {
       });
     } else {
       // Create user
-      response = await fetch(`${API_BASE_URL}/create`, {
+      response = await fetch(`${API_BASE_URL}/user/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -288,7 +288,7 @@ async function viewUser(userId, userEmail) {
 
     // Backend requires either id or email as query params
     const queryParam = userId ? `id=${userId}` : `email=${userEmail}`;
-    const response = await fetch(`${API_BASE_URL}/view?${queryParam}`, {
+    const response = await fetch(`${API_BASE_URL}/user/view?${queryParam}`, {
       credentials: "include",
     });
 
@@ -352,7 +352,7 @@ async function viewUser(userId, userEmail) {
 // Edit user
 async function editUser(userId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/view?id=${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/user/view?id=${userId}`, {
       credentials: "include",
     });
 
@@ -396,7 +396,7 @@ async function deleteUser(userId, userEmail) {
   try {
     // Backend expects DELETE /delete/:id/:email
     const response = await fetch(
-      `${API_BASE_URL}/delete/${userId}/${encodeURIComponent(userEmail)}`,
+      `${API_BASE_URL}/user/delete/${userId}/${encodeURIComponent(userEmail)}`,
       {
         method: "DELETE",
         credentials: "include",

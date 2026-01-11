@@ -5,17 +5,25 @@
 exports.up = async function (knex) {
   await knex.schema.createTable("event_tokens", (table) => {
     table.increments("id").primary();
+
     table.string("token", 255).notNullable().unique(); // UUID token
+
     table
-      .integer("event_id")
+      .integer("schedule_id")
       .unsigned()
       .notNullable()
       .references("id")
-      .inTable("events")
-      .onDelete("CASCADE"); // If event deleted, remove tokens too
-    table.boolean("is_used").defaultTo(false); // Optional: track if token has been used
+      .inTable("event_schedules")
+      .onDelete("CASCADE");
+
+    table.unique(["schedule_id"]); // 👈 enforce 1 token per schedule
+
+    table.boolean("is_used").defaultTo(false);
+
     table.timestamp("created_at").defaultTo(knex.fn.now());
-    table.timestamp("expires_at").nullable(); // Optional: add if token expiration is needed
+    table.timestamp("expires_at").nullable();
+
+    table.index(["token"]); // 👈 fast lookup on scan
   });
 };
 

@@ -25,7 +25,7 @@ const createUserValidation = [
     .withMessage("Birth date must be a valid date (YYYY-MM-DD)"),
 
   body("phone_number")
-    .optional()
+    .optional({ checkFalsy: true })
     .isString()
     .withMessage("Phone number must be a string"),
 
@@ -60,7 +60,7 @@ const updateUserValidation = [
     .withMessage("Birth date must be a valid date"),
 
   body("phone_number")
-    .optional()
+    .optional({ checkFalsy: true })
     .isString()
     .withMessage("Phone number must be a string"),
 

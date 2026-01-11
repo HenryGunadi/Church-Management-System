@@ -8,13 +8,9 @@ exports.up = async function (knex) {
     table.string("event_name").notNullable();
     table.string("place").notNullable();
     table.string("image_url").nullable();
-    table.text("qr_code").nullable();
     table.text("description").nullable();
-
-    table.string("speaker").nullable(); // 👈 added column
-
+    table.string("speaker").nullable();
     table.enu("event_type", ["event", "worship", "other"]).notNullable();
-
     table.timestamps(true, true);
   });
 };

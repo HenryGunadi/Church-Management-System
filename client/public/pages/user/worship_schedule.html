@@ -1,160 +1,88 @@
 <section>
   <div id="userNavbar"></div>
+
+  <!-- Hero Slider -->
   <div class="hero-slider">
     <div class="slider-container">
       <button class="slider-nav prev" onclick="changeSlide(-1)">‹</button>
-      <div class="slide">
-        <h2>"We RISE"</h2>
-        <h3>Sunday</h3>
-        <p class="date">09:00-10:30<br />11:00-12:30</p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur.
-        </p>
+      <div class="slide-wrapper">
+        <div class="slide">
+          <h2 id="slideTitle">"We RISE"</h2>
+          <h3 id="slideSubtitle">Loading...</h3>
+          <p class="date" id="slideDate">Loading...</p>
+          <p id="slideDescription">Loading worship schedules...</p>
+        </div>
       </div>
       <button class="slider-nav next" onclick="changeSlide(1)">›</button>
     </div>
+    <div class="slide-indicators" id="slideIndicators"></div>
   </div>
 
   <div class="content-container">
-    <div class="pastors-section">
-      <h2>OUR PASTORS</h2>
-      <div class="pastors-grid">
-        <div class="pastor-card">
-          <div class="pastor-image">👨‍💼</div>
-          <div class="pastor-name">Pastor David Johnson</div>
-          <div class="pastor-role">Senior Pastor</div>
+    <!-- Community Section -->
+    <div class="community-section-inline">
+      <h2>OUR WORSHIP COMMUNITY</h2>
+      <div class="community-content-grid">
+        <div class="community-text">
+          <h3>Join Us in Worship</h3>
+          <p>
+            We are a vibrant community of believers who gather together to
+            worship, grow in faith, and support one another. Our worship
+            services are designed to create an atmosphere where you can
+            encounter God's presence and experience meaningful connection with
+            fellow believers.
+          </p>
+          <p>
+            Whether you're new to faith or have been walking with God for years,
+            you'll find a welcoming home here. We believe in authentic worship,
+            powerful teaching from God's Word, and genuine fellowship that
+            extends beyond Sunday services.
+          </p>
         </div>
-        <div class="pastor-card">
-          <div class="pastor-image">👩‍💼</div>
-          <div class="pastor-name">Pastor Sarah Williams</div>
-          <div class="pastor-role">Associate Pastor</div>
-        </div>
-        <div class="pastor-card">
-          <div class="pastor-image">👨‍🏫</div>
-          <div class="pastor-name">Pastor Michael Brown</div>
-          <div class="pastor-role">Youth Pastor</div>
-        </div>
-        <div class="pastor-card">
-          <div class="pastor-image">👩‍🏫</div>
-          <div class="pastor-name">Pastor Emily Davis</div>
-          <div class="pastor-role">Worship Pastor</div>
+        <div class="community-features">
+          <div class="feature-card">
+            <div class="feature-icon">🎵</div>
+            <h4>Spirit-Led Worship</h4>
+            <p>
+              Experience passionate worship that draws you closer to God's
+              presence
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h4>Biblical Teaching</h4>
+            <p>
+              Dive deep into God's Word with relevant, life-changing messages
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🤝</div>
+            <h4>Genuine Fellowship</h4>
+            <p>
+              Build meaningful relationships with believers who care about your
+              journey
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🙏</div>
+            <h4>Prayer & Ministry</h4>
+            <p>
+              Receive prayer and ministry as we support one another in faith
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="community-section">
-    <div class="community-content">
-      <div class="community-text">
-        <h2>"OUR COMMUNITY"</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation.
-        </p>
-        <p>
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-          proident, sunt in culpa qui officia deserunt mollit anim id est
-          laborum.
-        </p>
-        <button class="community-button">Learn More</button>
-      </div>
-      <div class="community-image">🏛️</div>
-    </div>
-  </div>
-
-  <div class="content-container">
+    <!-- Schedule Section -->
     <div class="schedule-section">
-      <div class="schedule-card">
-        <h3>WEEKDAYS</h3>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Mon 11:00-12:00 PM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">Morning Prayer - 11:00 AM</div>
-            <div class="time-item">Bible Study - 11:30 AM</div>
-            <div class="time-item">Fellowship Time - 12:00 PM</div>
-          </div>
-        </div>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Wed 14:00-15:00 PM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">Worship Service - 14:00 PM</div>
-            <div class="time-item">Prayer Meeting - 14:45 PM</div>
-          </div>
-        </div>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Fri 18:00-19:00 PM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">Youth Service - 18:00 PM</div>
-            <div class="time-item">Small Group - 18:45 PM</div>
-          </div>
+      <h2>WORSHIP SCHEDULE</h2>
+      <div class="schedule-grid" id="scheduleGrid">
+        <div class="loading-state">
+          <div class="loader"></div>
+          <p>Loading worship schedules...</p>
         </div>
       </div>
-
-      <div class="schedule-card">
-        <h3>WEEKENDS</h3>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Sat 10:00-11:00 AM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">Community Service - 10:00 AM</div>
-            <div class="time-item">Fellowship - 10:45 AM</div>
-          </div>
-        </div>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Sun 09:00-10:30 AM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">First Service - 09:00 AM</div>
-            <div class="time-item">Worship & Preaching - 09:15 AM</div>
-            <div class="time-item">Closing Prayer - 10:15 AM</div>
-          </div>
-        </div>
-        <div class="schedule-dropdown" onclick="toggleDropdown(this)">
-          <div class="dropdown-header">
-            <span>Sun 11:00-12:30 PM</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
-          <div class="dropdown-content">
-            <div class="time-item">Second Service - 11:00 AM</div>
-            <div class="time-item">Worship & Preaching - 11:15 AM</div>
-            <div class="time-item">Closing Prayer - 12:15 PM</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bible-reading">
-      <h3>SEE OUR BIBLE READING COMMUNITY SCHEDULE</h3>
-      <p>
-        Join our daily Bible reading community and grow together in faith. Our
-        structured reading plan helps you engage with Scripture consistently and
-        meaningfully.
-      </p>
-      <p>
-        Connect with fellow believers as we journey through God's Word together,
-        sharing insights and encouraging one another in our spiritual walk.
-      </p>
-      <button class="community-button">View Schedule</button>
     </div>
   </div>
 

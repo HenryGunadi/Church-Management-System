@@ -5,13 +5,14 @@ const {
   UserRouter,
   EventRouter,
   AttendanceRouter,
+  EventScheduleRouter,
 } = require("../routers");
 const {
   AuthService,
   UserService,
   EventService,
-  EventSchedules,
-  EventTokens,
+  EventScheduleService,
+  EventTokenService,
   AttendanceService,
 } = require("../services");
 const cookieParser = require("cookie-parser");
@@ -50,8 +51,11 @@ class Server {
     // services
     const authService = new AuthService(this.db);
     const userService = new UserService(this.db);
-    const eventScheduleService = new EventSchedules(this.db);
-    const eventTokensService = new EventTokens(this.db);
+    const eventTokensService = new EventTokenService(this.db);
+    const eventScheduleService = new EventScheduleService(
+      this.db,
+      eventTokensService
+    );
     const attendanceService = new AttendanceService(this.db);
     const eventService = new EventService(
       this.db,
@@ -63,15 +67,21 @@ class Server {
     const authRouter = new AuthRouter(authService, this.express);
     const userRouter = new UserRouter(userService, this.express);
     const eventRouter = new EventRouter(eventService, this.express); // register routes
+    const eventScheduleRouter = new EventScheduleRouter(
+      eventScheduleService,
+      eventTokensService,
+      this.express
+    );
     const attendanceRouter = new AttendanceRouter(
       attendanceService,
       this.express
-    ); // register routes
+    );
 
     this.app.use("/api/auth", authRouter.router);
     this.app.use("/api/user", userRouter.router);
     this.app.use("/api/events", eventRouter.router);
     this.app.use("/api/attendance", attendanceRouter.router);
+    this.app.use("/api/schedules", eventScheduleRouter.router);
 
     // Health check
     this.app.get("/health", (req, res) => {
