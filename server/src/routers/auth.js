@@ -16,6 +16,8 @@ class AuthRouter {
   registerRoutes() {
     this.router.post("/login", loginValidation, this.login.bind(this));
     this.router.post("/register", registerValidation, this.register.bind(this));
+    this.router.post("/logout", this.logout.bind(this)); // ← LOGOUT ROUTE
+    
     this.router.get("/verify", authenticate, (req, res) => {
       res.json({
         authenticated: true,
@@ -78,15 +80,39 @@ class AuthRouter {
 
       res.cookie("auth_token", token, {
         httpOnly: true,
-        secure: false,
+        secure: false, // set to true in production with HTTPS
         sameSite: "lax",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
       });
 
       res.json({ message: "Login success.", user });
     } catch (err) {
       console.error("Login error:", err.stack || err.message);
       res.status(500).json({ message: err.message });
+    }
+  }
+
+  async logout(req, res) {
+    try {
+      // Clear the auth cookie
+      res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: "lax",
+      });
+
+      console.log("User logged out successfully");
+
+      res.status(200).json({ 
+        message: "Logout successful",
+        success: true 
+      });
+    } catch (err) {
+      console.error("Logout error:", err.message);
+      res.status(500).json({ 
+        message: "Logout failed", 
+        error: err.message 
+      });
     }
   }
 

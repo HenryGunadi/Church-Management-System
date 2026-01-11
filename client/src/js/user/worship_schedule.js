@@ -1,3 +1,7 @@
+import { loadUserNavbar } from './userNavbar.js';
+import { loadUserFooter } from './userFooter.js';
+
+// Slide state
 let currentSlide = 0;
 const slides = [
   {
@@ -20,33 +24,113 @@ const slides = [
   },
 ];
 
-function changeSlide(direction) {
-  currentSlide += direction;
-  if (currentSlide < 0) currentSlide = slides.length - 1;
-  if (currentSlide >= slides.length) currentSlide = 0;
+// Export init function
+export async function init() {
+  console.log('🚀 Initializing worship schedule page...');
+  
+  // Load navbar
+  await loadUserNavbar();
+  await loadUserFooter();
+  
+  // Initialize page components
+  initSlider();
+  initDropdowns();
+  
+  console.log('✅ Worship schedule page initialized');
+}
 
+// Initialize slider
+function initSlider() {
+  // Expose changeSlide to global scope for onclick
+  window.changeSlide = function(direction) {
+    currentSlide += direction;
+    if (currentSlide < 0) currentSlide = slides.length - 1;
+    if (currentSlide >= slides.length) currentSlide = 0;
+
+    updateSlideContent();
+  };
+
+  // Auto slide every 5 seconds (optional)
+  setInterval(() => {
+    window.changeSlide(1);
+  }, 5000);
+}
+
+// Update slide content
+function updateSlideContent() {
   const slide = slides[currentSlide];
-  document.querySelector(".slide h2").textContent = slide.title;
-  document.querySelector(".slide h3").textContent = slide.subtitle;
-  document.querySelector(".slide .date").innerHTML = slide.date;
-  document.querySelector(".slide p:last-child").textContent = slide.text;
+  const slideElement = document.querySelector('.slide');
+  
+  if (!slideElement) return;
+
+  const h2 = slideElement.querySelector('h2');
+  const h3 = slideElement.querySelector('h3');
+  const date = slideElement.querySelector('.date');
+  const text = slideElement.querySelector('p:last-child');
+
+  if (h2) h2.textContent = slide.title;
+  if (h3) h3.textContent = slide.subtitle;
+  if (date) date.innerHTML = slide.date;
+  if (text) text.textContent = slide.text;
+
+  // Add slide animation
+  slideElement.style.animation = 'fadeIn 0.5s ease-in';
+  setTimeout(() => {
+    slideElement.style.animation = '';
+  }, 500);
 }
 
-function toggleDropdown(element) {
-  const content = element.querySelector(".dropdown-content");
-  const icon = element.querySelector(".dropdown-icon");
+// Initialize dropdowns
+function initDropdowns() {
+  // Expose toggleDropdown to global scope for onclick
+  window.toggleDropdown = function(element) {
+    const content = element.querySelector('.dropdown-content');
+    const icon = element.querySelector('.dropdown-icon');
 
-  // Close all other dropdowns
-  document.querySelectorAll(".schedule-dropdown").forEach((dropdown) => {
-    if (dropdown !== element) {
-      dropdown.classList.remove("active");
-      dropdown.querySelector(".dropdown-content").classList.remove("open");
-      dropdown.querySelector(".dropdown-icon").classList.remove("open");
-    }
+    if (!content || !icon) return;
+
+    // Close all other dropdowns
+    document.querySelectorAll('.schedule-dropdown').forEach((dropdown) => {
+      if (dropdown !== element) {
+        dropdown.classList.remove('active');
+        const dropContent = dropdown.querySelector('.dropdown-content');
+        const dropIcon = dropdown.querySelector('.dropdown-icon');
+        if (dropContent) dropContent.classList.remove('open');
+        if (dropIcon) dropIcon.classList.remove('open');
+      }
+    });
+
+    // Toggle current dropdown
+    element.classList.toggle('active');
+    content.classList.toggle('open');
+    icon.classList.toggle('open');
+  };
+
+  // Add click handlers to View Schedule buttons
+  const scheduleButtons = document.querySelectorAll('.community-button');
+  scheduleButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Smooth scroll to schedule section
+      const scheduleSection = document.querySelector('.schedule-section');
+      if (scheduleSection) {
+        scheduleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   });
-
-  // Toggle current dropdown
-  element.classList.toggle("active");
-  content.classList.toggle("open");
-  icon.classList.toggle("open");
 }
+
+// Add CSS animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+`;
+document.head.appendChild(style);
