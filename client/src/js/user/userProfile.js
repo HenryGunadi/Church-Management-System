@@ -1,137 +1,277 @@
-let originalData = {
-  name: "Nama Jemaat",
-  email: "jemaat@gereja.com",
-};
+import { loadUserNavbar, refreshNavbarProfile } from './userNavbar.js';
 
-let currentPhotoUrl =
-  "https://ui-avatars.com/api/?name=Nama+Jemaat&size=160&background=ff6b35&color=fff";
+const API_BASE_URL = 'http://localhost:3000';
+let originalData = {};
+let userId = null;
 
-// Handle photo upload
-document.getElementById("photoInput").addEventListener("change", function (e) {
-  const file = e.target.files[0];
-  if (file) {
-    if (file.size > 5000000) {
-      showMessage("Ukuran file terlalu besar. Maksimal 5MB", "error");
-      return;
-    }
+// Export init function
+export async function init() {
+  console.log('Initializing user profile page...');
+  
+  await loadUserNavbar();
+  await loadProfile();
+  initEventListeners();
+  
+  console.log('User profile page initialized');
+}
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      document.getElementById("profilePhoto").src = event.target.result;
-      currentPhotoUrl = event.target.result;
-      showMessage(
-        "✅ Foto berhasil dipilih. Jangan lupa simpan perubahan!",
-        "success"
-      );
+// Initialize event listeners
+function initEventListeners() {
+  const editBtn = document.getElementById('editBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const saveBtn = document.getElementById('saveBtn');
+
+  if (editBtn) editBtn.addEventListener('click', enableEdit);
+  if (cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
+  if (saveBtn) saveBtn.addEventListener('click', saveChanges);
+}
+
+// Load user profile from backend
+async function loadProfile() {
+  try {
+    console.log('Loading user profile...');
+    
+    const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+      credentials: 'include'
+    });
+
+    if (!verifyResponse.ok) throw new Error('Failed to verify user');
+
+    const verifyData = await verifyResponse.json();
+    const tokenUserId = verifyData.user.id;
+
+    const response = await fetch(`${API_BASE_URL}/api/user/view?id=${tokenUserId}`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) throw new Error('Failed to load profile');
+
+    const data = await response.json();
+    const user = data.user;
+
+    console.log('User data loaded:', user);
+
+    originalData = {
+      name: user.name || '',
+      email: user.email || '',
+      phone_number: user.phone_number || '',
+      address: user.address || '',
+      gender: user.gender ? user.gender.toLowerCase() : ''
     };
-    reader.readAsDataURL(file);
-  }
-});
+    userId = user.id;
 
+    updateProfileUI(user);
+
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    showMessage('Gagal memuat data profil. Silakan refresh halaman.', 'error');
+  }
+}
+
+// Update profile UI
+function updateProfileUI(user) {
+  // Avatar
+  const avatarEl = document.getElementById('userAvatarLarge');
+  if (avatarEl && user.name) {
+    const parts = user.name.trim().split(' ');
+    let initials = parts.length >= 2
+      ? parts[0][0] + parts[parts.length - 1][0]
+      : parts[0][0];
+    avatarEl.textContent = initials.toUpperCase();
+  }
+
+  // Display name/email
+  document.getElementById('displayName').textContent =
+    user.name || user.email?.split('@')[0] || 'User';
+  document.getElementById('displayEmail').textContent = user.email || '';
+
+  // Form fields
+  document.getElementById('fullName').value = user.name || '';
+  document.getElementById('email').value = user.email || '';
+  document.getElementById('phone').value = user.phone_number || '';
+  document.getElementById('address').value = user.address || '';
+
+  const normalizedGender = user.gender ? user.gender.toLowerCase() : '';
+  
+  if (normalizedGender === 'male') {
+    document.getElementById('genderMale').checked = true;
+    document.getElementById('genderFemale').checked = false;
+  } else if (normalizedGender === 'female') {
+    document.getElementById('genderMale').checked = false;
+    document.getElementById('genderFemale').checked = true;
+  } else {
+    document.getElementById('genderMale').checked = false;
+    document.getElementById('genderFemale').checked = false;
+  }
+}
+
+// Enable edit mode
 function enableEdit() {
-  ["name", "email"].forEach((id) => {
-    document.getElementById(id).disabled = false;
+  const fields = ['fullName', 'phone', 'address'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = false;
   });
-  document.getElementById("editBtn").style.display = "none";
-  document.getElementById("cancelBtn").style.display = "inline-block";
+
+  document.getElementById('genderMale').disabled = false;
+  document.getElementById('genderFemale').disabled = false;
+
+  // Email tetap disabled
+  document.getElementById('email').disabled = true;
+
+  document.getElementById('editBtn').style.display = 'none';
+  document.getElementById('cancelBtn').style.display = 'inline-block';
+  document.getElementById('saveBtn').style.display = 'inline-block';
+  
+  showMessage('Mode edit diaktifkan. Ubah data Anda dan simpan.', 'success');
 }
 
+// Cancel edit
 function cancelEdit() {
-  ["name", "email"].forEach((id) => {
-    const field = document.getElementById(id);
-    field.value = originalData[id] || "";
-    field.disabled = true;
-  });
-  document.getElementById("editBtn").style.display = "inline-block";
-  document.getElementById("cancelBtn").style.display = "none";
+  // Restore original
+  document.getElementById('fullName').value = originalData.name || '';
+  document.getElementById('email').value = originalData.email || '';
+  document.getElementById('phone').value = originalData.phone_number || '';
+  document.getElementById('address').value = originalData.address || '';
+
+  if (originalData.gender === 'male') {
+    document.getElementById('genderMale').checked = true;
+    document.getElementById('genderFemale').checked = false;
+  } else if (originalData.gender === 'female') {
+    document.getElementById('genderMale').checked = false;
+    document.getElementById('genderFemale').checked = true;
+  } else {
+    document.getElementById('genderMale').checked = false;
+    document.getElementById('genderFemale').checked = false;
+  }
+
+  // Disable again
+  const fields = ['fullName', 'email', 'phone', 'address'];
+  fields.forEach(id => document.getElementById(id).disabled = true);
+  document.getElementById('genderMale').disabled = true;
+  document.getElementById('genderFemale').disabled = true;
+
+  document.getElementById('editBtn').style.display = 'inline-block';
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('saveBtn').style.display = 'none';
+  
+  showMessage('Perubahan dibatalkan.', 'error');
 }
 
-function saveChanges() {
-  // Validasi data pribadi
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
+// Save changes
+async function saveChanges() {
+  try {
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    
+    const genderElement = document.querySelector('input[name="gender"]:checked');
+    const gender = genderElement ? genderElement.value : null; 
 
-  if (!name) {
-    showMessage("❌ Nama lengkap harus diisi", "error");
-    return;
-  }
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-  if (!email) {
-    showMessage("❌ Email harus diisi", "error");
-    return;
-  }
+    if (!name) return showMessage('Nama lengkap harus diisi', 'error');
+    if (!email) return showMessage('Email harus diisi', 'error');
 
-  // Validasi format email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    showMessage("❌ Format email tidak valid", "error");
-    return;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return showMessage('Format email tidak valid', 'error');
 
-  // Validasi password jika diisi
-  const currentPassword = document.getElementById("currentPassword").value;
-  const newPassword = document.getElementById("newPassword").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-
-  if (currentPassword || newPassword || confirmPassword) {
-    if (!currentPassword) {
-      showMessage("❌ Masukkan password saat ini", "error");
-      return;
+    if (currentPassword || newPassword || confirmPassword) {
+      if (!currentPassword) return showMessage('Masukkan password saat ini', 'error');
+      if (!newPassword) return showMessage('Masukkan password baru', 'error');
+      if (newPassword.length < 6) return showMessage('Password baru minimal 6 karakter', 'error');
+      if (newPassword !== confirmPassword) return showMessage('Konfirmasi password tidak cocok', 'error');
     }
-    if (!newPassword) {
-      showMessage("❌ Masukkan password baru", "error");
-      return;
+
+    const updateData = {
+      id: parseInt(userId),
+      name,
+      email,
+      phone_number: phone || null,
+      address: address || null,
+      gender 
+    };
+
+    if (newPassword) updateData.password = newPassword;
+
+    console.log('📤 Updating profile:', updateData);
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+    console.log('📤 Sending update request with data:', updateData);
+    
+    const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(updateData)
+    });
+
+    console.log('📥 Response status:', response.status);
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('❌ Error response:', error);
+      throw new Error(error.message || 'Gagal menyimpan perubahan');
     }
-    if (newPassword.length < 6) {
-      showMessage("❌ Password baru minimal 6 karakter", "error");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showMessage("❌ Konfirmasi password tidak cocok", "error");
-      return;
-    }
+
+    const result = await response.json();
+    console.log('✅ Backend response:', result);
+    console.log('✅ Updated user data:', result.user);
+
+    await loadProfile();
+    await refreshNavbarProfile();
+
+    originalData = {
+      name,
+      email,
+      phone_number: phone,
+      address,
+      gender: gender ? gender.toLowerCase() : ''
+    };
+
+    // Disable fields
+    const fields = ['fullName', 'email', 'phone', 'address'];
+    fields.forEach(id => document.getElementById(id).disabled = true);
+    document.getElementById('genderMale').disabled = true;
+    document.getElementById('genderFemale').disabled = true;
+
+    document.getElementById('editBtn').style.display = 'inline-block';
+    document.getElementById('cancelBtn').style.display = 'none';
+    document.getElementById('saveBtn').style.display = 'none';
+
+    // Clear password fields
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+    showMessage('✅ Perubahan berhasil disimpan! Tuhan memberkati.', 'success');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (error) {
+    console.error('❌ Error saving profile:', error);
+    showMessage(`Gagal menyimpan: ${error.message}`, 'error');
+  } finally {
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Semua Perubahan';
   }
-
-  // Simpan data
-  originalData.name = name;
-  originalData.email = email;
-
-  // Disable fields
-  ["name", "email"].forEach((id) => {
-    document.getElementById(id).disabled = true;
-  });
-
-  // Reset buttons
-  document.getElementById("editBtn").style.display = "inline-block";
-  document.getElementById("cancelBtn").style.display = "none";
-
-  // Reset password fields
-  document.getElementById("currentPassword").value = "";
-  document.getElementById("newPassword").value = "";
-  document.getElementById("confirmPassword").value = "";
-
-  showMessage("✅ Perubahan berhasil disimpan! Tuhan memberkati.", "success");
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Show message
 function showMessage(text, type) {
-  const messageEl = document.getElementById("message");
+  const messageEl = document.getElementById('message');
+  if (!messageEl) return;
+
   messageEl.textContent = text;
   messageEl.className = `message ${type} show`;
 
   setTimeout(() => {
-    messageEl.classList.remove("show");
+    messageEl.classList.remove('show');
   }, 5000);
-}
-
-export function init() {
-  loadProfile();
-}
-
-async function loadProfile() {
-  const res = await fetch("http://localhost:3000/api/users/me");
-  const user = await res.json();
-
-  document.getElementById("fullName").value = user.name;
-  document.getElementById("email").value = user.email;
 }

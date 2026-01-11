@@ -1,128 +1,101 @@
-<section>
+<section class="profile-page"></section>
+<div id="userNavbar"></div>
   <div class="container">
-    <div class="header">
-      <div class="header-icon">✝️</div>
-      <h1>Profil Jemaat</h1>
-      <p>Kelola informasi profil Anda di sistem gereja</p>
-    </div>
-
-    <div class="profile-section">
-      <div id="message" class="message"></div>
-
-      <!-- Photo Section -->
-      <div class="profile-photo-container">
-        <div class="photo-wrapper">
-          <img
-            id="profilePhoto"
-            src="https://ui-avatars.com/api/?name=Nama+Jemaat&size=160&background=ff6b35&color=fff"
-            alt="Foto Profil"
-            class="profile-photo"
-          />
-          <div
-            class="photo-overlay"
-            onclick="document.getElementById('photoInput').click()"
-          >
-            <span>📷</span>
-            <small>Ganti Foto</small>
-          </div>
-        </div>
-        <input
-          type="file"
-          id="photoInput"
-          class="file-input"
-          accept="image/*"
-        />
-        <button
-          class="btn-change-photo"
-          onclick="document.getElementById('photoInput').click()"
-        >
-          📸 Pilih Foto Profil
-        </button>
+      <div class="header">
+          <div class="header-icon">✝️</div>
+          <h1>Profil Jemaat</h1>
+          <p>Kelola informasi profil Anda di sistem gereja</p>
       </div>
 
-      <div class="info-box">
-        ℹ️ Klik tombol "Edit Profil" untuk mengubah informasi Anda. Jangan lupa
-        simpan perubahan setelah selesai.
+      <div class="profile-section">
+          <div id="message" class="message"></div>
+
+          <!-- Profile Avatar Section (No Upload) -->
+          <div class="profile-photo-container">
+              <div class="photo-wrapper">
+                  <div class="user-avatar-large" id="userAvatarLarge">U</div>
+              </div>
+              <h2 id="displayName">Loading...</h2>
+              <p id="displayEmail">Loading...</p>
+          </div>
+
+          <div class="info-box">
+              <i class="fas fa-info-circle"></i> Klik tombol "Edit Profil" untuk mengubah informasi Anda. Jangan lupa simpan perubahan setelah selesai.
+          </div>
+
+          <!-- Personal Info Card -->
+          <div class="card">
+              <h2 class="section-title">
+                  <i class="fas fa-user"></i> Informasi Pribadi
+              </h2>
+              <form id="personalForm">
+                  <div class="form-group">
+                      <label for="fullName">Nama Lengkap <span>*</span></label>
+                      <input type="text" id="fullName" placeholder="Masukkan nama lengkap" disabled required />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="email">Email <span>*</span></label>
+                      <input type="email" id="email" placeholder="Masukkan email" disabled required />
+                  </div>
+                  <div class="form-group">
+                    <label for="gender">Jenis Kelamin <span>*</span></label>
+                    <div class="gender-options">
+                      <label class="gender-option">
+                        <input type="radio" name="gender" id="genderMale" value="male" disabled />
+                        <span>Laki-laki</span>
+                      </label>
+                      <label class="gender-option">
+                        <input type="radio" name="gender" id="genderFemale" value="female" disabled />
+                        <span>Perempuan</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="phone">Nomor Telepon</label>
+                      <input type="tel" id="phone" placeholder="08xxx-xxxx-xxxx" disabled />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="address">Alamat</label>
+                      <textarea id="address" rows="3" placeholder="Masukkan alamat lengkap" disabled></textarea>
+                  </div>
+
+                  <div class="form-actions">
+                      <button type="button" class="btn btn-primary" id="editBtn">
+                          <i class="fas fa-edit"></i> Edit Profil
+                      </button>
+                      <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none">
+                          <i class="fas fa-times"></i> Batal
+                      </button>
+                  </div>
+              </form>
+          </div>
+
+          <!-- Change Password Section -->
+          <div class="password-section">
+              <h3><i class="fas fa-lock"></i> Ubah Password</h3>
+              <form id="passwordForm">
+                  <div class="form-group">
+                      <label for="currentPassword">Password Saat Ini <span>*</span></label>
+                      <input type="password" id="currentPassword" placeholder="Masukkan password saat ini" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="newPassword">Password Baru <span>*</span></label>
+                      <input type="password" id="newPassword" placeholder="Minimal 6 karakter" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="confirmPassword">Konfirmasi Password Baru <span>*</span></label>
+                      <input type="password" id="confirmPassword" placeholder="Ulangi password baru" />
+                  </div>
+              </form>
+          </div>
+
+          <button class="btn-save" id="saveBtn">
+              <i class="fas fa-save"></i> Simpan Semua Perubahan
+          </button>
       </div>
-
-      <!-- Personal Info Card -->
-      <div class="card">
-        <h2 class="section-title">📋 Informasi Pribadi</h2>
-        <form id="personalForm">
-          <div class="form-group">
-            <label for="name">Nama Lengkap <span>*</span></label>
-            <input type="text" id="fullName" value="Nama Jemaat" disabled />
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email <span>*</span></label>
-            <input type="email" id="email" value="jemaat@gereja.com" disabled />
-          </div>
-
-          <div class="form-actions">
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="editBtn"
-              onclick="enableEdit()"
-            >
-              ✏️ Edit Profil
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              id="cancelBtn"
-              onclick="cancelEdit()"
-              style="display: none"
-            >
-              ✖️ Batal
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Change Password Section -->
-      <div class="password-section">
-        <h3>🔒 Ubah Password</h3>
-        <form id="passwordForm">
-          <div class="form-group">
-            <label for="currentPassword"
-              >Password Saat Ini <span>*</span></label
-            >
-            <input
-              type="password"
-              id="currentPassword"
-              placeholder="Masukkan password saat ini"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="newPassword">Password Baru <span>*</span></label>
-            <input
-              type="password"
-              id="newPassword"
-              placeholder="Minimal 6 karakter"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="confirmPassword"
-              >Konfirmasi Password Baru <span>*</span></label
-            >
-            <input
-              type="password"
-              id="confirmPassword"
-              placeholder="Ulangi password baru"
-            />
-          </div>
-        </form>
-      </div>
-
-      <button class="btn-save" onclick="saveChanges()">
-        💾 Simpan Semua Perubahan
-      </button>
-    </div>
   </div>
-
-  <script src="../../js/user/userProfile.js" type="module"></script>
 </section>

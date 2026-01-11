@@ -51,7 +51,7 @@ const updateUserValidation = [
 
   body("gender")
     .optional()
-    .isIn(["Male", "Female"])
+    .isIn(["male", "female", "Male", "Female"])
     .withMessage("Gender must be Male or Female"),
 
   body("birth_date")

@@ -80,7 +80,10 @@ export const routes = {
 
   "/user/profile": {
     html: "/src/pages/user/userProfile.html",
-    css: "/src/css/user/userProfile.css",
+    css: [
+      "/src/css/user/userNavbar.css",
+      "/src/css/user/userProfile.css"
+    ],
     js: ["/src/js/user/userProfile.js"],
     meta: { requiresAuth: true, role: "member" },
   },

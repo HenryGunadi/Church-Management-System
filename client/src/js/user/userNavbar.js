@@ -20,7 +20,7 @@ export async function loadUserNavbar() {
     const html = await response.text();
     navbarContainer.innerHTML = html;
 
-    console.log('✅ User navbar loaded successfully');
+    console.log('User navbar loaded successfully');
 
     // Wait for next frame to ensure DOM is ready
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -28,7 +28,7 @@ export async function loadUserNavbar() {
     // Initialize navbar functionality
     initUserNavbar();
   } catch (error) {
-    console.error('❌ Error loading user navbar:', error);
+    console.error('Error loading user navbar:', error);
     
     // Fallback: render basic navbar
     navbarContainer.innerHTML = `
@@ -62,8 +62,8 @@ function initUserNavbar() {
     setupLogout();
     setActiveNavLink();
     
-    console.log('✅ User navbar initialized');
-  }, 100); // Small delay to ensure DOM is ready
+    console.log('User navbar initialized');
+  }, 100); 
 }
 
 // Mobile Menu Toggle
@@ -154,36 +154,60 @@ function handleScrollEffect() {
   });
 }
 
-// Load User Profile
+// ✅ Load User Profile - FIXED to fetch from database
 async function loadUserProfile() {
   try {
-    console.log('🔄 Loading user profile...');
+    console.log('Loading user profile for navbar...');
     
-    const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+    // First get user ID from token
+    const verifyResponse = await fetch(`${API_BASE_URL}/api/auth/verify`, {
       credentials: 'include'
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('✅ User data received:', data);
-      
-      if (data.user) {
-        updateProfileUI(data.user);
-      } else {
-        console.warn('⚠️ No user data in response');
-        updateProfileUI({
-          name: null,
-          email: 'guest@example.com'
-        });
-      }
-    } else {
-      console.warn('⚠️ Auth verify failed:', response.status);
-      // Use default if not authenticated
+    if (!verifyResponse.ok) {
+      console.warn(' Auth verify failed:', verifyResponse.status);
       updateProfileUI({
         name: null,
         email: 'guest@example.com'
       });
+      return;
     }
+
+    const verifyData = await verifyResponse.json();
+    console.log('Token verified:', verifyData);
+    
+    if (!verifyData.user || !verifyData.user.id) {
+      console.warn('No user ID in token');
+      updateProfileUI({
+        name: null,
+        email: verifyData.user?.email || 'guest@example.com'
+      });
+      return;
+    }
+
+    const userId = verifyData.user.id;
+
+    const userResponse = await fetch(`${API_BASE_URL}/api/user/view?id=${userId}`, {
+      credentials: 'include'
+    });
+
+    if (!userResponse.ok) {
+      console.warn('Failed to fetch user data from DB');
+      // Fallback to token data
+      updateProfileUI(verifyData.user);
+      return;
+    }
+
+    const userData = await userResponse.json();
+    console.log('Fresh user data from DB:', userData);
+
+    if (userData.user) {
+      updateProfileUI(userData.user);
+    } else {
+      console.warn('No user data in response');
+      updateProfileUI(verifyData.user);
+    }
+
   } catch (error) {
     console.error('Error loading user profile:', error);
     updateProfileUI({
@@ -193,15 +217,13 @@ async function loadUserProfile() {
   }
 }
 
-// Update Profile UI
 function updateProfileUI(userData) {
-  console.log('Updating profile UI with:', userData);
+  console.log('📝 Updating navbar profile UI with:', userData);
   
   const userNameEl = document.getElementById('userName');
   const avatarCircleEl = document.getElementById('userAvatarCircle');
 
   if (userNameEl) {
-    // Priority: name > email username > 'User'
     let displayName = 'User';
     
     if (userData.name && userData.name.trim() !== '') {
@@ -211,7 +233,7 @@ function updateProfileUI(userData) {
     }
     
     userNameEl.textContent = displayName;
-    console.log('✅ Display name set to:', displayName);
+    console.log('Navbar display name set to:', displayName);
   }
 
   if (avatarCircleEl) {
@@ -234,7 +256,7 @@ function updateProfileUI(userData) {
     }
     
     avatarCircleEl.textContent = initials.toUpperCase();
-    console.log('✅ Initials set to:', initials.toUpperCase());
+    console.log('Navbar initials set to:', initials.toUpperCase());
   }
 }
 
@@ -281,17 +303,14 @@ function setupLogout() {
           throw new Error('Logout failed');
         }
 
-        // Clear storage
         localStorage.clear();
         sessionStorage.clear();
 
-        // Redirect to home/login
         window.location.href = '/login';
       } catch (error) {
         console.error('Logout error:', error);
         alert('Failed to logout. Please try again.');
 
-        // Reset button
         logoutBtn.style.opacity = '1';
         logoutBtn.style.pointerEvents = 'auto';
       }
@@ -299,7 +318,11 @@ function setupLogout() {
   });
 }
 
-// Export init function
+export async function refreshNavbarProfile() {
+  console.log('Refreshing navbar profile...');
+  await loadUserProfile();
+}
+
 export function init() {
   loadUserNavbar();
 }
