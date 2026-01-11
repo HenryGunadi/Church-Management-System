@@ -1,120 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar Component -->
-        <div id="adminSidebar"></div>
+<section>
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div id="adminSidebar"></div>
 
-        <!-- Main Content -->
-        <main class="main-content">
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <h1 class="page-title">
+          <i class="fas fa-calendar-check"></i>
+          Event Attendance
+        </h1>
+        <button class="btn" id="exportBtn">
+          <i class="fas fa-download"></i>
+          Export Data
+        </button>
+      </header>
 
-            <header class="header">
-                <h1 class="page-title"><i class="fas fa-calendar-check"></i> Attendance</h1>
-                <button class="btn"><i class="fas fa-download"></i> Export</button>
-            </header>
+      <!-- Filter Card -->
+      <div class="card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="filterEventName">
+              <i class="fas fa-search"></i> Cari Event
+            </label>
+            <input 
+              type="text" 
+              id="filterEventName" 
+              placeholder="Cari nama event..."
+            />
+          </div>
+          <div class="filter-group">
+            <label for="filterEventType">
+              <i class="fas fa-filter"></i> Tipe Event
+            </label>
+            <select id="filterEventType">
+              <option value="">Semua Tipe</option>
+              <option value="event">Event</option>
+              <option value="worship">Worship</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filterDate">
+              <i class="fas fa-calendar"></i> Tanggal
+            </label>
+            <input type="date" id="filterDate" />
+          </div>
+        </div>
+      </div>
 
-            <!-- Filter -->
-            <div class="card">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label>Tanggal</label>
-                        <input type="date" id="filterDate">
-                    </div>
-                    <div class="filter-group">
-                        <label>Nama User</label>
-                        <input type="text" id="filterName" placeholder="Cari nama...">
-                    </div>
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select id="filterStatus">
-                            <option value="">Semua</option>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Alpha">Alpha</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+      <!-- Loading State -->
+      <div id="loadingState" class="loading-state" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Memuat data event...</p>
+      </div>
 
-            <!-- Table -->
-            <div class="card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Tanggal</th>
-                            <th>Masuk</th>
-                            <th>Keluar</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTable">
-                        <tr>
-                            <td>1</td>
-                            <td class="name">John Doe</td>
-                            <td class="date">2025-01-10</td>
-                            <td>08:05</td>
-                            <td>16:45</td>
-                            <td><span class="status hadir">Hadir</span></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td class="name">Siti Aisyah</td>
-                            <td class="date">2025-01-10</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="status izin">Izin</span></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td class="name">Agus Wijaya</td>
-                            <td class="date">2025-01-10</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td><span class="status alpha">Alpha</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      <!-- Events Grid -->
+      <div class="events-grid" id="eventsGrid">
+        <!-- Event cards will be dynamically loaded here -->
+      </div>
 
-        </main>
-    </div>    
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fas fa-calendar-times"></i>
+        <p>Tidak ada event ditemukan</p>
+        <small>Coba ubah filter pencarian Anda</small>
+      </div>
+    </main>
+  </div>
 
-    <script>
-    const filterName = document.getElementById('filterName');
-    const filterStatus = document.getElementById('filterStatus');
-    const filterDate = document.getElementById('filterDate');
-    const rows = document.querySelectorAll('#attendanceTable tr');
+  <!-- Modal for Attendance Details -->
+  <div class="modal" id="attendanceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalEventName">Detail Absensi</h2>
+        <button class="modal-close" id="modalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="event-info" id="eventInfo">
+          <!-- Event info will be loaded here -->
+        </div>
+        
+        <div class="attendance-stats" id="attendanceStats">
+          <!-- Stats will be loaded here -->
+        </div>
 
-    function filterTable() {
-        const nameVal = filterName.value.toLowerCase();
-        const statusVal = filterStatus.value;
-        const dateVal = filterDate.value;
+        <div class="attendance-table-container">
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Waktu Check-in</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <!-- Attendance data will be loaded here -->
+            </tbody>
+          </table>
+        </div>
 
-        rows.forEach(row => {
-            const name = row.querySelector('.name').textContent.toLowerCase();
-            const status = row.querySelector('.status').textContent;
-            const date = row.querySelector('.date').textContent;
-
-            let show = true;
-            if (nameVal && !name.includes(nameVal)) show = false;
-            if (statusVal && status !== statusVal) show = false;
-            if (dateVal && date !== dateVal) show = false;
-
-            row.style.display = show ? '' : 'none';
-        });
-    }
-
-    filterName.addEventListener('input', filterTable);
-    filterStatus.addEventListener('change', filterTable);
-    filterDate.addEventListener('change', filterTable);
-    </script>
-</body>
-</html>
+        <div class="empty-attendance" id="emptyAttendance" style="display: none;">
+          <i class="fas fa-user-clock"></i>
+          <p>Belum ada yang hadir</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="exportEventBtn">
+          <i class="fas fa-download"></i> Export Absensi Event Ini
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
