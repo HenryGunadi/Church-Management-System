@@ -35,19 +35,21 @@ class AuthRouter {
       }
     );
   }
-  
+
   async verify(req, res) {
     try {
-      const token = req.cookies?.auth_token; 
+      const token = req.cookies?.auth_token;
       if (!token) {
-        return res.status(401).json({ authenticated: false, message: "No token" });
+        return res
+          .status(401)
+          .json({ authenticated: false, message: "No token" });
       }
 
       const decoded = jwt.verify(token, config.auth.jwt_secret);
 
       res.status(200).json({
         authenticated: true,
-        user: decoded, 
+        user: decoded,
       });
     } catch (err) {
       res.status(401).json({
@@ -58,8 +60,8 @@ class AuthRouter {
   }
 
   async login(req, res) {
-  try {
-    const errors = validationResult(req);
+    try {
+      const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
@@ -91,7 +93,7 @@ class AuthRouter {
   async register(req, res) {
     try {
       // Validate payload
-      console.log("register terpanggil")
+      console.log("register terpanggil");
       console.log(req.body);
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

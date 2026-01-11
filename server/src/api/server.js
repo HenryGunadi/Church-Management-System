@@ -19,10 +19,11 @@ class Server {
     this.host = host || "0.0.0.0";
     this.db = db;
 
+    const frontendIP = "http://192.168.100.2:5173"; // your computer LAN IP
     // Middleware
     this.app.use(
       cors({
-        origin: true,
+        origin: frontendIP,
         credentials: true,
       })
     );
@@ -73,8 +74,22 @@ class Server {
 
   run() {
     this.app.listen(this.port, this.host, () => {
-      const displayHost =
-        this.host === "0.0.0.0" ? require("os").networkInterfaces() : this.host;
+      let displayHost = this.host;
+
+      if (this.host === "0.0.0.0") {
+        const nets = os.networkInterfaces();
+        for (const name of Object.keys(nets)) {
+          for (const net of nets[name]) {
+            // IPv4 & not internal
+            if (net.family === "IPv4" && !net.internal) {
+              displayHost = net.address;
+              break;
+            }
+          }
+          if (displayHost !== "0.0.0.0") break;
+        }
+      }
+
       console.log(`Server running at http://${displayHost}:${this.port}`);
     });
   }

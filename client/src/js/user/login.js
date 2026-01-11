@@ -138,7 +138,7 @@ export function init() {
 
         if (data.user?.role === "admin") {
           history.pushState(null, "", "/admin/dashboard");
-        } else if(data.user?.role === "member") {
+        } else if (data.user?.role === "member") {
           history.pushState(null, "", "/user/dashboard");
         }
         window.dispatchEvent(new PopStateEvent("popstate"));
@@ -155,7 +155,10 @@ export function init() {
       }
     } catch (err) {
       console.error("Login error:", err);
-      showError(emailError, "An error occurred. Please try again.");
+      showError(
+        emailError,
+        `An error occurred. Please try again. : ${err.message}`
+      );
       submitBtn.disabled = false;
       submitBtn.textContent = "Sign In";
     }

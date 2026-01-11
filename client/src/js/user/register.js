@@ -243,7 +243,11 @@ export function init() {
       }
     } catch (err) {
       console.error(err);
-      showError(emailInput, emailError, "An error occurred. Please try again.");
+      showError(
+        emailInput,
+        emailError,
+        `An error occurred. Please try again : ${err.messagea}`
+      );
       submitBtn.disabled = false;
       submitBtn.textContent = "Create Account";
     }
