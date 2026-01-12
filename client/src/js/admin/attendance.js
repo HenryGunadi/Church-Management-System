@@ -15,9 +15,9 @@ export async function init() {
 
     await initAttendance();
 
-    console.log("✅ Attendance page initialized");
+    console.log("Attendance page initialized");
   } catch (error) {
-    console.error("❌ Initialization error:", error);
+    console.error("Initialization error:", error);
     showMessage("Gagal menginisialisasi halaman", "error");
   }
 }
@@ -128,7 +128,7 @@ async function loadEvents() {
     const data = await response.json();
     allEvents = data.data || [];
 
-    console.log(`✅ Loaded ${allEvents.length} events`);
+    console.log(`Loaded ${allEvents.length} events`);
 
     if (loadingState) loadingState.style.display = "none";
 
@@ -145,7 +145,7 @@ async function loadEvents() {
       renderEvents(allEvents);
     }
   } catch (error) {
-    console.error("❌ Error loading events:", error);
+    console.error("Error loading events:", error);
 
     if (loadingState) loadingState.style.display = "none";
 
@@ -387,6 +387,35 @@ async function loadAttendanceData(event) {
 
     let attendanceData = [];
 
+    // Pastikan event punya schedule
+    if (!event.schedules || event.schedules.length === 0) {
+      throw new Error('No schedule found for this event');
+    }
+
+    const scheduleId = event.schedules[0].id;
+    console.log("🎯 Schedule ID:", scheduleId);
+
+    // Fetch attendance records dari database
+    const attendanceResponse = await fetch(`${API_BASE_URL}/attendance/schedule/${scheduleId}`, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+
+    if (!attendanceResponse.ok) {
+      throw new Error('Failed to fetch attendance records');
+    }
+
+    // ✅ Perbaikan di sini: akses data array dari attendanceRecords.data
+    const attendanceRecords = await attendanceResponse.json();
+    const checkedInMembers = Array.isArray(attendanceRecords?.data)
+      ? attendanceRecords.data
+      : [];
+
+    console.log(`✅ Found ${checkedInMembers.length} attendance records`);
+
     // LOGIC BERBEDA UNTUK WORSHIP vs EVENT
     if (event.event_type === 'worship') {
       // WORSHIP: Ambil SEMUA member dari database
@@ -394,6 +423,9 @@ async function loadAttendanceData(event) {
       
       const membersResponse = await fetch(`${API_BASE_URL}/user/view`, {
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (!membersResponse.ok) {
@@ -401,18 +433,11 @@ async function loadAttendanceData(event) {
       }
 
       const membersData = await membersResponse.json();
-      const allMembers = Array.isArray(membersData.user) ? membersData.user : [membersData.user];
+      const allMembers = Array.isArray(membersData.user)
+        ? membersData.user
+        : [membersData.user];
       
       console.log(`✅ Loaded ${allMembers.length} members`);
-
-      // Fetch attendance records for this event
-      // TODO: Replace with actual attendance API endpoint
-      // const attendanceResponse = await fetch(`${API_BASE_URL}/attendance/event/${event.id}`, {
-      //   credentials: "include",
-      // });
-      
-      // For now, use empty array (no one has checked in yet)
-      const checkedInMembers = []; // This should come from API
 
       // Create attendance data for ALL members
       attendanceData = allMembers.map(member => {
@@ -422,45 +447,32 @@ async function loadAttendanceData(event) {
           user_id: member.id,
           user_name: member.name,
           gender: member.gender || 'Unknown',
-          check_in_time: checkedIn ? checkedIn.check_in_time : null,
-          status: checkedIn ? 'hadir' : 'tidak hadir'
+          check_in_time: checkedIn ? checkedIn.scanned_at : null,
+          status: checkedIn ? 'hadir' : 'tidak hadir',
         };
       });
 
     } else {
-      // EVENT: Ambil hanya yang REGISTER untuk event ini
-      console.log('📥 Fetching registered users for event...');
+      // EVENT: Ambil dari attendance records (yang sudah register dan scan)
+      console.log('📥 Processing event attendance...');
       
-      // TODO: Replace with actual registration API endpoint
-      // const registrationResponse = await fetch(`${API_BASE_URL}/registration/event/${event.id}`, {
-      //   credentials: "include",
-      // });
+      attendanceData = checkedInMembers.map(record => ({
+        user_id: record.user_id,
+        user_name: record.user_name || `User ${record.user_id}`,
+        gender: record.user_gender || 'Unknown',
+        check_in_time: record.scanned_at,
+        status:
+          record.status === 'Present'
+            ? 'hadir'
+            : record.status === 'Registered'
+            ? 'terdaftar'
+            : 'tidak hadir',
+      }));
       
-      // For now, use empty array
-      const registeredUsers = []; // This should come from API
-      
-      // Fetch attendance records
-      const checkedInUsers = []; // This should come from API
-      
-      // Create attendance data only for registered users
-      attendanceData = registeredUsers.map(user => {
-        const checkedIn = checkedInUsers.find(a => a.user_id === user.id);
-        
-        return {
-          user_id: user.id,
-          user_name: user.name,
-          gender: user.gender || 'Unknown',
-          check_in_time: checkedIn ? checkedIn.check_in_time : null,
-          status: checkedIn ? 'hadir' : 'tidak hadir'
-        };
-      });
+      console.log(`✅ Processed ${attendanceData.length} event attendance records`);
     }
 
-    // Store for filtering
-    allAttendanceData = attendanceData;
-
-    console.log(`✅ Loaded ${attendanceData.length} attendance records`);
-
+    // ✅ Render hasil ke tabel
     if (attendanceData.length === 0) {
       if (attendanceTableBody) attendanceTableBody.innerHTML = "";
       if (emptyAttendance) emptyAttendance.style.display = "block";
@@ -469,11 +481,7 @@ async function loadAttendanceData(event) {
     }
 
     if (emptyAttendance) emptyAttendance.style.display = "none";
-
-    // Render table with initial filter (all)
-    renderAttendanceTable(attendanceData, 'all');
-    
-    // Update stats
+    renderAttendanceTable(attendanceData, "all");
     updateStats(attendanceData, attendanceStats);
 
   } catch (error) {
@@ -488,6 +496,7 @@ async function loadAttendanceData(event) {
     }
   }
 }
+
 
 function renderAttendanceTable(attendanceData, genderFilter = 'all') {
   const attendanceTableBody = document.getElementById("attendanceTableBody");
