@@ -3,8 +3,24 @@ import { loadSidebar } from "./adminSidebar.js";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 let currentEditId = null;
 
+// Define API endpoints - Try different endpoint patterns
+const API_ENDPOINTS = {
+  // Try these variations:
+  getUsers: `${API_BASE_URL}/user/view`,     // Original
+  // getUsers: `${API_BASE_URL}/users/view`,    // Alternative 1
+  // getUsers: `${API_BASE_URL}/user`,          // Alternative 2
+  createUser: `${API_BASE_URL}/user/create`,
+  updateUser: `${API_BASE_URL}/user/update`,
+  viewUser: (id) => `${API_BASE_URL}/user/view?id=${id}`,
+  deleteUser: (id, email) => `${API_BASE_URL}/user/delete/${id}/${encodeURIComponent(email)}`,
+};
+
 // Export init function untuk dipanggil oleh router
 export async function init() {
+  console.log('🚀 Initializing users page...');
+  console.log('📡 API_BASE_URL:', API_BASE_URL);
+  console.log('📡 API_ENDPOINTS:', API_ENDPOINTS);
+  
   // Load sidebar first
   await loadSidebar();
 
@@ -69,17 +85,43 @@ async function loadUsers() {
       credentials: "include",
     });
 
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response ok:', response.ok);
+    console.log('📡 Response headers:', response.headers);
+
+    // Get raw response text first for debugging
+    const responseText = await response.text();
+    console.log('📦 Raw response (first 500 chars):', responseText.substring(0, 500));
+
     if (!response.ok) {
-      throw new Error("Failed to fetch users");
+      console.error('❌ Response not OK. Status:', response.status);
+      console.error('❌ Response text:', responseText);
+      throw new Error(`Failed to fetch users: ${response.status}`);
     }
 
-    const data = await response.json();
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log('📦 Parsed JSON data:', data);
+    } catch (parseError) {
+      console.error('❌ Failed to parse JSON:', parseError);
+      console.error('❌ Response was:', responseText);
+      throw new Error('Response is not valid JSON');
+    }
+    console.log('📦 Raw response:', data);
+    console.log('📦 data.user:', data.user);
+    console.log('📦 Is Array?', Array.isArray(data.user));
+    
     // Backend returns { message, user } or array of users
     const users = Array.isArray(data.user)
       ? data.user
       : data.user
       ? [data.user]
       : [];
+
+    console.log('📦 Final users array:', users);
+    console.log('📦 Users count:', users.length);
 
     renderUsersTable(users);
   } catch (error) {
@@ -229,7 +271,7 @@ async function handleSubmit(e) {
     let response;
 
     if (currentEditId) {
-      // Update user
+      // Update user - ✅ FIXED: Gunakan API_ENDPOINTS
       formData.id = currentEditId;
       response = await fetch(`${API_BASE_URL}/user/update`, {
         method: "PATCH",
@@ -394,7 +436,7 @@ async function deleteUser(userId, userEmail) {
   }
 
   try {
-    // Backend expects DELETE /delete/:id/:email
+    // ✅ FIXED: Gunakan API_ENDPOINTS
     const response = await fetch(
       `${API_BASE_URL}/user/delete/${userId}/${encodeURIComponent(userEmail)}`,
       {

@@ -166,7 +166,7 @@ class EventService {
         const eventSchedules = schedules
           .filter((schedule) => schedule.event_id === event.id)
           .map((schedule) => ({
-            schedule_id: schedule.id,
+            id: schedule.id,
             start_time: schedule.start_time,
             end_time: schedule.end_time,
             worship_topic: schedule.worship_topic,

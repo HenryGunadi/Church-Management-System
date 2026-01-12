@@ -26,10 +26,11 @@ class UserRouter {
     );
 
     this.router.patch(
-      "/profile",
-      authenticate, 
-      updateUserValidation, 
-      this.updateProfile.bind(this)
+      "/update",
+      authenticate,
+      checkRole("admin"),
+      updateUserValidation,
+      this.update.bind(this)
     );
 
     this.router.delete(
@@ -59,32 +60,6 @@ class UserRouter {
       const user = await this.userService.create(req.body);
 
       res.status(201).json({ message: "User created successfully.", user });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-
-  async updateProfile(req, res) {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const loggedInUser = req.user; // dari middleware authenticate
-      const payload = req.body;
-
-      // pastikan user hanya update dirinya sendiri
-      if (payload.id !== loggedInUser.id) {
-        return res.status(403).json({ message: "Access denied: cannot update another user's data" });
-      }
-
-      const updatedUser = await this.userService.update(payload);
-
-      res.status(200).json({
-        message: "Profile updated successfully",
-        user: updatedUser,
-      });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

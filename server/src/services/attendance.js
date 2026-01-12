@@ -6,11 +6,9 @@ class AttendanceService {
 
   /**
    * Register user for a specific schedule/session
-   * Users register for a SESSION, not just an event
    */
   async register(userId, scheduleId) {
     try {
-      // Check if schedule exists and get event info
       const schedule = await this.db("event_schedules")
         .where({ "event_schedules.id": scheduleId })
         .join("events", "event_schedules.event_id", "=", "events.id")
@@ -21,7 +19,6 @@ class AttendanceService {
         throw new Error("Schedule not found");
       }
 
-      // Check if user already registered for this schedule
       const existing = await this.db("attendance")
         .where({ user_id: userId, schedule_id: scheduleId })
         .first();
@@ -30,7 +27,6 @@ class AttendanceService {
         throw new Error("You are already registered for this session");
       }
 
-      // Register user with "Registered" status (not Present yet)
       const [id] = await this.db("attendance").insert({
         user_id: userId,
         schedule_id: scheduleId,
@@ -51,13 +47,11 @@ class AttendanceService {
 
   /**
    * Scan QR code to mark attendance
-   * QR tokens are linked to schedule_id
    */
   async scanQR(userId, token) {
     const trx = await this.db.transaction();
 
     try {
-      // Verify token and get schedule info
       const tokenData = await trx("event_tokens")
         .where({ token })
         .join(
@@ -81,13 +75,11 @@ class AttendanceService {
 
       const scheduleId = tokenData.schedule_id;
 
-      // Check if user already has attendance record for this schedule
       const existing = await trx("attendance")
         .where({ user_id: userId, schedule_id: scheduleId })
         .first();
 
       if (existing) {
-        // If status is "Registered", update to "Present" (attended)
         if (existing.status === "Registered") {
           await trx("attendance").where({ id: existing.id }).update({
             status: "Present",
@@ -103,7 +95,6 @@ class AttendanceService {
           };
         }
 
-        // Already Present
         if (existing.status === "Present") {
           await trx.commit();
           return {
@@ -113,7 +104,6 @@ class AttendanceService {
           };
         }
 
-        // If Absent, update to Present
         if (existing.status === "Absent") {
           await trx("attendance").where({ id: existing.id }).update({
             status: "Present",
@@ -130,7 +120,6 @@ class AttendanceService {
         }
       }
 
-      // No existing record - create new with Present status
       const [id] = await trx("attendance").insert({
         user_id: userId,
         schedule_id: scheduleId,
@@ -156,7 +145,6 @@ class AttendanceService {
 
   /**
    * Get user's attendance history
-   * Shows all sessions the user has attended
    */
   async getUserAttendance(userId) {
     try {
@@ -193,33 +181,43 @@ class AttendanceService {
   }
 
   /**
-   * Get all attendance for a specific schedule/session (Admin)
+   * ✅ FIXED: Get all attendance for a specific schedule/session (Admin)
+   * NOW INCLUDES: gender, proper formatting, and nested user object
    */
   async getScheduleAttendance(scheduleId) {
     try {
-      const attendance = await this.db("attendance")
-        .where({ schedule_id: scheduleId })
-        .join("users", "attendance.user_id", "=", "users.id")
-        .select(
-          "attendance.id as attendance_id",
-          "attendance.status",
-          "attendance.scanned_at",
-          "users.id as user_id",
-          "users.name",
-          "users.email",
-          "users.phone"
-        )
-        .orderBy("attendance.scanned_at", "desc");
+      if (!scheduleId) {
+        throw new Error("Schedule ID is required");
+      }
 
-      return attendance;
+      console.log("📡 Fetching attendance for schedule:", scheduleId);
+
+      // Pastikan tabel/kolom benar: attendance.schedule_id, users.id, users.name, users.gender
+      const records = await this.db("attendance")
+        .leftJoin("users", "attendance.user_id", "users.id")
+        .select(
+          "attendance.id",
+          "attendance.schedule_id",
+          "attendance.user_id",
+          "attendance.scanned_at",
+          "attendance.status",
+          "users.name as user_name",
+          "users.gender as user_gender"
+        )
+        .where("attendance.schedule_id", scheduleId);
+
+      console.log(`✅ Found ${records.length} attendance records`);
+
+      return records;
     } catch (err) {
-      console.error("Get schedule attendance error:", err);
-      throw new Error("Failed to retrieve schedule attendance");
+      console.error("❌ getScheduleAttendance error:", err);
+      throw new Error(`Failed to fetch attendance records: ${err.message}`);
     }
   }
 
   /**
-   * Get all attendance for an event (all sessions combined) (Admin)
+   * ✅ FIXED: Get all attendance for an event (all sessions combined) (Admin)
+   * NOW INCLUDES: gender, proper formatting, and nested user object
    */
   async getEventAttendance(eventId) {
     try {
@@ -237,16 +235,34 @@ class AttendanceService {
           "attendance.status",
           "attendance.scanned_at",
           "attendance.schedule_id",
+          "attendance.user_id",
           "event_schedules.start_time",
           "event_schedules.end_time",
-          "users.id as user_id",
-          "users.name",
-          "users.email",
-          "users.phone"
+          "users.name as user_name",
+          "users.email as user_email",
+          "users.phone as user_phone",
+          "users.gender as user_gender"  // ✅ ADDED: gender field
         )
         .orderBy("event_schedules.start_time", "desc");
 
-      return attendance;
+      // ✅ Format response dengan nested user object
+      return attendance.map(record => ({
+        id: record.attendance_id,
+        user_id: record.user_id,
+        schedule_id: record.schedule_id,
+        scanned_at: record.scanned_at,
+        status: record.status,
+        start_time: record.start_time,
+        end_time: record.end_time,
+        user_name: record.user_name,      // ✅ Flat untuk backward compatibility
+        user_gender: record.user_gender,  // ✅ Flat untuk backward compatibility
+        user: {                            // ✅ Nested untuk new format
+          name: record.user_name,
+          email: record.user_email,
+          phone: record.user_phone,
+          gender: record.user_gender
+        }
+      }));
     } catch (err) {
       console.error("Get event attendance error:", err);
       throw new Error("Failed to retrieve event attendance");
@@ -381,7 +397,6 @@ class AttendanceService {
     const trx = await this.db.transaction();
 
     try {
-      // 1. Find the token and get schedule_id
       const eventToken = await trx("event_tokens").where({ token }).first();
 
       if (!eventToken) {
@@ -390,7 +405,6 @@ class AttendanceService {
 
       const scheduleId = eventToken.schedule_id;
 
-      // 2. Get event type to determine if registration is required
       const schedule = await trx("event_schedules")
         .where({ "event_schedules.id": scheduleId })
         .join("events", "event_schedules.event_id", "=", "events.id")
@@ -408,7 +422,6 @@ class AttendanceService {
         throw new Error("Event schedule not found.");
       }
 
-      // 3. Check if user already has an attendance record
       let attendance = await trx("attendance")
         .where({
           user_id: userId,
@@ -416,11 +429,8 @@ class AttendanceService {
         })
         .first();
 
-      // 4. Handle different event types
       if (schedule.event_type === "worship") {
-        // WORSHIP: Auto-register if not exists, or check if already present
         if (!attendance) {
-          // Auto-register for worship
           await trx("attendance").insert({
             user_id: userId,
             schedule_id: scheduleId,
@@ -435,12 +445,10 @@ class AttendanceService {
             event: formatEventResponse(schedule),
           };
         } else if (attendance.status === "Present") {
-          // Already checked in
           throw new Error(
             "You have already checked in for this worship service."
           );
         } else {
-          // Was registered but not present, update to Present
           await trx("attendance")
             .where({
               user_id: userId,
@@ -457,7 +465,6 @@ class AttendanceService {
           };
         }
       } else {
-        // REGULAR EVENTS (event/other): Must be registered first
         if (!attendance) {
           throw new Error(
             "You are not registered for this event. Please register first before checking in."
@@ -468,7 +475,6 @@ class AttendanceService {
           throw new Error("You have already checked in for this event.");
         }
 
-        // Update status to Present
         await trx("attendance")
           .where({
             user_id: userId,

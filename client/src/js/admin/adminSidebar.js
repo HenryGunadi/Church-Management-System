@@ -6,17 +6,24 @@ export async function loadSidebar() {
   if (!sidebarContainer) return;
 
   try {
-    // Load sidebar HTML
     const response = await fetch("/components/adminSidebar.html");
     const html = await response.text();
-    sidebarContainer.innerHTML = html;
 
-    // Initialize sidebar functionality
-    initSidebar();
+    // Jika sidebar belum pernah dimuat sebelumnya → isi HTML baru
+    if (!sidebarContainer.dataset.loaded) {
+      sidebarContainer.innerHTML = html;
+      sidebarContainer.dataset.loaded = "true"; // flag agar tidak reload tiap kali
+      initSidebar(); // ✅ pasang listener pertama kali
+    } else {
+      // Jika sudah ada, cukup update active menu
+      setActiveMenu();
+    }
+
   } catch (error) {
     console.error("Error loading sidebar:", error);
   }
 }
+
 
 function initSidebar() {
   // Set active menu based on current path
@@ -30,6 +37,14 @@ function initSidebar() {
 
   // Setup menu click handlers
   setupMenuHandlers();
+  window.addEventListener("popstate", setActiveMenu);
+
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("[data-link]");
+    if (link) {
+      setTimeout(setActiveMenu, 100);
+    }
+  });
 }
 
 // Set active menu item based on current URL
@@ -92,47 +107,42 @@ function setupLogout() {
   if (!logoutBtn) return;
 
   logoutBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ✅ Cegah URL berubah ke #
+    e.stopPropagation();
 
-    if (confirm("Apakah Anda yakin ingin logout?")) {
-      try {
-        // Show loading state
-        logoutBtn.style.opacity = "0.6";
-        logoutBtn.style.pointerEvents = "none";
+    const confirmLogout = confirm("Apakah Anda yakin ingin logout?");
+    if (!confirmLogout) return;
 
-        // Call logout API
-        const response = await fetch(`${API_URL}/auth/logout`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+    try {
+      // Optional: tampilkan loading
+      logoutBtn.style.opacity = "0.6";
+      logoutBtn.style.pointerEvents = "none";
 
-        if (!response.ok) {
-          throw new Error("Logout failed");
-        }
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
 
-        const result = await response.json();
-        console.log("Logout successful:", result);
+      if (!response.ok) throw new Error("Logout failed");
 
-        // Clear any local storage/session storage
-        localStorage.clear();
-        sessionStorage.clear();
+      // Bersihkan session/local storage
+      localStorage.clear();
+      sessionStorage.clear();
 
-        // Redirect to login page
-        window.location.href = "/login";
-      } catch (error) {
-        console.error("Logout error:", error);
-        alert("Terjadi kesalahan saat logout. Silakan coba lagi.");
-
-        // Reset button state
-        logoutBtn.style.opacity = "1";
-        logoutBtn.style.pointerEvents = "auto";
-      }
+      // Redirect ke halaman login
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Gagal logout, silakan coba lagi.");
+    } finally {
+      // Balikin tampilan tombol
+      logoutBtn.style.opacity = "1";
+      logoutBtn.style.pointerEvents = "auto";
     }
   });
 }
+
 
 // Setup menu click handlers
 function setupMenuHandlers() {
