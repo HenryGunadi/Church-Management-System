@@ -1,11 +1,22 @@
-// src/js/user/event.js
+import { loadUserNavbar } from "./userNavbar.js";
+import { loadUserFooter } from "./userFooter.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function init() {
   console.log("🎉 Initializing events page...");
+
+  // Load navbar and footer
+  await loadUserNavbar();
+  await loadUserFooter();
+
+  // Load events
   await loadEvents();
+
+  // Setup modal
   setupModal();
+
+  console.log("✅ Events page initialized");
 }
 
 let currentUser = null;
@@ -75,8 +86,8 @@ function displayEvents(events) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📅</div>
-        <h3>No events available</h3>
-        <p>Check back soon for upcoming events!</p>
+        <h3>No Upcoming Events</h3>
+        <p>Stay tuned for exciting events and gatherings!</p>
       </div>
     `;
     return;
@@ -98,14 +109,14 @@ function displayEvents(events) {
             day: "numeric",
             year: "numeric",
           })
-        : "TBA";
+        : "Date TBA";
 
       const timeStr = startTime
         ? startTime.toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
           })
-        : "TBA";
+        : "Time TBA";
 
       return `
         <div class="event-card" onclick="openEventModal(${event.event_id})">
@@ -129,36 +140,18 @@ function displayEvents(events) {
             <div class="event-type">${event.event_type}</div>
             <h3 class="event-title">${event.event_name}</h3>
             <div class="event-meta">
-              <div class="meta-item">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M13 2H3C2.4 2 2 2.4 2 3V13C2 13.6 2.4 14 3 14H13C13.6 14 14 13.6 14 13V3C14 2.4 13.6 2 13 2Z" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M11 1V3M5 1V3M2 6H14" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                ${dateStr}
-              </div>
-              <div class="meta-item">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M8 4V8L11 10" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                ${timeStr}
-              </div>
-              <div class="meta-item">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 14C8 14 13 10 13 6C13 3.8 11.2 2 9 2C6.8 2 5 3.8 5 6C5 10 8 14 8 14Z" stroke="currentColor" stroke-width="1.5"/>
-                  <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
-                </svg>
-                ${event.place}
-              </div>
+              <div class="meta-item">📅 ${dateStr}</div>
+              <div class="meta-item">🕐 ${timeStr}</div>
+              <div class="meta-item">📍 ${event.place}</div>
             </div>
             ${
               event.speaker
-                ? `<div class="event-speaker">🎤 ${event.speaker}</div>`
+                ? `<div class="event-speaker">🎤 Speaker: ${event.speaker}</div>`
                 : ""
             }
             ${
               worshipTopic
-                ? `<div class="event-topic">📖 ${worshipTopic}</div>`
+                ? `<div class="event-topic">📖 Topic: ${worshipTopic}</div>`
                 : ""
             }
           </div>
@@ -279,21 +272,11 @@ window.openEventModal = function (eventId) {
     registerBtn.className = "btn-register disabled";
     registerBtn.disabled = true;
   } else if (status === "attended") {
-    registerBtn.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M16.7 5L7.5 14.2L3.3 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Attended
-    `;
+    registerBtn.innerHTML = "✓ Attended";
     registerBtn.className = "btn-register attended";
     registerBtn.disabled = true;
   } else if (status === "registered") {
-    registerBtn.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M16.7 5L7.5 14.2L3.3 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Registered
-    `;
+    registerBtn.innerHTML = "✓ Registered";
     registerBtn.className = "btn-register registered";
     registerBtn.disabled = true;
   } else {
@@ -374,7 +357,7 @@ function showError(message) {
     container.innerHTML = `
       <div class="empty-state error">
         <div class="empty-icon">⚠️</div>
-        <h3>Error</h3>
+        <h3>Oops!</h3>
         <p>${message}</p>
       </div>
     `;
@@ -401,4 +384,11 @@ function showNotification(message, type) {
     notification.classList.remove("show");
     setTimeout(() => notification.remove(), 300);
   }, 3000);
+}
+
+// Auto-initialize
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }

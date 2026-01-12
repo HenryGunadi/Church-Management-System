@@ -1,45 +1,94 @@
-<section>
+<section class="worship-page">
+  <!-- Navbar placeholder -->
   <div id="userNavbar"></div>
 
-  <!-- Hero Slider -->
+  <!-- Hero Slider Section -->
   <div class="hero-slider">
+    <div class="hero-background"></div>
     <div class="slider-container">
-      <button class="slider-nav prev" onclick="changeSlide(-1)">‹</button>
+      <button
+        class="slider-nav prev"
+        onclick="changeSlide(-1)"
+        aria-label="Previous slide"
+      >
+        ‹
+      </button>
+
       <div class="slide-wrapper">
         <div class="slide">
+          <div class="slide-badge">This Week's Worship</div>
           <h2 id="slideTitle">"We RISE"</h2>
           <h3 id="slideSubtitle">Loading...</h3>
-          <p class="date" id="slideDate">Loading...</p>
-          <p id="slideDescription">Loading worship schedules...</p>
+          <p class="slide-date" id="slideDate">Loading...</p>
+          <p class="slide-description" id="slideDescription">
+            Loading worship schedules...
+          </p>
         </div>
       </div>
-      <button class="slider-nav next" onclick="changeSlide(1)">›</button>
+
+      <button
+        class="slider-nav next"
+        onclick="changeSlide(1)"
+        aria-label="Next slide"
+      >
+        ›
+      </button>
     </div>
     <div class="slide-indicators" id="slideIndicators"></div>
+
+    <!-- Wave Divider -->
+    <svg
+      class="wave-divider"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+      preserveAspectRatio="none"
+    >
+      <path
+        fill="#ffffff"
+        fill-opacity="1"
+        d="M0,160L48,144C96,128,192,96,288,90.7C384,85,480,107,576,128C672,149,768,171,864,165.3C960,160,1056,128,1152,122.7C1248,117,1344,139,1392,149.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+      ></path>
+    </svg>
   </div>
 
-  <div class="content-container">
+  <div class="content-wrapper">
     <!-- Community Section -->
-    <div class="community-section-inline">
-      <h2>OUR WORSHIP COMMUNITY</h2>
-      <div class="community-content-grid">
-        <div class="community-text">
-          <h3>Join Us in Worship</h3>
-          <p>
-            We are a vibrant community of believers who gather together to
-            worship, grow in faith, and support one another. Our worship
-            services are designed to create an atmosphere where you can
-            encounter God's presence and experience meaningful connection with
-            fellow believers.
-          </p>
-          <p>
-            Whether you're new to faith or have been walking with God for years,
-            you'll find a welcoming home here. We believe in authentic worship,
-            powerful teaching from God's Word, and genuine fellowship that
-            extends beyond Sunday services.
-          </p>
+    <div class="community-section">
+      <div class="section-header">
+        <h2>Join Our Worship Community</h2>
+        <div class="section-underline"></div>
+        <p class="section-subtitle">
+          Experience God's presence in fellowship and worship
+        </p>
+      </div>
+
+      <div class="community-grid">
+        <div class="community-text-block">
+          <div class="text-content">
+            <h3>A Place to Belong</h3>
+            <p>
+              We are a vibrant community of believers who gather together to
+              worship, grow in faith, and support one another. Our worship
+              services are designed to create an atmosphere where you can
+              encounter God's presence and experience meaningful connection with
+              fellow believers.
+            </p>
+            <p>
+              Whether you're new to faith or have been walking with God for
+              years, you'll find a welcoming home here. We believe in authentic
+              worship, powerful teaching from God's Word, and genuine fellowship
+              that extends beyond Sunday services.
+            </p>
+          </div>
+          <div class="community-image">
+            <img
+              src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80"
+              alt="Worship Community"
+            />
+          </div>
         </div>
-        <div class="community-features">
+
+        <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">🎵</div>
             <h4>Spirit-Led Worship</h4>
@@ -58,17 +107,12 @@
           <div class="feature-card">
             <div class="feature-icon">🤝</div>
             <h4>Genuine Fellowship</h4>
-            <p>
-              Build meaningful relationships with believers who care about your
-              journey
-            </p>
+            <p>Build meaningful relationships with believers who care</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">🙏</div>
             <h4>Prayer & Ministry</h4>
-            <p>
-              Receive prayer and ministry as we support one another in faith
-            </p>
+            <p>Receive prayer and ministry as we support one another</p>
           </div>
         </div>
       </div>
@@ -76,7 +120,14 @@
 
     <!-- Schedule Section -->
     <div class="schedule-section">
-      <h2>WORSHIP SCHEDULE</h2>
+      <div class="section-header">
+        <h2>Upcoming Worship Services</h2>
+        <div class="section-underline"></div>
+        <p class="section-subtitle">
+          Join us for these spirit-filled gatherings
+        </p>
+      </div>
+
       <div class="schedule-grid" id="scheduleGrid">
         <div class="loading-state">
           <div class="loader"></div>
@@ -86,5 +137,6 @@
     </div>
   </div>
 
+  <!-- Footer placeholder -->
   <div id="userFooter"></div>
 </section>

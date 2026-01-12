@@ -78,7 +78,7 @@
 }
 
 .nav-links a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -5px;
   left: 0;
@@ -96,20 +96,30 @@
   width: 100%;
 }
 
-/* Mobile Menu Button */
+/* Mobile Menu Button - FIXED */
 .mobile-menu-btn {
   display: none;
   background: none;
   border: none;
   font-size: 24px;
-  color: #1a1a1a;
+  color: #1a1a1a !important;
   cursor: pointer;
-  padding: 5px;
-  transition: color 0.3s ease;
+  padding: 8px;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.mobile-menu-btn i {
+  color: #1a1a1a !important;
+  display: block;
 }
 
 .mobile-menu-btn:hover {
-  color: #ff6b00;
+  color: #ff6b00 !important;
+}
+
+.mobile-menu-btn:hover i {
+  color: #ff6b00 !important;
 }
 
 /* Profile Dropdown */

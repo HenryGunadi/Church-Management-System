@@ -216,7 +216,7 @@ function updateSlideContent() {
   // Add slide animation
   slideElement.style.animation = "none";
   setTimeout(() => {
-    slideElement.style.animation = "fadeIn 0.5s ease-in";
+    slideElement.style.animation = "fadeIn 0.6s ease-out";
   }, 10);
 }
 
@@ -237,7 +237,7 @@ function displaySchedules() {
   }
 
   gridContainer.innerHTML = allSchedules
-    .map((schedule, index) => {
+    .map((schedule) => {
       const startTime = new Date(schedule.start_time);
       const endTime = schedule.end_time ? new Date(schedule.end_time) : null;
 
@@ -264,7 +264,7 @@ function displaySchedules() {
       });
 
       return `
-        <div class="schedule-card" style="animation-delay: ${index * 0.1}s">
+        <div class="schedule-card">
           <div class="schedule-card-header">
             <div class="schedule-icon">⛪</div>
             <div class="schedule-title">
@@ -372,4 +372,11 @@ function showError(message) {
       </div>
     `;
   }
+}
+
+// Auto-initialize
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }
