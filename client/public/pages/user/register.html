@@ -3,7 +3,7 @@
     <!-- Left Image / Info Section -->
     <div class="image-section">
       <div class="image-content">
-        <a href="#/" class="logo">✟</a>
+        <a href="/" class="logo">✟</a>
         <h1>Welcome to Our Faith Community</h1>
         <p>
           Join us in worship, fellowship, and spiritual growth. Create your
@@ -31,6 +31,20 @@
             required
           />
           <div class="error-message" id="emailError"></div>
+        </div>
+
+        <!-- Phone Number Field - NEW -->
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phoneNumber"
+            placeholder="+62 812 3456 7890"
+            required
+          />
+          <div class="phone-hint">Format: +62 or 08xx-xxxx-xxxx</div>
+          <div class="error-message" id="phoneError"></div>
         </div>
 
         <div class="form-group">
@@ -78,7 +92,7 @@
 
         <div class="login-link">
           Already have an account?
-          <a href="/login">Sign in</a>
+          <a href="/login" data-link>Sign in</a>
         </div>
       </form>
     </div>

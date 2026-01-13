@@ -6,9 +6,13 @@ import { PAGES } from "../../config/pages";
 export const routes = {
   "/": {
     html: PAGES.landing,
-    css: "/css/user/landingPage.css",
+    css: [
+      "/css/user/userNavbar.css",
+      "/css/user/userFooter.css",
+      "/css/user/landingPage.css",
+    ],
+    js: ["/src/js/user/dashboard.js", "/src/js/user/userFooter.js"],
     layout: "user",
-    js: ["/src/js/user/landingPage.js"],
   },
 
   "/register": {
@@ -25,7 +29,6 @@ export const routes = {
     js: ["/src/js/user/login.js"],
   },
 
-  // ===== QR CODE SCAN =====
   "/scan": {
     html: PAGES.userScan,
     css: ["/css/user/scan.css"],
@@ -34,7 +37,6 @@ export const routes = {
     layout: null, // No layout needed for scan page
   },
 
-  // ===== ADMIN =====
   "/admin/profile": {
     html: PAGES.adminProfile,
     layout: "admin",
@@ -86,7 +88,6 @@ export const routes = {
     meta: { requiresAuth: true, role: "admin" },
   },
 
-  // ===== USER =====
   "/user/dashboard": {
     html: PAGES.userDashboard,
     css: [

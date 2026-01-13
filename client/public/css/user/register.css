@@ -289,3 +289,82 @@ input.error {
     font-size: 28px;
   }
 }
+
+.phone-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.4;
+}
+
+.phone-hint::before {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Valid input styling */
+input.valid {
+  border-color: #16a34a;
+}
+
+input.valid:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+}
+
+/* Phone input specific */
+input[type="tel"] {
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+}
+
+input[type="tel"]::placeholder {
+  font-family: "Inter", sans-serif;
+  letter-spacing: normal;
+}
+
+/* Error state for phone */
+input[type="tel"].error {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+input[type="tel"].error:focus {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+/* Success checkmark animation */
+input.valid::after {
+  content: "✓";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #16a34a;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Form group spacing adjustment */
+.form-group {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  input[type="tel"] {
+    font-size: 14px;
+  }
+
+  .phone-hint {
+    font-size: 11px;
+  }
+
+  .phone-hint::before {
+    font-size: 12px;
+  }
+}

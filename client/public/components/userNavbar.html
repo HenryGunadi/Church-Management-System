@@ -1,8 +1,8 @@
 <!-- User Navbar Component -->
 <nav class="navbar" id="navbar">
   <div class="nav-container">
-    <a href="/user/dashboard" data-link class="logo">
-      <div class="logo-icon">✟</div>
+    <a href="/" data-link class="logo">
+      <img src="/assets/images/Majesty-New.png" alt="Majesty Logo" class="logo-img"/>
       <span class="logo-text">GKIm Majesty</span>
     </a>
 
@@ -18,8 +18,14 @@
       <li><a href="/user/event" data-link>Events</a></li>
       <li><a href="/user/worship" data-link>Worship Schedule</a></li>
 
-      <!-- User Profile & Logout -->
-      <li class="nav-profile">
+      <!-- Login/Sign Up Buttons (for guests) -->
+      <li class="nav-cta" style="display: none;">
+        <a href="/login" class="btn-login" data-link>Login</a>
+        <a href="/register" class="btn-signup" data-link>Sign Up</a>
+      </li>
+
+      <!-- User Profile & Logout (for logged-in users) -->
+      <li class="nav-profile" style="display: none;">
         <div class="profile-dropdown">
           <button class="profile-btn" id="profileBtn">
             <div class="user-avatar-circle" id="userAvatarCircle">U</div>

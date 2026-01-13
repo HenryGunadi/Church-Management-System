@@ -563,3 +563,163 @@ body {
     font-size: 32px;
   }
 }
+
+/* Contact Section Clickable Links */
+.contact-link {
+  color: #ff6b00;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+  font-weight: 500;
+}
+
+.contact-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ff6b00;
+  transition: width 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #ff8c00;
+  transform: translateX(3px);
+}
+
+.contact-link:hover::after {
+  width: 100%;
+}
+
+/* Icon for external links */
+.contact-link[target="_blank"]::before {
+  content: "📍 ";
+  margin-right: 4px;
+}
+
+.contact-link[href^="mailto:"]::before {
+  content: "✉️ ";
+  margin-right: 4px;
+}
+
+.contact-link[href^="tel:"]::before {
+  content: "📞 ";
+  margin-right: 4px;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .contact-link {
+    display: inline;
+    word-break: break-word;
+  }
+  
+  .contact-link:hover {
+    transform: none;
+  }
+}
+
+/* Active state for touch devices */
+.contact-link:active {
+  color: #ff5500;
+  transform: scale(0.98);
+}
+
+/* Event Meta Info (Time & Place) */
+.event-meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.event-meta-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* No Events Message */
+.no-events-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.no-events-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.no-events-message h3 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.no-events-message p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* Event Card Enhancements */
+.event-card {
+  cursor: default;
+  height: 100%;
+}
+
+.event-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-content h3 {
+  flex-grow: 0;
+  margin-bottom: 10px;
+}
+
+.event-content p {
+  flex-grow: 1;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.event-link {
+  margin-top: auto;
+  display: inline-block;
+  padding-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .event-meta-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .no-events-message {
+    padding: 40px 20px;
+  }
+
+  .no-events-icon {
+    font-size: 48px;
+  }
+
+  .no-events-message h3 {
+    font-size: 20px;
+  }
+
+  .no-events-message p {
+    font-size: 14px;
+  }
+}

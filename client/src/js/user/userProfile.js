@@ -212,8 +212,6 @@ async function saveChanges() {
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
-    console.log("📤 Sending update request with data:", updateData);
-
     const response = await fetch(`${API_BASE_URL}/user/profile`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -222,15 +220,24 @@ async function saveChanges() {
     });
 
     console.log("📥 Response status:", response.status);
+    console.log("📥 Response content-type:", response.headers.get("content-type"));
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("❌ Error response:", error);
-      throw new Error(error.message || "Gagal menyimpan perubahan");
+    // ✅ FIX: Check if response is JSON
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error("❌ Response is not JSON");
+      const text = await response.text();
+      console.error("❌ Response body:", text.substring(0, 200));
+      throw new Error("Server tidak mengembalikan JSON. Cek backend endpoint.");
     }
 
     const result = await response.json();
     console.log("✅ Backend response:", result);
+
+    if (!response.ok) {
+      throw new Error(result.message || "Gagal menyimpan perubahan");
+    }
+
     console.log("✅ Updated user data:", result.user);
 
     await loadProfile();

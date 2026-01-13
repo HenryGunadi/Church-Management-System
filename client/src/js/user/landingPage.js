@@ -1,11 +1,26 @@
+// Import navbar functionality
+import { loadUserNavbar } from './userNavbar.js';
+import { loadUserFooter } from './userFooter.js';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 // Init (called by router)
-export function init() {
+export async function init() {
+  // ✅ LOAD NAVBAR FIRST
+  await loadUserNavbar();
+  await loadUserFooter();
+
   const navbar = document.getElementById("navbar");
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const navLinks = document.getElementById("navLinks");
 
-  if (!navbar || !mobileMenuBtn || !navLinks) return;
+  if (!navbar || !mobileMenuBtn || !navLinks) {
+    console.warn("Navbar elements not found after loading");
+    return;
+  }
 
+  // Load events from API
+  await loadUpcomingEvents();
 
   // Navbar scroll effect
   window.addEventListener("scroll", onScrollNavbar);
@@ -17,7 +32,6 @@ export function init() {
       navbar.classList.remove("scrolled");
     }
   }
-
 
   // Mobile menu toggle
   mobileMenuBtn.addEventListener("click", () => {
@@ -55,7 +69,6 @@ export function init() {
     icon.classList.add("fa-bars");
   }
 
-
   // Smooth scroll for anchors
   document
     .querySelectorAll('a[href^="#"]:not([href^="#/"])')
@@ -78,7 +91,6 @@ export function init() {
         });
       });
     });
-
 
   // Gallery lightbox
   document.querySelectorAll(".gallery-item").forEach((item) => {
@@ -116,7 +128,6 @@ export function init() {
     });
   });
 
-
   // Section animations
   const observer = new IntersectionObserver(
     (entries) => {
@@ -139,14 +150,13 @@ export function init() {
       observer.observe(section);
     });
 
-
   // Active nav link on scroll
   window.addEventListener("scroll", updateActiveNav);
 
   function updateActiveNav() {
     const scrollPos = window.scrollY + 100;
 
-    document.querySelectorAll("section[id]").forEach((section) => {
+    document.querySelectorAll("section[id], div[id]").forEach((section) => {
       const top = section.offsetTop;
       const height = section.offsetHeight;
       const id = section.id;
@@ -159,7 +169,6 @@ export function init() {
         scrollPos >= top && scrollPos < top + height ? "#ff6b00" : "#1a1a1a";
     });
   }
-
 
   // Hero animation
   const heroContent = document.querySelector(".hero-content");
@@ -174,14 +183,121 @@ export function init() {
     }, 100);
   }
 
+  console.log("✅ Landing page initialized with navbar");
+}
 
-  // Placeholder event links
-  document.querySelectorAll(".event-link").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Event details coming soon! Please check back later.");
+// ✅ NEW: Load Upcoming Events from API
+async function loadUpcomingEvents() {
+  try {
+    console.log("📅 Loading upcoming events...");
+
+    const response = await fetch(`${API_BASE_URL}/events/view`, {
+      credentials: "include",
     });
-  });
 
-  console.log("Landing page initialized");
+    if (!response.ok) {
+      console.warn("Failed to fetch events:", response.status);
+      return;
+    }
+
+    const data = await response.json();
+    const allEvents = data.data || [];
+
+    console.log("✅ Events loaded:", allEvents.length);
+
+    // Filter: only "event" and "other" types, exclude "worship"
+    const filteredEvents = allEvents.filter(
+      (event) => event.event_type === "event" || event.event_type === "other"
+    );
+
+    // Get only upcoming events (future dates)
+    const now = new Date();
+    const upcomingEvents = filteredEvents
+      .filter((event) => {
+        if (event.schedules && event.schedules.length > 0) {
+          const startTime = new Date(event.schedules[0].start_time);
+          return startTime > now;
+        }
+        return false;
+      })
+      .sort((a, b) => {
+        // Sort by start time (earliest first)
+        const timeA = new Date(a.schedules[0].start_time);
+        const timeB = new Date(b.schedules[0].start_time);
+        return timeA - timeB;
+      })
+      .slice(0, 4); // Show only 4 upcoming events
+
+    if (upcomingEvents.length > 0) {
+      displayEvents(upcomingEvents);
+    } else {
+      showNoEvents();
+    }
+  } catch (error) {
+    console.error("❌ Error loading events:", error);
+    showNoEvents();
+  }
+}
+
+function displayEvents(events) {
+  const container = document.querySelector(".events-container");
+  
+  if (!container) {
+    console.warn("Events container not found");
+    return;
+  }
+
+  container.innerHTML = events
+    .map((event) => {
+      const schedule = event.schedules[0];
+      const startTime = new Date(schedule.start_time);
+
+      const dateStr = startTime.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }).toUpperCase();
+
+      const timeStr = startTime.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      return `
+        <div class="event-card">
+          <div class="event-content">
+            <div class="event-date">${dateStr}</div>
+            <h3>${escapeHtml(event.event_name)}</h3>
+            <p>${escapeHtml(event.description || "Join us for this special event!")}</p>
+            <div class="event-meta-info">
+              <span>🕐 ${timeStr}</span>
+              <span>📍 ${escapeHtml(event.place)}</span>
+            </div>
+            <a href="/user/event" data-link class="event-link">Learn More →</a>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function showNoEvents() {
+  const container = document.querySelector(".events-container");
+  
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="no-events-message">
+      <div class="no-events-icon">📅</div>
+      <h3>No Upcoming Events</h3>
+      <p>Check back soon for exciting events and gatherings!</p>
+    </div>
+  `;
+}
+
+function escapeHtml(text) {
+  if (!text) return "";
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }

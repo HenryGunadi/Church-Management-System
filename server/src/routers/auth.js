@@ -16,7 +16,7 @@ class AuthRouter {
   registerRoutes() {
     this.router.post("/login", loginValidation, this.login.bind(this));
     this.router.post("/register", registerValidation, this.register.bind(this));
-    this.router.post("/logout", this.logout.bind(this)); // ← LOGOUT ROUTE
+    this.router.post("/logout", this.logout.bind(this));
 
     this.router.get("/verify", authenticate, (req, res) => {
       res.json({
@@ -120,21 +120,28 @@ class AuthRouter {
     try {
       // Validate payload
       console.log("register terpanggil");
-      console.log(req.body);
+      console.log("📥 Request body:", req.body);
+      
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { email, password } = req.body;
-      const user = await this.authService.register(email, password, "member");
+      // ✅ FIXED: Extract phone_number from request body
+      const { email, phone_number, password } = req.body;
+      
+      console.log("📧 Email:", email);
+      console.log("📱 Phone:", phone_number);
+      
+      // ✅ FIXED: Pass phone_number to authService.register
+      const user = await this.authService.register(email, password, "member", phone_number);
 
       res.status(201).json({
         message: "Your account has been created successfully.",
         user,
       });
     } catch (err) {
-      console.log("Register error : ", err.message);
+      console.log("Register error:", err.message);
       res.status(500).json({ message: err.message });
     }
   }

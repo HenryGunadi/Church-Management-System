@@ -1,33 +1,6 @@
 <section>
-  <main id="app"></main>
-  <!-- Navbar -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-container">
-      <a href="#/" class="logo">
-        <div class="logo-icon">✟</div>
-        <span class="logo-text">Grace Chapel</span>
-      </a>
-
-      <ul class="nav-links" id="navLinks">
-        <li><a href="/user/dashboard" data-link>Home</a></li>
-        <li><a href="/user/about" data-link>About Us</a></li>
-        <li><a href="/user/event" data-link>Events</a></li>
-        <li><a href="/user/Ministries" data-link>Ministries</a></li>
-        <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
-
-        <div class="nav-cta">
-          <a href="/login" class="btn-login">Login</a>
-          <a href="/register" class="btn-signup">Sign Up</a>
-        </div>
-      </ul>
-
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
-  </nav>
-
   <!-- Hero Section -->
+  <div id="userNavbar"></div>
   <section class="hero" id="home">
     <div class="hero-content">
       <h1>Welcome!</h1>
@@ -45,7 +18,7 @@
       <div class="about-content">
         <h2>ABOUT US</h2>
         <p>
-          Grace Chapel Church is a vibrant and welcoming community dedicated to
+          GKIm Majesty is a vibrant and welcoming community dedicated to
           spreading God's love and serving our neighbors.
         </p>
         <p>
@@ -56,32 +29,40 @@
           Whether you're new to faith or experienced, you'll find a home here.
         </p>
       </div>
-
       <div class="about-images">
         <div class="about-img large">
           <img
-            src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800"
+            src="/assets/images/worship.jpeg"
             alt="Church community"
           />
         </div>
         <div class="about-img">
           <img
-            src="https://images.unsplash.com/photo-1509027572446-af8401acfdc3?w=400"
+            src="/assets/images/worship2.jpeg"
             alt="Worship"
           />
         </div>
         <div class="about-img">
           <img
-            src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400"
+            src="/assets/images/worship3.jpeg"
             alt="Community"
           />
         </div>
       </div>
     </div>
   </section>
+  <div class="events" id="events">
+    <div class="section-header">
+      <h2>UPCOMING EVENTS</h2>
+      <p>Join us for these exciting events</p>
+    </div>
+    <div class="events-container">
+      
+    </div>
+  </div>
 
   <!-- Events Section -->
-  <section class="events" id="events">
+  <!-- <section class="events" id="events">
     <div class="section-header">
       <h2>UPCOMING EVENTS</h2>
       <p>Join us for these exciting events</p>
@@ -124,7 +105,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 
   <!-- Gallery Section -->
   <section class="gallery" id="gallery">
@@ -138,21 +119,19 @@
         <div class="gallery-item">
           <img
             src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=600"
-          />
-        </div>
-        <div class="gallery-item">
-          <img
-            src="https://images.unsplash.com/photo-1509027572446-af8401acfdc3?w=600"
+            alt="Gallery 1"
           />
         </div>
         <div class="gallery-item">
           <img
             src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600"
+            alt="Gallery 3"
           />
         </div>
         <div class="gallery-item">
           <img
             src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600"
+            alt="Gallery 4"
           />
         </div>
       </div>
@@ -164,8 +143,35 @@
     <div class="contact-container">
       <div class="contact-info">
         <h3>Connect With Us</h3>
-        <p>Email: info@gracechapel.com</p>
-        <p>Phone: +1 (555) 123-4567</p>
+        
+        <!-- Email - Clickable (Opens email client) -->
+        <p>
+          <strong>Email:</strong> 
+          <a href="mailto:cdm.majestycommunity@gmail.com" class="contact-link">
+            cdm.majestycommunity@gmail.com
+          </a>
+        </p>
+        
+        <!-- Phone - Clickable (Opens phone dialer on mobile) -->
+        <p>
+          <strong>Phone:</strong> 
+          <a href="tel:+15551234567" class="contact-link">
+            +1 (555) 123-4567
+          </a>
+        </p>
+        
+        <!-- Address - Clickable (Opens Google Maps) -->
+        <p>
+          <strong>Address:</strong> 
+          <a 
+            href="https://www.google.com/maps/search/?api=1&query=Jl.+Prof.+drg.+Soeria+Soemantri+No.91+Ruko+C3+Sukawarna+Sukajadi+Bandung" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="contact-link"
+          >
+            Jl. Prof. drg. Soeria Soemantri No.91 Ruko C3, Sukawarna, Sukajadi, Bandung City, West Java 40164
+          </a>
+        </p>
       </div>
 
       <div class="map-container">
@@ -176,35 +182,5 @@
       </div>
     </div>
   </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h3>Grace Chapel</h3>
-        <p>Building a community of faith, hope, and love.</p>
-      </div>
-
-      <div class="footer-section">
-        <h3>Quick Links</h3>
-        <ul class="footer-links">
-          <li><a href="/user/dashboard" data-link>Home</a></li>
-          <li><a href="/user/about" data-link>About Us</a></li>
-          <li><a href="/user/event" data-link>Events</a></li>
-          <li><a href="/user/Ministries" data-link>Ministries</a></li>
-          <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
-          <li><a href="/login">Member Login</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h3>Newsletter</h3>
-        <a href="/register" class="btn-signup">Subscribe</a>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2024 Grace Chapel Church</p>
-    </div>
-  </footer>
+  <div id="userFooter"></div>
 </section>

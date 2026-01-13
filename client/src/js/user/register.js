@@ -3,9 +3,6 @@ import { showAlert } from "./alert";
 // API
 const apiUrl = import.meta.env.VITE_API_URL;
 
-// ================================
-// Init (called by router)
-// ================================
 export function init() {
   const form = document.getElementById("registerForm");
   if (!form) return;
@@ -15,12 +12,14 @@ export function init() {
 
   // Form elements
   const emailInput = document.getElementById("email");
+  const phoneInput = document.getElementById("phoneNumber"); // NEW
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirmPassword");
   const submitBtn = document.getElementById("submitBtn");
 
   // Error elements
   const emailError = document.getElementById("emailError");
+  const phoneError = document.getElementById("phoneError"); // NEW
   const passwordError = document.getElementById("passwordError");
   const confirmPasswordError = document.getElementById("confirmPasswordError");
 
@@ -29,15 +28,40 @@ export function init() {
 
   // Eye toggles
   const togglePassword = document.getElementById("togglePassword");
-  const toggleConfirmPassword = document.getElementById(
-    "toggleConfirmPassword"
-  );
+  const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
 
   // ================================
-  // Helpers
+  // VALIDATION FUNCTIONS
   // ================================
+
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  // NEW: Phone validation for Indonesian numbers
+  function validatePhone(phone) {
+    // Remove all spaces, dashes, and parentheses
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+    
+    // Check if it's a valid Indonesian phone number
+    // Format: +62xxx or 08xxx (minimum 10 digits after country code)
+    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{7,11}$/;
+    
+    return phoneRegex.test(cleanPhone);
+  }
+
+  // NEW: Format phone number for display
+  function formatPhoneNumber(phone) {
+    // Remove all non-digits except +
+    let cleaned = phone.replace(/[^\d+]/g, "");
+    
+    // If starts with 0, keep it
+    // If starts with 62, add +
+    if (cleaned.startsWith("62") && !cleaned.startsWith("+62")) {
+      cleaned = "+" + cleaned;
+    }
+    
+    return cleaned;
   }
 
   function checkPasswordStrength(password) {
@@ -78,6 +102,7 @@ export function init() {
     errorEl.textContent = message;
     errorEl.classList.add("show");
     input.classList.add("error");
+    input.classList.remove("valid");
   }
 
   function hideError(input, errorEl) {
@@ -86,8 +111,9 @@ export function init() {
   }
 
   // ================================
-  // Eye toggles
+  // EYE TOGGLE HANDLERS
   // ================================
+
   togglePassword.addEventListener("click", () => {
     const type = passwordInput.type === "password" ? "text" : "password";
     passwordInput.type = type;
@@ -101,8 +127,9 @@ export function init() {
   });
 
   // ================================
-  // Validation listeners
+  // EMAIL VALIDATION
   // ================================
+
   emailInput.addEventListener("blur", () => {
     if (!emailInput.value) {
       showError(emailInput, emailError, "Email is required");
@@ -110,10 +137,48 @@ export function init() {
       showError(emailInput, emailError, "Please enter a valid email");
     } else {
       hideError(emailInput, emailError);
+      emailInput.classList.add("valid");
     }
   });
 
-  emailInput.addEventListener("input", () => hideError(emailInput, emailError));
+  emailInput.addEventListener("input", () => {
+    hideError(emailInput, emailError);
+  });
+
+  // ================================
+  // PHONE NUMBER VALIDATION - NEW
+  // ================================
+
+  phoneInput.addEventListener("input", () => {
+    hideError(phoneInput, phoneError);
+    
+    // Auto-format as user types
+    const formatted = formatPhoneNumber(phoneInput.value);
+    if (formatted !== phoneInput.value) {
+      const cursorPos = phoneInput.selectionStart;
+      phoneInput.value = formatted;
+      phoneInput.setSelectionRange(cursorPos, cursorPos);
+    }
+  });
+
+  phoneInput.addEventListener("blur", () => {
+    if (!phoneInput.value) {
+      showError(phoneInput, phoneError, "Phone number is required");
+    } else if (!validatePhone(phoneInput.value)) {
+      showError(
+        phoneInput,
+        phoneError,
+        "Please enter a valid Indonesian phone number (e.g., +62812xxxx or 0812xxxx)"
+      );
+    } else {
+      hideError(phoneInput, phoneError);
+      phoneInput.classList.add("valid");
+    }
+  });
+
+  // ================================
+  // PASSWORD VALIDATION
+  // ================================
 
   passwordInput.addEventListener("input", () => {
     updatePasswordStrength();
@@ -145,9 +210,14 @@ export function init() {
       showError(passwordInput, passwordError, "Password is too weak");
     } else {
       hideError(passwordInput, passwordError);
+      passwordInput.classList.add("valid");
     }
 
     updatePasswordStrength();
+  });
+
+  confirmPasswordInput.addEventListener("input", () => {
+    hideError(confirmPasswordInput, confirmPasswordError);
   });
 
   confirmPasswordInput.addEventListener("blur", () => {
@@ -165,27 +235,43 @@ export function init() {
       );
     } else {
       hideError(confirmPasswordInput, confirmPasswordError);
+      confirmPasswordInput.classList.add("valid");
     }
   });
 
   // ================================
-  // Submit
+  // FORM SUBMIT
   // ================================
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Clear all errors
     hideError(emailInput, emailError);
+    hideError(phoneInput, phoneError);
     hideError(passwordInput, passwordError);
     hideError(confirmPasswordInput, confirmPasswordError);
 
     let hasError = false;
     const strength = checkPasswordStrength(passwordInput.value);
 
+    // Validate email
     if (!emailInput.value || !validateEmail(emailInput.value)) {
       showError(emailInput, emailError, "Invalid email");
       hasError = true;
     }
 
+    // Validate phone number - NEW
+    if (!phoneInput.value || !validatePhone(phoneInput.value)) {
+      showError(
+        phoneInput,
+        phoneError,
+        "Invalid phone number format"
+      );
+      hasError = true;
+    }
+
+    // Validate password
     if (
       !passwordInput.value ||
       passwordInput.value.length < 8 ||
@@ -195,6 +281,7 @@ export function init() {
       hasError = true;
     }
 
+    // Validate confirm password
     if (
       !confirmPasswordInput.value ||
       passwordInput.value !== confirmPasswordInput.value
@@ -209,16 +296,21 @@ export function init() {
 
     if (hasError) return;
 
+    // Disable submit button
     submitBtn.disabled = true;
     submitBtn.textContent = "Creating Account...";
 
     try {
+      // Format phone number for database
+      const phoneFormatted = formatPhoneNumber(phoneInput.value);
+
       const res = await fetch(`${apiUrl}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           email: emailInput.value,
+          phone_number: phoneFormatted, // NEW: Send to backend
           password: passwordInput.value,
           role: "member",
         }),
@@ -227,29 +319,44 @@ export function init() {
       const data = await res.json();
 
       if (res.ok) {
-        // navigation
-        history.pushState(null, "", "/login");
-        window.dispatchEvent(new PopStateEvent("popstate"));
+        // Show success message
+        showAlert({
+          timer: true,
+          type: "success",
+          title: "Registration Successful!",
+          message: "Please login to continue",
+        });
+
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          history.pushState(null, "", "/login");
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        }, 2000);
       } else {
         showAlert({
           timer: true,
           type: "error",
-          title: "Register Failed",
-          message: data.message,
+          title: "Registration Failed",
+          message: data.message || "Please try again",
         });
 
         submitBtn.disabled = false;
         submitBtn.textContent = "Create Account";
       }
     } catch (err) {
-      console.error(err);
-      showError(
-        emailInput,
-        emailError,
-        `An error occurred. Please try again : ${err.messagea}`
-      );
+      console.error("Registration error:", err);
+      
+      showAlert({
+        timer: true,
+        type: "error",
+        title: "Connection Error",
+        message: "Unable to connect to server. Please try again.",
+      });
+
       submitBtn.disabled = false;
       submitBtn.textContent = "Create Account";
     }
   });
+
+  console.log("✅ Register form initialized with phone validation");
 }

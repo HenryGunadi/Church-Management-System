@@ -58,7 +58,7 @@ function initUserNavbar() {
     handleMobileMenu();
     handleProfileDropdown();
     handleScrollEffect();
-    loadUserProfile();
+    checkAuthAndLoadProfile(); // Changed: Check auth first
     setupLogout();
     setActiveNavLink();
 
@@ -154,65 +154,100 @@ function handleScrollEffect() {
   });
 }
 
-// ✅ Load User Profile - FIXED to fetch from database
-async function loadUserProfile() {
+// ✅ NEW: Check Authentication and Toggle UI
+async function checkAuthAndLoadProfile() {
   try {
-    console.log("Loading user profile for navbar...");
+    console.log("Checking authentication status...");
 
-    // First get user ID from token
+    // Verify if user is logged in
     const verifyResponse = await fetch(`${API_BASE_URL}/auth/verify`, {
       credentials: "include",
     });
 
     if (!verifyResponse.ok) {
-      console.warn(" Auth verify failed:", verifyResponse.status);
-      updateProfileUI({
-        name: null,
-        email: "guest@example.com",
-      });
+      console.log("User not authenticated - showing login/signup buttons");
+      showAuthButtons();
       return;
     }
 
     const verifyData = await verifyResponse.json();
-    console.log("Token verified:", verifyData);
-
+    
     if (!verifyData.user || !verifyData.user.id) {
-      console.warn("No user ID in token");
-      updateProfileUI({
-        name: null,
-        email: verifyData.user?.email || "guest@example.com",
-      });
+      console.log("No valid user data - showing login/signup buttons");
+      showAuthButtons();
       return;
     }
 
-    const userId = verifyData.user.id;
+    // User is authenticated - load profile
+    console.log("User authenticated - showing profile");
+    await loadUserProfile(verifyData.user.id, verifyData.user);
 
+  } catch (error) {
+    console.error("Error checking auth:", error);
+    showAuthButtons();
+  }
+}
+
+// ✅ Show Login/Sign Up Buttons (for guests)
+function showAuthButtons() {
+  const navProfile = document.querySelector(".nav-profile");
+  const navCta = document.querySelector(".nav-cta");
+
+  if (navProfile) {
+    navProfile.style.display = "none";
+  }
+
+  if (navCta) {
+    navCta.style.display = "flex";
+  }
+
+  console.log("✅ Showing auth buttons (Login/Sign Up)");
+}
+
+// ✅ Show Profile Dropdown (for logged-in users)
+function showProfileDropdown() {
+  const navProfile = document.querySelector(".nav-profile");
+  const navCta = document.querySelector(".nav-cta");
+
+  if (navProfile) {
+    navProfile.style.display = "block";
+  }
+
+  if (navCta) {
+    navCta.style.display = "none";
+  }
+
+  console.log("✅ Showing profile dropdown");
+}
+
+// ✅ Load User Profile - Updated to accept fallback data
+async function loadUserProfile(userId, fallbackData) {
+  try {
+    console.log("Loading user profile for navbar...");
+
+    // Try to fetch fresh data from database
     const userResponse = await fetch(`${API_BASE_URL}/user/view?id=${userId}`, {
       credentials: "include",
     });
 
-    if (!userResponse.ok) {
-      console.warn("Failed to fetch user data from DB");
-      // Fallback to token data
-      updateProfileUI(verifyData.user);
-      return;
-    }
+    let userData;
 
-    const userData = await userResponse.json();
-    console.log("Fresh user data from DB:", userData);
-
-    if (userData.user) {
-      updateProfileUI(userData.user);
+    if (userResponse.ok) {
+      const responseData = await userResponse.json();
+      userData = responseData.user || fallbackData;
+      console.log("Fresh user data from DB:", userData);
     } else {
-      console.warn("No user data in response");
-      updateProfileUI(verifyData.user);
+      console.warn("Failed to fetch user data from DB, using fallback");
+      userData = fallbackData;
     }
+
+    updateProfileUI(userData);
+    showProfileDropdown(); // Show profile UI
+
   } catch (error) {
     console.error("Error loading user profile:", error);
-    updateProfileUI({
-      name: null,
-      email: "user@example.com",
-    });
+    updateProfileUI(fallbackData);
+    showProfileDropdown(); // Still show profile UI with fallback data
   }
 }
 
@@ -319,7 +354,7 @@ function setupLogout() {
 
 export async function refreshNavbarProfile() {
   console.log("Refreshing navbar profile...");
-  await loadUserProfile();
+  await checkAuthAndLoadProfile();
 }
 
 export function init() {
