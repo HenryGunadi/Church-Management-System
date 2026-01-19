@@ -8,4 +8,6 @@ async function init() {
   server.run();
 }
 
+console.log(process.env.PORT);
+
 init();
