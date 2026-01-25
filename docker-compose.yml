@@ -1,0 +1,42 @@
+  services:
+    mysql:
+      image: mysql:8.0
+      container_name: church-mysql
+      restart: always
+      environment:
+        MYSQL_DATABASE: church_management_system
+        MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      ports:
+        - "3306:3306"
+      volumes:
+        - mysql_data:/var/lib/mysql
+      healthcheck:
+        test: ["CMD-SHELL","mysql -h localhost -uroot -e 'SELECT 1'"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+
+    server:
+      build: ./server
+      container_name: church-server
+      restart: always
+      ports:
+        - "3000:3000"
+      env_file:
+        - ./server/.env
+      depends_on:
+        mysql:
+          condition: service_healthy
+
+    client:
+      build: ./client
+      container_name: church-client
+      restart: always
+      ports:
+        - "8080:80"
+      depends_on:
+        server:
+          condition: service_started
+
+  volumes:
+    mysql_data:

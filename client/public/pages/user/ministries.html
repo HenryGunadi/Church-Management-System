@@ -1,0 +1,351 @@
+<section>
+  <main id="app"></main>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#/" class="logo">
+        <div class="logo-icon">✟</div>
+        <span class="logo-text">Grace Chapel</span>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/user/dashboard" data-link>Home</a></li>
+        <li><a href="/user/about" data-link>About Us</a></li>
+        <li><a href="/user/event" data-link>Events</a></li>
+        <li><a href="/user/Ministries" data-link>Ministries</a></li>
+        <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
+      </ul>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <div class="hero-ministries">
+    <h1>Ministries</h1>
+    <p>
+      Discover ways to serve, connect, and grow in your faith journey through
+      our various ministry programs
+    </p>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-container">
+      <button class="filter-btn active" onclick="filterMinistries('all')">
+        All Ministries
+      </button>
+      <button class="filter-btn" onclick="filterMinistries('youth')">
+        Youth
+      </button>
+      <button class="filter-btn" onclick="filterMinistries('children')">
+        Children
+      </button>
+      <button class="filter-btn" onclick="filterMinistries('adults')">
+        Adults
+      </button>
+      <button class="filter-btn" onclick="filterMinistries('outreach')">
+        Outreach
+      </button>
+      <button class="filter-btn" onclick="filterMinistries('worship')">
+        Worship
+      </button>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <div class="main-layout">
+      <div class="ministry-card-large">
+        <div class="ministry-image-large">🎸</div>
+        <div class="ministry-content-large">
+          <h3>Worship Services</h3>
+          <div class="ministry-meta">
+            <div class="meta-item">
+              <span>📅</span>
+              <span>Every Sunday</span>
+            </div>
+            <div class="meta-item">
+              <span>⏰</span>
+              <span>09:00 & 11:00 AM</span>
+            </div>
+            <div class="meta-item">
+              <span>👥</span>
+              <span>All Ages</span>
+            </div>
+          </div>
+          <p>
+            Join us for powerful worship experiences that bring our community
+            together in praise and adoration. Our worship team leads
+            contemporary and traditional songs that inspire hearts and minds to
+            connect with God.
+          </p>
+          <div class="ministry-actions">
+            <button class="action-btn btn-primary">Join Ministry</button>
+            <button class="action-btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h3>Jadilah Bagian Dari Pelayanan!</h3>
+        <p>
+          Daftarkan diri Anda untuk bergabung dengan pelayanan yang sesuai
+          dengan panggilan dan talenta Anda. Mari bersama-sama melayani dan
+          bertumbuh dalam komunitas.
+        </p>
+        <form onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label>Nama</label>
+            <input type="text" placeholder="Nama lengkap Anda" required />
+          </div>
+          <div class="form-group">
+            <label>No. Telepon</label>
+            <input type="tel" placeholder="Nomor telepon aktif" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="email@example.com" required />
+          </div>
+          <div class="form-group">
+            <label>Penempatan Yang Ingin Anda Ambil:</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="youth"
+                  name="ministry"
+                  value="youth"
+                />
+                <label for="youth">Youth Ministry</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="children"
+                  name="ministry"
+                  value="children"
+                />
+                <label for="children">Children's Ministry</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="worship"
+                  name="ministry"
+                  value="worship"
+                />
+                <label for="worship">Worship Team</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="outreach"
+                  name="ministry"
+                  value="outreach"
+                />
+                <label for="outreach">Community Outreach</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="media"
+                  name="ministry"
+                  value="media"
+                />
+                <label for="media">Media & Creative</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Kapan Anda tersedia Untuk Melayani?</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="weekday"
+                  name="availability"
+                  value="weekday"
+                />
+                <label for="weekday">Weekdays</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="weekend"
+                  name="availability"
+                  value="weekend"
+                />
+                <label for="weekend">Weekends</label>
+              </div>
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="anytime"
+                  name="availability"
+                  value="anytime"
+                />
+                <label for="anytime">Anytime</label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Submit Application</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <div class="ministry-card-large">
+        <div class="ministry-image-large">👶</div>
+        <div class="ministry-content-large">
+          <h3>Children's Ministry</h3>
+          <div class="ministry-meta">
+            <div class="meta-item">
+              <span>📅</span>
+              <span>Sunday & Wednesday</span>
+            </div>
+            <div class="meta-item">
+              <span>⏰</span>
+              <span>09:00 AM - 12:00 PM</span>
+            </div>
+            <div class="meta-item">
+              <span>👥</span>
+              <span>Ages 3-12</span>
+            </div>
+          </div>
+          <p>
+            A safe and nurturing environment where children learn about God's
+            love through engaging Bible stories, creative activities, and
+            interactive games. Our dedicated team helps young hearts grow in
+            faith.
+          </p>
+          <div class="ministry-actions">
+            <button class="action-btn btn-primary">Join Ministry</button>
+            <button class="action-btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ministry-card-large">
+        <div class="ministry-image-large">🎓</div>
+        <div class="ministry-content-large">
+          <h3>Youth Ministry</h3>
+          <div class="ministry-meta">
+            <div class="meta-item">
+              <span>📅</span>
+              <span>Every Friday</span>
+            </div>
+            <div class="meta-item">
+              <span>⏰</span>
+              <span>18:00 - 20:00</span>
+            </div>
+            <div class="meta-item">
+              <span>👥</span>
+              <span>Ages 13-18</span>
+            </div>
+          </div>
+          <p>
+            Dynamic and relevant ministry designed for teenagers to explore
+            their faith, build meaningful friendships, and discover their
+            purpose. Featuring worship, discussions, and fun activities.
+          </p>
+          <div class="ministry-actions">
+            <button class="action-btn btn-primary">Join Ministry</button>
+            <button class="action-btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <div class="ministry-card-large">
+        <div class="ministry-image-large">🤝</div>
+        <div class="ministry-content-large">
+          <h3>Community Outreach</h3>
+          <div class="ministry-meta">
+            <div class="meta-item">
+              <span>📅</span>
+              <span>Monthly</span>
+            </div>
+            <div class="meta-item">
+              <span>⏰</span>
+              <span>Various Times</span>
+            </div>
+            <div class="meta-item">
+              <span>👥</span>
+              <span>All Ages</span>
+            </div>
+          </div>
+          <p>
+            Making a difference in our community through acts of service,
+            compassion, and love. Join us in various outreach programs including
+            food drives, community service, and mission trips.
+          </p>
+          <div class="ministry-actions">
+            <button class="action-btn btn-primary">Join Ministry</button>
+            <button class="action-btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ministry-card-large">
+        <div class="ministry-image-large">📖</div>
+        <div class="ministry-content-large">
+          <h3>Bible Study Groups</h3>
+          <div class="ministry-meta">
+            <div class="meta-item">
+              <span>📅</span>
+              <span>Wednesday</span>
+            </div>
+            <div class="meta-item">
+              <span>⏰</span>
+              <span>19:00 - 20:30</span>
+            </div>
+            <div class="meta-item">
+              <span>👥</span>
+              <span>Adults</span>
+            </div>
+          </div>
+          <p>
+            Dive deeper into God's Word in small group settings. Experience
+            meaningful discussions, prayer, and fellowship as we study Scripture
+            together and apply biblical truths to daily life.
+          </p>
+          <div class="ministry-actions">
+            <button class="action-btn btn-primary">Join Ministry</button>
+            <button class="action-btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>Grace Chapel</h3>
+        <p>Building a community of faith, hope, and love.</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/user/dashboard" data-link>Home</a></li>
+          <li><a href="/user/about" data-link>About Us</a></li>
+          <li><a href="/user/event" data-link>Events</a></li>
+          <li><a href="/user/Ministries" data-link>Ministries</a></li>
+          <li><a href="/user/Worship" data-link>Worship Schedule</a></li>
+          <li><a href="/login">Member Login</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Newsletter</h3>
+        <a href="/register" class="btn-signup">Subscribe</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2024 Grace Chapel Church</p>
+    </div>
+  </footer>
+</section>

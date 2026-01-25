@@ -1,5 +1,8 @@
 const { validationResult } = require("express-validator");
 const { registerValidation, loginValidation } = require("../validators/auth");
+const config = require("../config/config");
+const jwt = require("jsonwebtoken");
+const { authenticate, checkRole } = require("../middlewares/auth");
 
 class AuthRouter {
   constructor(authService, express) {
@@ -13,46 +16,133 @@ class AuthRouter {
   registerRoutes() {
     this.router.post("/login", loginValidation, this.login.bind(this));
     this.router.post("/register", registerValidation, this.register.bind(this));
+    this.router.post("/logout", this.logout.bind(this));
+
+    this.router.get("/verify", authenticate, (req, res) => {
+      res.json({
+        authenticated: true,
+        user: req.user,
+      });
+    });
+
+    this.router.get(
+      "/admin-only",
+      authenticate,
+      checkRole("admin"),
+      (req, res) => {
+        res.json({
+          message: "Admin access granted",
+          user: req.user,
+        });
+      }
+    );
+  }
+
+  async verify(req, res) {
+    try {
+      const token = req.cookies?.auth_token;
+      if (!token) {
+        return res
+          .status(401)
+          .json({ authenticated: false, message: "No token" });
+      }
+
+      const decoded = jwt.verify(token, config.auth.jwt_secret);
+
+      res.status(200).json({
+        authenticated: true,
+        user: decoded,
+      });
+    } catch (err) {
+      res.status(401).json({
+        authenticated: false,
+        message: "Invalid or expired token",
+      });
+    }
   }
 
   async login(req, res) {
     try {
-      // Validate payload
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
       const { email, password } = req.body;
-      const { user, token } = await this.authService.login(email, password);
+      console.log("Login attempt:", email);
 
-      if (!user) {
+      const result = await this.authService.login(email, password);
+      if (!result) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      res.json({ message: "Login successful", user, token });
+      const { user, token } = result;
+
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      });
+
+      res.json({ message: "Login success.", user });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      console.error("Login error:", err.stack || err.message);
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  async logout(req, res) {
+    try {
+      // Clear the auth cookie
+      res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: false, // set to true in production with HTTPS
+        sameSite: "none",
+      });
+
+      console.log("User logged out successfully");
+
+      res.status(200).json({
+        message: "Logout successful",
+        success: true,
+      });
+    } catch (err) {
+      console.error("Logout error:", err.message);
+      res.status(500).json({
+        message: "Logout failed",
+        error: err.message,
+      });
     }
   }
 
   async register(req, res) {
     try {
       // Validate payload
+      console.log("register terpanggil");
+      console.log("📥 Request body:", req.body);
+      
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { name, email, password, role } = req.body;
-      const user = await this.authService.register(name, email, password, role);
+      // ✅ FIXED: Extract phone_number from request body
+      const { email, phone_number, password } = req.body;
+      
+      console.log("📧 Email:", email);
+      console.log("📱 Phone:", phone_number);
+      
+      // ✅ FIXED: Pass phone_number to authService.register
+      const user = await this.authService.register(email, password, "member", phone_number);
 
       res.status(201).json({
-        message: "User registered successfully",
+        message: "Your account has been created successfully.",
         user,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      console.log("Register error:", err.message);
+      res.status(500).json({ message: err.message });
     }
   }
 }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Component -->
+        <div id="adminSidebar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari...">
+                </div>
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Cards Statistik -->
+            <section class="stats-cards">
+                <div class="card">
+                    <div class="card-icon" style="background-color: #4CAF50;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>1,254</h3>
+                        <p>Total Pengguna</p>
+                    </div>
+                    <span class="card-trend up">+12%</span>
+                </div>
+                <div class="card">
+                    <div class="card-icon" style="background-color: #2196F3;">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>568</h3>
+                        <p>Pesanan Bulan Ini</p>
+                    </div>
+                    <span class="card-trend up">+5%</span>
+                </div>
+                <div class="card">
+                    <div class="card-icon" style="background-color: #FF9800;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Rp 45,2 Jt</h3>
+                        <p>Pendapatan</p>
+                    </div>
+                    <span class="card-trend down">-2%</span>
+                </div>
+                <div class="card">
+                    <div class="card-icon" style="background-color: #9C27B0;">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>12,543</h3>
+                        <p>Pengunjung</p>
+                    </div>
+                    <span class="card-trend up">+18%</span>
+                </div>
+            </section>
+
+            <!-- Grafik dan Tabel -->
+            <section class="content-row">
+                <div class="chart-container">
+                    <h3>Statistik Pengunjung 7 Hari Terakhir</h3>
+                    <canvas id="visitorChart"></canvas>
+                </div>
+                <div class="recent-orders">
+                    <h3>Pesanan Terbaru</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Pesanan</th>
+                                <th>Pelanggan</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-001</td>
+                                <td>Budi Santoso</td>
+                                <td>Rp 250.000</td>
+                                <td><span class="status completed">Selesai</span></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-002</td>
+                                <td>Siti Aisyah</td>
+                                <td>Rp 150.000</td>
+                                <td><span class="status pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-003</td>
+                                <td>Agus Wijaya</td>
+                                <td>Rp 500.000</td>
+                                <td><span class="status processing">Diproses</span></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-004</td>
+                                <td>Rina Dewi</td>
+                                <td>Rp 320.000</td>
+                                <td><span class="status completed">Selesai</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

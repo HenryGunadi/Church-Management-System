@@ -7,7 +7,8 @@ class Config {
   constructor() {
     this.server = {
       port: process.env.PORT || 3000,
-      host: process.env.HOST || "localhost",
+      host: process.env.HOST || "0.0.0.0",
+      publicUrl: process.env.PUBLIC_URL || null, // Add this line
     };
     this.db = {
       port: process.env.DB_PORT,
@@ -20,6 +21,7 @@ class Config {
       jwt_secret: process.env.JWT_SECRET,
       jwt_exp: process.env.JWT_EXP,
     };
+    this.state_mode = process.env.STATE_MODE;
   }
 }
 

@@ -41,12 +41,19 @@ class AuthService {
 
       return { user, token };
     } catch (err) {
+      console.log("Login service error:", err.message);
       throw new Error(`Login failed: ${err.message}`);
     }
   }
 
-  async register(name, email, password, role) {
+  // ✅ FIXED: Added phone_number parameter
+  async register(email, password, role, phone_number = null) {
     try {
+      console.log("🔐 AuthService.register called");
+      console.log("📧 Email:", email);
+      console.log("📱 Phone:", phone_number);
+      console.log("👤 Role:", role);
+
       const existingUser = await this.db("users").where({ email }).first();
       if (existingUser) {
         throw new Error("Email already registered");
@@ -54,20 +61,25 @@ class AuthService {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // ✅ FIXED: Insert phone_number into database
       const [insertId] = await this.db("users").insert({
-        name,
         email,
+        phone_number, // ⚠️ Add phone_number field
         password: hashedPassword,
         role,
       });
 
+      console.log("✅ User created with ID:", insertId);
+
+      // ✅ FIXED: Select phone_number in response
       const newUser = await this.db("users")
         .where({ id: insertId })
-        .select("id", "name", "email", "role", "created_at")
+        .select("id", "email", "phone_number", "role", "created_at")
         .first();
 
       return newUser;
     } catch (err) {
+      console.log("❌ Register service error:", err.message);
       throw new Error(`Registration failed: ${err.message}`);
     }
   }

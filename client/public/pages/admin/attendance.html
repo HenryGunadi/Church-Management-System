@@ -1,0 +1,132 @@
+<section>
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <div class="dashboard-container">
+    <!-- Sidebar Component -->
+    <div id="adminSidebar"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <h1 class="page-title">
+          <i class="fas fa-calendar-check"></i>
+          Event Attendance
+        </h1>
+        <button class="btn" id="exportBtn">
+          <i class="fas fa-download"></i>
+          Export All Data
+        </button>
+      </header>
+
+      <!-- Filter Card -->
+      <div class="card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="filterEventName">
+              <i class="fas fa-search"></i> Cari Event
+            </label>
+            <input 
+              type="text" 
+              id="filterEventName" 
+              placeholder="Cari nama event..."
+            />
+          </div>
+          <div class="filter-group">
+            <label for="filterEventType">
+              <i class="fas fa-filter"></i> Tipe Event
+            </label>
+            <select id="filterEventType">
+              <option value="">Semua Tipe</option>
+              <option value="event">Event</option>
+              <option value="worship">Worship</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading-state" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Memuat data event...</p>
+      </div>
+
+      <!-- Events Grid -->
+      <div class="events-grid" id="eventsGrid">
+        <!-- Event cards will be dynamically loaded here -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fas fa-calendar-times"></i>
+        <p>Tidak ada event ditemukan</p>
+        <small>Coba ubah filter pencarian Anda</small>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Attendance Details -->
+  <div class="modal" id="attendanceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalEventName">Detail Absensi</h2>
+        <button class="modal-close" id="modalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="event-info" id="eventInfo">
+          <!-- Event info will be loaded here -->
+        </div>
+        
+        <!-- Gender Filter (only for worship events) -->
+        <div class="gender-filter-container" id="genderFilterContainer" style="display: none;">
+          <div class="gender-filter-buttons">
+            <button class="gender-filter-btn active" data-gender="all">
+              <i class="fas fa-users"></i> Semua
+            </button>
+            <button class="gender-filter-btn" data-gender="male">
+              <i class="fas fa-mars"></i> Laki-laki
+            </button>
+            <button class="gender-filter-btn" data-gender="female">
+              <i class="fas fa-venus"></i> Perempuan
+            </button>
+          </div>
+        </div>
+
+        <div class="attendance-stats" id="attendanceStats">
+          <!-- Stats will be loaded here -->
+        </div>
+
+        <div class="attendance-table-container">
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Gender</th>
+                <th>Waktu Check-in</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <!-- Attendance data will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-attendance" id="emptyAttendance" style="display: none;">
+          <i class="fas fa-user-clock"></i>
+          <p>Belum ada data absensi</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="exportEventBtn">
+          <i class="fas fa-download"></i> Export Absensi Event Ini
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

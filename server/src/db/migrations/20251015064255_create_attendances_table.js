@@ -4,30 +4,32 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function (knex) {
-    await knex.schema.createTable('attendance', (table) => {
-        table.increments('id').primary();
-        table
-            .integer('event_id')
-            .unsigned()
-            .notNullable()
-            .references('id')
-            .inTable('events')
-            .onDelete('CASCADE');
-        table
-            .integer('user_id')
-            .unsigned()
-            .notNullable()
-            .references('id')
-            .inTable('users')
-            .onDelete('CASCADE');
-        table.timestamp('scanned_at').defaultTo(knex.fn.now());
-        table.enu('status', ['Present', 'Absent']).defaultTo('Present');
-    });
+  await knex.schema.createTable("attendance", (table) => {
+    table.increments("id").primary();
+    table
+      .integer("schedule_id")
+      .unsigned()
+      .notNullable()
+      .references("id")
+      .inTable("event_schedules")
+      .onDelete("CASCADE");
+    table
+      .integer("user_id")
+      .unsigned()
+      .notNullable()
+      .references("id")
+      .inTable("users")
+      .onDelete("CASCADE");
+    table.timestamp("scanned_at").defaultTo(knex.fn.now());
+    table
+      .enu("status", ["Registered", "Present", "Absent"])
+      .defaultTo("Present");
+  });
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function (knex) {
-    await knex.schema.dropTableIfExists('attendance');
+  await knex.schema.dropTableIfExists("attendance");
 };

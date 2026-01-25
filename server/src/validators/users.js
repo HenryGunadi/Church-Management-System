@@ -25,7 +25,7 @@ const createUserValidation = [
     .withMessage("Birth date must be a valid date (YYYY-MM-DD)"),
 
   body("phone_number")
-    .optional()
+    .optional({ checkFalsy: true })
     .isString()
     .withMessage("Phone number must be a string"),
 
@@ -51,7 +51,7 @@ const updateUserValidation = [
 
   body("gender")
     .optional()
-    .isIn(["Male", "Female"])
+    .isIn(["male", "female", "Male", "Female"])
     .withMessage("Gender must be Male or Female"),
 
   body("birth_date")
@@ -60,7 +60,7 @@ const updateUserValidation = [
     .withMessage("Birth date must be a valid date"),
 
   body("phone_number")
-    .optional()
+    .optional({ checkFalsy: true })
     .isString()
     .withMessage("Phone number must be a string"),
 
@@ -68,8 +68,8 @@ const updateUserValidation = [
 ];
 
 const viewUserValidation = [
-  param("id").optional().isInt().withMessage("User ID must be an integer"),
-  param("email").optional().isEmail().withMessage("Email must be valid"),
+  query("id").optional().isInt().withMessage("User ID must be an integer"),
+  query("email").optional().isEmail().withMessage("Email must be valid"),
 ];
 
 const deleteUserValidation = [
